@@ -235,6 +235,10 @@ class Cpu6502Test < Test::Unit::TestCase
             pc = @cpu.pc
             @cpu.runop(0xD0, 0x20)
             assert_equal pc + 0x20 + 2, @cpu.pc
+
+            pc = @cpu.pc
+            @cpu.runop(0xD0, 0xE0)
+            assert_equal (pc - (~0xE0 & 0x00FF)) + 2, @cpu.pc
           end
         end
       end
