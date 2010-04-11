@@ -61,6 +61,10 @@ class Cpu6502
     @flag[:C] = accumulator ? 1 : 0
   end
 
+  def set_overflow(val)
+    @flag[:V] = val
+  end
+
   def loadi(filen)
     @prog = File.open(filen, "rb") { |io| io.read }
     @imagesize = @prog.size
@@ -135,10 +139,21 @@ class Cpu6502
         @pc = (@ram[0xFFFE] << 8) | @ram[0xFFFF]
       when 0x69 # ADC
         @pc += 2
-        p @register[:A]
-        p oper1
-        @register[:A] += (@flag[:C] + oper1)
-        set_zero @register[:A]
+        result = @register[:A] + @flag[:C] + oper1
+        set_zero result
+        set_sign(result)
+        set_carry(result > 255)
+
+        if ( ~(@register[:A] ^ oper1) & (@register[:A] ^ result) ) & 0x80 > 0
+          set_overflow(1)
+        else
+          set_overflow(0)
+        end
+
+        result &= 0xFF
+
+
+        @register[:A] = result
 
       when 0xEA # NOP
         @pc += 1
