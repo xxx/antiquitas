@@ -107,16 +107,13 @@ class Cpu6502
         set_zero(tmp)
         @pc += 2
       when 0xD0 #BNE
-        display_status
-        @pc+=1
+        @pc += 2
         if (@flag[:Z] == 0)
           if (oper1 > 0x7F)
             @pc = @pc - (~(oper1) & 0x00FF)
           else
             @pc = @pc + (oper1 & 0x00FF)
           end
-        else
-          @pc += 1
         end
       when 0xA9 #LDA
         set_sign(oper1)
@@ -133,6 +130,9 @@ class Cpu6502
 #        @flag[:B] = 1
         @pc += 1
         exit 0
+      when 0xEA # NOP
+        @pc += 1
+
     end
     display_status
   end
