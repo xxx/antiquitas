@@ -160,7 +160,7 @@ class Cpu6502Test < Test::Unit::TestCase
 
         should "set the program counter to the passed 16-bit memory address" do
           @cpu.runop(0x20, 0x40, 0x25)
-          assert_equal (0x40 << 8) | 0x25, @cpu.pc
+          assert_equal to16bit(0x40, 0x25), @cpu.pc
         end
       end
     end
@@ -280,6 +280,31 @@ class Cpu6502Test < Test::Unit::TestCase
             @cpu.runop(0xD0, 0xE0)
             assert_equal (pc - (~0xE0 & 0x00FF)) + 2, @cpu.pc
           end
+        end
+      end
+    end
+
+    context "BRK" do
+      context "implied mode" do
+        should "set the break flag" do
+          @cpu.runop(0x00)
+          assert_equal 1, @cpu.flag[:B]
+        end
+
+        should "push the program counter, high byte first, then the status register contents onto the stack" do
+          @cpu.pc = to16bit(0x10, 0x04)
+          @cpu.register[:SR] = 0x19
+          @cpu.runop(0x00)
+          assert_equal 0x19, @cpu.pull
+          assert_equal 0x04 + 1, @cpu.pull # add 1 because of @pc increment
+          assert_equal 0x10, @cpu.pull
+        end
+
+        should "load the interrupt vector from 0xFFFE/F into the pc" do
+          @cpu.ram[0xFFFE] = 0x34
+          @cpu.ram[0xFFFF] = 0x02
+          @cpu.runop(0x00)
+          assert_equal to16bit(0x34, 0x02), @cpu.pc
         end
       end
     end

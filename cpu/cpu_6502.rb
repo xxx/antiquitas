@@ -28,7 +28,7 @@ class Cpu6502
     @imagesize = 0
     @pc = 0
     @pc_offset = 0
-    @ram = Array.new(65536)
+    @ram = Array.new(65536, 0)
     @register = { :A => 0, :X => 0, :Y => 0, :SP => 0xFF, :SR => 0 }
     @flag = { :S => 0, :V => 0, :B => 0, :D => 0, :I => 0, :Z => 0, :C => 0 }
     @operand = Array.new(2)
@@ -126,11 +126,16 @@ class Cpu6502
         set_sign(@register[:A])
         set_zero(@register[:A])
         @pc += 1
-      when 00 #BRK
+      when 0x00 #BRK
         #puts "************** IN BREAK **************"
-#        @flag[:B] = 1
+        # 
         @pc += 1
-        exit 0
+        push(@pc >> 8)
+        push(@pc & 0x00FF)
+        push(register[:SR])
+        @flag[:B] = 1
+        @pc = (@ram[0xFFFE] << 8) | @ram[0xFFFF]
+#        exit 0
       when 0xEA # NOP
         @pc += 1
 
