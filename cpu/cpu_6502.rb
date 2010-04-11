@@ -15,6 +15,7 @@ class Cpu6502
     0xAE => [ "LDX", :absolute,  2, 4 ],
     0xBE => [ "LDX", :absolutey, 2, [4, 5] ],
     0x8A => [ "TXA", :implied,   1, 2 ],
+    0x98 => [ "TYA", :implied,   1, 2 ],
     0x20 => [ "JSR", :absolute,  3, 6 ],
     0xE8 => [ "INX", :absolute,  1, 2 ],
     0xE0 => [ "CPX", :absolute,  2, 2 ],
