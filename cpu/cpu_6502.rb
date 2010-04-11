@@ -23,7 +23,9 @@ class Cpu6502
     0x75 => [ "ADC", :zeropagex, 2, 4 ],
     0x6D => [ "ADC", :absolute,  3, 4 ],
     0x7D => [ "ADC", :absolutex, 3, [4, 5] ],
-    0x79 => [ "ADC", :absolutey, 3, [4, 5] ]
+    0x79 => [ "ADC", :absolutey, 3, [4, 5] ],
+    0x61 => [ "ADC", :indirectx, 2, 6 ],
+    0x71 => [ "ADC", :indirecty, 2, [5, 6] ]
   }
 
   # tables cribbed from py65. illegal bytes not supported. don't use 'em.
@@ -170,22 +172,35 @@ class Cpu6502
         @flag[:B] = 1
         @pc = (@ram[0xFFFE] << 8) | @ram[0xFFFF]
       when 0x69 # ADC immediate
-        op_ADC(oper1)
+        @pc += 2
+        op_adc(oper1)
 
       when 0x65 # ADC zeropage
-        op_ADC(@ram[oper1])
+        @pc += 2
+        op_adc(@ram[oper1])
       
       when 0x75 # ADC zeropagex
-        op_ADC(@ram[oper1 + @register[:X]])
+        @pc += 2
+        # TODO : wraparound
+        op_adc(@ram[oper1 + @register[:X]])
 
       when 0x6D # ADC absolute
-        op_ADC(@ram[(oper1 << 8) | oper2])
+        @pc += 3
+        op_adc(@ram[(oper1 << 8) | oper2])
 
       when 0x7D # ADC absolutex
-        op_ADC(@ram[((oper1 << 8) | oper2) + @register[:X]])
+        @pc += 3
+        op_adc(@ram[((oper1 << 8) | oper2) + @register[:X]])
 
       when 0x79 # ADC absolutey
-        op_ADC(@ram[((oper1 << 8) | oper2) + @register[:Y]])
+        @pc += 3
+        op_adc(@ram[((oper1 << 8) | oper2) + @register[:Y]])
+
+      when 0x61 # ADC indirectx
+        @pc += 2
+        # TODO: wraparound
+        tmp_address = oper1 + @register[:X]
+        op_adc(@ram[@ram[tmp_address + 1] << 8 | @ram[tmp_address]])
 
       when 0xEA # NOP
         @pc += 1
@@ -223,8 +238,7 @@ class Cpu6502
 
   private
 
-  def op_ADC(arg)
-    @pc += 2
+  def op_adc(arg)
     if @flag[:D] == 1
       result = @@to_bin[@register[:A]] + @flag[:C] + @@to_bin[arg]
     else
