@@ -309,6 +309,33 @@ class Cpu6502Test < Test::Unit::TestCase
       end
     end
 
+    context "ADC" do
+      context "immediate mode" do
+        should "add the passed value and the value of the carry flag bit to the present value of the accumulator" do
+          @cpu.register[:A] = 0x08
+          @cpu.flag[:C] = 1
+          @cpu.runop(0x69, 0x05)
+          assert_equal 0x08 + 0x05 + 1, @cpu.register[:A]
+        end
+
+        should "set the zero flag if the result is 0" do
+          @cpu.register[:A] = 0x08
+          @cpu.runop(0x69, 0xF8)
+          assert_equal 1, @cpu.flag[:Z]
+        end
+
+        should "not set the zero flag if the result is not zero" do
+
+        end
+
+        should "increase the pc by the number of bytes for the op" do
+          pc = @cpu.pc
+          @cpu.runop(0x69, 0x05)
+          assert_equal pc + 2, @cpu.pc
+        end
+      end
+    end
+
     context "NOP" do
       context "implied mode" do
         should "increase the pc by the number of bytes for the op" do

@@ -1,6 +1,3 @@
-#!/usr/bin/ruby
-#Written by Farhan Yousaf - March 2010
-
 class Cpu6502
   attr_accessor :debug, :register, :flag, :ram, :pc
   attr_reader :imagesize
@@ -20,7 +17,8 @@ class Cpu6502
     0xE8 => [ "INX", :absolute,  1, 2 ],
     0xE0 => [ "CPX", :absolute,  2, 2 ],
     0xD0 => [ "BNE", :absolute,  2, [2, 3, 4] ],
-    0x00 => [ "BRK", :absolute,  2, 7 ]
+    0x00 => [ "BRK", :absolute,  2, 7 ],
+    0x69 => [ "ADC", :immediate, 2, 2 ]
   }
 
   def initialize
@@ -97,16 +95,16 @@ class Cpu6502
 #        @pc |= (pull << 8)
 #        @pc += 1
       when 0xE8 #INX
+        @pc += 1
         @register[:X] = (@register[:X]+1) & 0xff
         set_sign(@register[:X])
         set_zero(@register[:X])
-        @pc += 1
       when 0xE0 #CPX
+        @pc += 2
         tmp = @register[:X] - oper1
         set_carry(@register[:X] >= oper1) #was < 0x100
         set_sign(tmp)
         set_zero(tmp)
-        @pc += 2
       when 0xD0 #BNE
         @pc += 2
         if (@flag[:Z] == 0)
@@ -117,15 +115,15 @@ class Cpu6502
           end
         end
       when 0xA9 #LDA
+        @pc += 2
         set_sign(oper1)
         set_zero(oper1)
         @register[:A] = oper1
-        @pc+=2
       when 0x98 # TYA
+        @pc += 1
         @register[:A] = @register[:Y]
         set_sign(@register[:A])
         set_zero(@register[:A])
-        @pc += 1
       when 0x00 #BRK
         #puts "************** IN BREAK **************"
         # 
@@ -135,12 +133,18 @@ class Cpu6502
         push(register[:SR])
         @flag[:B] = 1
         @pc = (@ram[0xFFFE] << 8) | @ram[0xFFFF]
-#        exit 0
+      when 0x69 # ADC
+        @pc += 2
+        p @register[:A]
+        p oper1
+        @register[:A] += (@flag[:C] + oper1)
+        set_zero @register[:A]
+
       when 0xEA # NOP
         @pc += 1
 
     end
-    display_status
+    #display_status
   end
 
   def readmem(pc)
