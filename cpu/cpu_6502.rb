@@ -2,8 +2,8 @@
 #Written by Farhan Yousaf - March 2010
 
 class Cpu6502
-  attr_accessor :debug
-  attr_reader :imagesize, :register, :flag, :ram, :pc
+  attr_accessor :debug, :register, :flag, :ram, :pc
+  attr_reader :imagesize
 
 
   @@opcodes = {
@@ -59,7 +59,7 @@ class Cpu6502
   end
 
   def set_carry(accumulator)
-    @flag[:C] = accumulator
+    @flag[:C] = accumulator ? 1 : 0
   end
 
   def loadi(filen)
@@ -104,11 +104,7 @@ class Cpu6502
         tmp = @register[:X] - oper1
         set_carry(@register[:X] >= oper1) #was < 0x100
         set_sign(tmp)
-        if (tmp == 0)
-          set_zero(1)
-        else
-          set_zero(0)
-        end
+        set_zero(tmp)
         @pc += 2
       when 0xD0 #BNE
         display_status
