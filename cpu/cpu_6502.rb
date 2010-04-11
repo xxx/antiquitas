@@ -166,35 +166,11 @@ class Cpu6502
         @flag[:B] = 1
         @pc = (@ram[0xFFFE] << 8) | @ram[0xFFFF]
       when 0x69 # ADC immediate
-        @pc += 2
-        if @flag[:D] == 1
-          result = @@to_bin[@register[:A]] + @@to_bin[@flag[:C]] + oper1
-        else
-          result = @register[:A] + @flag[:C] + oper1
-        end
-        set_zero result
-        set_sign(result)
+        op_ADC(oper1)
 
-        threshold = flag[:D] == 1 ? 99 : 255
-        set_carry(result > threshold)
-
-        if ( ~(@register[:A] ^ oper1) & (@register[:A] ^ result) ) & 0x80 > 0
-          set_overflow(1)
-        else
-          set_overflow(0)
-        end
-
-        result &= 0xFF
-
-        # 6502 bases flags on pre-converted results in decimal mode.
-        set_sign(result)
-
-        if @flag[:D] == 1
-          @register[:A] = @@to_bcd[result]
-        else
-          @register[:A] = result
-        end
-
+      when 0x65 # ADC zeropage
+        op_ADC(@ram[oper1])
+      
       when 0xEA # NOP
         @pc += 1
 
@@ -227,6 +203,38 @@ class Cpu6502
           runop(opcode, @operand[0], @operand[1])
       end
     end
+  end
+
+  private
+
+  def op_ADC(arg)
+    @pc += 2
+    if @flag[:D] == 1
+      result = @@to_bin[@register[:A]] + @flag[:C] + @@to_bin[arg]
+    else
+      result = @register[:A] + @flag[:C] + arg
+    end
+    set_zero result
+    set_sign(result)
+
+    if @flag[:D] == 1
+      set_carry(result > 99)
+      set_overflow(result > 99) # no idea what to do here.
+      result -= 100 while result > 100
+      @register[:A] = @@to_bcd[result]
+    else
+      set_carry(result > 255)
+
+      if ( ~(@register[:A] ^ arg) & (@register[:A] ^ result) ) & 0x80 > 0
+        set_overflow(1)
+      else
+        set_overflow(0)
+      end
+
+      result &= 0xFF
+      @register[:A] = result
+    end
+
   end
 
 end
