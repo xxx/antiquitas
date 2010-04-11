@@ -20,7 +20,8 @@ class Cpu6502
     0x00 => [ "BRK", :absolute,  2, 7 ],
     0x69 => [ "ADC", :immediate, 2, 2 ],
     0x65 => [ "ADC", :zeropage,  2, 3 ],
-    0x75 => [ "ADC", :zeropagex, 2, 4 ]
+    0x75 => [ "ADC", :zeropagex, 2, 4 ],
+    0x6D => [ "ADC", :absolute , 2, 4 ]
   }
 
   # tables cribbed from py65. illegal bytes not supported. don't use 'em.
@@ -174,6 +175,9 @@ class Cpu6502
       
       when 0x75 # ADC zeropagex
         op_ADC(@ram[oper1 + @register[:X]])
+
+      when 0x6D # ADC absolute
+        op_ADC(@ram[(oper1 << 8) | oper2])
 
       when 0xEA # NOP
         @pc += 1
