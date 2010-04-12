@@ -5,35 +5,40 @@ class Cpu6502
 
   @@opcodes = {
     # mnemonic, mode, bytes, cycles
-    0xA2 => [ "LDX", :immediate, 2, 2 ],
-    0xA9 => [ "LDA", :immediate, 2, 2 ],
-    0xA6 => [ "LDX", :zeropage,  2, 3 ],
-    0xB6 => [ "LDX", :zeropagey, 2, 4 ],
-    0xAE => [ "LDX", :absolute,  2, 4 ],
-    0xBE => [ "LDX", :absolutey, 2, [4, 5] ],
-    0x8A => [ "TXA", :implied,   1, 2 ],
-    0x98 => [ "TYA", :implied,   1, 2 ],
-    0x20 => [ "JSR", :absolute,  3, 6 ],
-    0xE8 => [ "INX", :absolute,  1, 2 ],
-    0xE0 => [ "CPX", :absolute,  2, 2 ],
-    0xD0 => [ "BNE", :absolute,  2, [2, 3, 4] ],
-    0x00 => [ "BRK", :absolute,  2, 7 ],
-    0x69 => [ "ADC", :immediate, 2, 2 ],
-    0x65 => [ "ADC", :zeropage,  2, 3 ],
-    0x75 => [ "ADC", :zeropagex, 2, 4 ],
-    0x6D => [ "ADC", :absolute,  3, 4 ],
-    0x7D => [ "ADC", :absolutex, 3, [4, 5] ],
-    0x79 => [ "ADC", :absolutey, 3, [4, 5] ],
-    0x61 => [ "ADC", :indirectx, 2, 6 ],
-    0x71 => [ "ADC", :indirecty, 2, [5, 6] ],
-    0x29 => [ "AND", :immediate, 2, 2 ],
-    0x25 => [ "AND", :zeropage,  2, 3 ],
-    0x35 => [ "AND", :zeropagex, 2, 4 ],
-    0x2D => [ "AND", :absolute,  2, 4 ],
-    0x3D => [ "AND", :absolutex, 2, [4, 5] ],
-    0x39 => [ "AND", :absolutey, 2, [4, 5] ],
-    0x21 => [ "AND", :indirectx, 2, 6 ],
-    0x31 => [ "AND", :indirecty, 2, [5, 6] ]
+    0xA2 => [ "LDX", :immediate,   2, 2 ],
+    0xA9 => [ "LDA", :immediate,   2, 2 ],
+    0xA6 => [ "LDX", :zeropage,    2, 3 ],
+    0xB6 => [ "LDX", :zeropagey,   2, 4 ],
+    0xAE => [ "LDX", :absolute,    2, 4 ],
+    0xBE => [ "LDX", :absolutey,   2, [4, 5] ],
+    0x8A => [ "TXA", :implied,     1, 2 ],
+    0x98 => [ "TYA", :implied,     1, 2 ],
+    0x20 => [ "JSR", :absolute,    3, 6 ],
+    0xE8 => [ "INX", :absolute,    1, 2 ],
+    0xE0 => [ "CPX", :absolute,    2, 2 ],
+    0xD0 => [ "BNE", :absolute,    2, [2, 3, 4] ],
+    0x00 => [ "BRK", :absolute,    2, 7 ],
+    0x69 => [ "ADC", :immediate,   2, 2 ],
+    0x65 => [ "ADC", :zeropage,    2, 3 ],
+    0x75 => [ "ADC", :zeropagex,   2, 4 ],
+    0x6D => [ "ADC", :absolute,    3, 4 ],
+    0x7D => [ "ADC", :absolutex,   3, [4, 5] ],
+    0x79 => [ "ADC", :absolutey,   3, [4, 5] ],
+    0x61 => [ "ADC", :indirectx,   2, 6 ],
+    0x71 => [ "ADC", :indirecty,   2, [5, 6] ],
+    0x29 => [ "AND", :immediate,   2, 2 ],
+    0x25 => [ "AND", :zeropage,    2, 3 ],
+    0x35 => [ "AND", :zeropagex,   2, 4 ],
+    0x2D => [ "AND", :absolute,    2, 4 ],
+    0x3D => [ "AND", :absolutex,   2, [4, 5] ],
+    0x39 => [ "AND", :absolutey,   2, [4, 5] ],
+    0x21 => [ "AND", :indirectx,   2, 6 ],
+    0x31 => [ "AND", :indirecty,   2, [5, 6] ],
+    0x0A => [ "ASL", :accumulator, 1, 2 ],
+    0x06 => [ "ASL", :zeropage,    2, 5 ],
+    0x16 => [ "ASL", :zeropagex,   2, 6 ],
+    0x0E => [ "ASL", :absolute,    3, 6 ],
+    0x1E => [ "ASL", :absolutex,   3, 7 ]
   }
 
   # tables cribbed from py65. illegal bytes not supported. don't use 'em.
@@ -263,6 +268,14 @@ class Cpu6502
         @pc += 2
 
         @register[:A] &= @ram[indirect_y_address(oper1)]
+        set_zero(@register[:A])
+        set_sign(@register[:A])
+
+      when 0x0A # ASL accumulator
+        @pc += 1
+        set_carry(@register[:A] & 0x80 == 0x80)
+        @register[:A] <<= 1
+        @register[:A] &= 0xFF
         set_zero(@register[:A])
         set_sign(@register[:A])
 
