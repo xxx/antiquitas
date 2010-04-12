@@ -63,7 +63,11 @@ class Cpu6502
     0xDD => [ "CMP", :absolutex,   2, 2 ],
     0xD9 => [ "CMP", :absolutey,   2, 2 ],
     0xC1 => [ "CMP", :indirectx,   2, 2 ],
-    0xD1 => [ "CMP", :indirecty,   2, 2 ]
+    0xD1 => [ "CMP", :indirecty,   2, 2 ],
+    0xC6 => [ "DEC", :zeropage,    2, 5 ],
+    0xD6 => [ "DEC", :zeropagex,   2, 6 ],
+    0xCE => [ "DEC", :absolute,    3, 6 ],
+    0xDE => [ "DEC", :absolutex,   3, 7 ]
   }
 
   # tables cribbed from py65. illegal bytes not supported. don't use 'em.
@@ -471,6 +475,12 @@ class Cpu6502
         @pc += 2
         address = indirect_y_address(oper1)
         op_cmp(address)
+
+      when 0xC6 # DEC zeropage
+        @pc += 2
+        @ram[oper1] -= 0x01
+        set_zero(@ram[oper1])
+        set_sign(@ram[oper1])
 
       when 0xEA # NOP
         @pc += 1
