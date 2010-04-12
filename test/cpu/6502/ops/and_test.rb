@@ -340,5 +340,66 @@ class Cpu6502AndTest < Test::Unit::TestCase
       end
     end
 
+    context "indirecty mode" do
+      setup do
+        @cpu.register[:Y] = 0x04
+        @cpu.ram[0x1E] = 0x22
+        @cpu.ram[0x1F] = 0x45
+        @cpu.ram[0x4526] = 0x77
+      end
+
+      should "do a bitwise AND of the accumulator and the correct memory location, storing the result in the accumulator" do
+        @cpu.register[:A] = 0x69
+        @cpu.runop(0x31, 0x1E)
+        assert_equal 0x69 & 0x77, @cpu.register[:A]
+      end
+
+      should "set the zero flag if the resulting accumulator is 0" do
+        @cpu.register[:A] = 0x69
+        @cpu.ram[0x4526] = 0x00
+        @cpu.runop(0x31, 0x1E)
+        assert_equal 1, @cpu.flag[:Z]
+      end
+
+      should "not set the zero flag if the resulting accumulator is not 0" do
+        @cpu.register[:A] = 0x07
+        @cpu.ram[0x4526] = 0x04
+        @cpu.runop(0x31, 0x1E)
+        assert_equal 0, @cpu.flag[:Z]
+      end
+
+      should "set the sign flag if bit 7 of the resulting accumulator is set" do
+        @cpu.register[:A] = 0x80
+        @cpu.ram[0x4526] = 0x80
+        @cpu.runop(0x31, 0x1E)
+        assert_equal 1, @cpu.flag[:S]
+      end
+
+      should "not set the sign flag if bit 7 of the resulting accumulator is set" do
+        @cpu.register[:A] = 0x80
+        @cpu.ram[0x4526] = 0x7F
+        @cpu.runop(0x31, 0x1E)
+        assert_equal 0, @cpu.flag[:S]
+      end
+
+      should "wrap too-large addresses around so they fit on the zero page" do
+        @cpu.register[:A] = 0x80
+        @cpu.register[:Y] = 0x04
+        @cpu.ram[0x00] = 0x0A
+        @cpu.ram[0xFF] = 0x02
+        @cpu.ram[0xFF + 1] = 0x10
+        @cpu.ram[((0x10 << 8) | 0x06)] = 0xB0 # WRONG - didn't wrap
+        @cpu.ram[((0x0A << 8) | 0x06)] = 0x69 # correct
+        @cpu.runop(0x31, 0xFF)
+        assert_equal 0x80 & 0x69, @cpu.register[:A]
+      end
+
+      should "increase the pc by the correct number of bytes" do
+        pc = @cpu.pc
+        @cpu.runop(0x31, 0x1E)
+        assert_equal pc + 2, @cpu.pc
+      end
+    end
+
   end
 end
