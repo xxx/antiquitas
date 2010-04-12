@@ -141,8 +141,9 @@ class Cpu6502
         @register[:A] = @register[:X]
         @pc += 1
       when 0x20 #JSR
-        @pc = @pc + 3 - 1 #was +3
-        
+#        @pc = @pc + 3 - 1 # we subtract 1 because the JSR docs say to
+        @pc -= 1 # we subtract 1 because the JSR docs say to
+
         # push one byte at a time ont the stack
         push((@pc >> 8) & 0xff)
         push(@pc & 0xff)
