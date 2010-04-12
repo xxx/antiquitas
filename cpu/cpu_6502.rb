@@ -50,7 +50,15 @@ class Cpu6502
     0x18 => [ "CLC", :implied,     1, 2 ],
     0xD8 => [ "CLD", :implied,     1, 2 ],
     0x58 => [ "CLI", :implied,     1, 2 ],
-    0xB8 => [ "CLV", :implied,     1, 2 ]
+    0xB8 => [ "CLV", :implied,     1, 2 ],
+    0xC9 => [ "CMP", :immediate,   2, 2 ],
+    0xC5 => [ "CMP", :zeropage,    2, 2 ],
+    0xD5 => [ "CMP", :zeropagex,   2, 2 ],
+    0xCD => [ "CMP", :absolute,    2, 2 ],
+    0xDD => [ "CMP", :absolutex,   2, 2 ],
+    0xD9 => [ "CMP", :absolutey,   2, 2 ],
+    0xC1 => [ "CMP", :indirectx,   2, 2 ],
+    0xD1 => [ "CMP", :indirecty,   2, 2 ]
   }
 
   # tables cribbed from py65. illegal bytes not supported. don't use 'em.
@@ -375,6 +383,13 @@ class Cpu6502
       when 0xB8 # CLV implied
         @pc += 1
         @flag[:V] = 0
+
+      when 0XC9 # CMP immediate
+        @pc += 2
+        result = (@register[:A] - oper1) & 0xFF
+        set_zero(result)
+        set_sign(result)
+        set_carry(@register[:A] >= oper1)
 
       when 0xEA # NOP
         @pc += 1
