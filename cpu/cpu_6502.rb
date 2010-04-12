@@ -512,6 +512,12 @@ class Cpu6502
         set_zero(@register[:X])
         set_sign(@register[:X])
 
+      when 0x88 # DEY implied
+        @pc += 1
+        @register[:Y] = (@register[:Y] - 1) & 0xFF
+        set_zero(@register[:Y])
+        set_sign(@register[:Y])
+
       when 0xEA # NOP
         @pc += 1
 
