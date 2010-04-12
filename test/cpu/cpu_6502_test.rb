@@ -696,6 +696,15 @@ class Cpu6502Test < Test::Unit::TestCase
           @cpu.runop(0x75, 0x3E)
           assert_equal pc + 2, @cpu.pc
         end
+
+        should "wrap too-large addresses around so they fit on the zero page" do
+          @cpu.register[:A] = 0x00
+          @cpu.register[:X] = 0xFF
+          @cpu.ram[0xFE] = 0x0A
+          @cpu.ram[0xFE + 0xFF] = 0x02
+          @cpu.runop(0x75, 0xFE)
+          assert_equal 0x0A, @cpu.register[:A]
+        end
       end
 
       context "absolute mode" do
@@ -1233,9 +1242,22 @@ class Cpu6502Test < Test::Unit::TestCase
 
         should "increase the pc by the number of bytes for the op" do
           pc = @cpu.pc
-          @cpu.runop(0x61, 0x3E)
+          @cpu.runop(0x61, 0x31)
           assert_equal pc + 2, @cpu.pc
         end
+
+        should "wrap too-large addresses around so they fit on the zero page" do
+          @cpu.register[:A] = 0x00
+          @cpu.register[:X] = 0x04
+          @cpu.ram[0x00] = 0x0A
+          @cpu.ram[0xFF] = 0x02
+          @cpu.ram[0xFF + 1] = 0x10
+          @cpu.ram[((0x10 << 8) | 0x02)] = 0xB0
+          @cpu.ram[((0x0A << 8) | 0x02)] = 0x69
+          @cpu.runop(0x61, 0xFB)
+          assert_equal 0x69, @cpu.register[:A]
+        end
+
       end
 
 

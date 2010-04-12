@@ -181,8 +181,10 @@ class Cpu6502
       
       when 0x75 # ADC zeropagex
         @pc += 2
-        # TODO : wraparound
-        op_adc(@ram[oper1 + @register[:X]])
+        address = oper1 + @register[:X]
+        address -= 0xFF while address > 0xFF 
+
+        op_adc(@ram[address])
 
       when 0x6D # ADC absolute
         @pc += 3
@@ -198,9 +200,12 @@ class Cpu6502
 
       when 0x61 # ADC indirectx
         @pc += 2
-        # TODO: wraparound
-        tmp_address = oper1 + @register[:X]
-        op_adc(@ram[@ram[tmp_address + 1] << 8 | @ram[tmp_address]])
+        lsb_address = oper1 + @register[:X]
+
+        lsb_address -= 0xFF while lsb_address > 0xFF
+        hsb_address = lsb_address == 0xFF ? 0x00 : lsb_address + 1
+
+        op_adc(@ram[@ram[hsb_address] << 8 | @ram[lsb_address]])
 
       when 0xEA # NOP
         @pc += 1
