@@ -296,6 +296,25 @@ class Cpu6502
         set_sign(val)
         @ram[oper1 + @register[:X]] = val
 
+      when 0x0E # ASL absolute
+        @pc += 3
+        val = @ram[(oper1 << 8) | oper2]
+        set_carry(val & 0x80 == 0x80)
+        val = (val << 1) & 0xFF
+        set_zero(val)
+        set_sign(val)
+        @ram[(oper1 << 8) | oper2] = val
+
+      when 0x1E # ASL absolutex
+        @pc += 3
+        index = ((oper1 << 8) | oper2) + @register[:X]
+        val = @ram[index]
+        set_carry(val & 0x80 == 0x80)
+        val = (val << 1) & 0xFF
+        set_zero(val)
+        set_sign(val)
+        @ram[index] = val
+
       when 0xEA # NOP
         @pc += 1
 
