@@ -424,9 +424,17 @@ class Cpu6502
         set_zero(result)
         set_sign(result)
 
-      when 0XD9 # CMP absolutex
+      when 0XD9 # CMP absolutey
         @pc += 3
         address = ((oper1 << 8) | oper2) + @register[:Y]
+        set_carry(@register[:A] >= @ram[address])
+        result = (@register[:A] - @ram[address]) & 0xFF
+        set_zero(result)
+        set_sign(result)
+
+      when 0XC1 # CMP indirectx
+        @pc += 3
+        address = ((@ram[oper1] << 8) | @ram[oper2]) + @register[:X]
         set_carry(@register[:A] >= @ram[address])
         result = (@register[:A] - @ram[address]) & 0xFF
         set_zero(result)
