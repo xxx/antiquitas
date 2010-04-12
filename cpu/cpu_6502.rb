@@ -245,6 +245,12 @@ class Cpu6502
         set_zero(@register[:A])
         set_sign(@register[:A])
 
+      when 0x2D # AND absolute
+        @pc += 3
+        @register[:A] &= @ram[(oper1 << 8) | oper2]
+        set_zero(@register[:A])
+        set_sign(@register[:A])
+
       when 0xEA # NOP
         @pc += 1
 
