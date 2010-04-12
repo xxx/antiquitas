@@ -39,7 +39,8 @@ class Cpu6502
     0x16 => [ "ASL", :zeropagex,   2, 6 ],
     0x0E => [ "ASL", :absolute,    3, 6 ],
     0x1E => [ "ASL", :absolutex,   3, 7 ],
-    0x90 => [ "BCC", :relative,    2, [2, 3, 4] ]
+    0x90 => [ "BCC", :relative,    2, [2, 3, 4] ],
+    0xB0 => [ "BCS", :relative,    2, [2, 3, 4] ]
   }
 
   # tables cribbed from py65. illegal bytes not supported. don't use 'em.
@@ -158,11 +159,7 @@ class Cpu6502
       when 0xD0 #BNE
         @pc += 2
         if (@flag[:Z] == 0)
-          if (oper1 > 0x7F)
-            @pc -= ~oper1 & 0xFF
-          else
-            @pc += oper1 & 0xFF
-          end
+          branch_pc(oper1)
         end
       when 0xA9 #LDA
         @pc += 2
@@ -300,11 +297,13 @@ class Cpu6502
       when 0x90 # BCC relative
         @pc += 2
         if @flag[:C] == 0
-          if (oper1 > 0x7F)
-            @pc -= ~oper1 & 0x00FF
-          else
-            @pc += oper1 & 0x00FF
-          end
+          branch_pc(oper1)
+        end
+
+      when 0xB0 # BCS relative
+        @pc += 2
+        if @flag[:C] == 1
+          branch_pc(oper1)
         end
 
       when 0xEA # NOP
@@ -396,6 +395,13 @@ class Cpu6502
     set_sign(@ram[address])
   end
 
+  def branch_pc(arg)
+    if (arg > 0x7F)
+      @pc -= ~arg & 0x00FF
+    else
+      @pc += arg & 0x00FF
+    end
+  end
 
 end
 
