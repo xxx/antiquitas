@@ -6,7 +6,7 @@ namespace :test do
   Rake::TestTask.new do |t|
     t.name = 'cpu'
     t.libs << "test"
-    t.test_files = FileList['test/cpu/*_test.rb']
+    t.test_files = FileList['test/cpu/**/*_test.rb']
     t.verbose = true
   end
 
