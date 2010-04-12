@@ -386,10 +386,26 @@ class Cpu6502
 
       when 0XC9 # CMP immediate
         @pc += 2
+        set_carry(@register[:A] >= oper1)
         result = (@register[:A] - oper1) & 0xFF
         set_zero(result)
         set_sign(result)
-        set_carry(@register[:A] >= oper1)
+
+      when 0XC5 # CMP zeropage
+        @pc += 2
+        set_carry(@register[:A] >= @ram[oper1])
+        result = (@register[:A] - @ram[oper1]) & 0xFF
+        set_zero(result)
+        set_sign(result)
+
+      when 0XD5 # CMP zeropagex
+        @pc += 2
+        address = oper1 + @register[:X]
+        address -= 0xFF while address > 0xFF
+        set_carry(@register[:A] >= @ram[address])
+        result = (@register[:A] - @ram[address])
+        set_zero(result)
+        set_sign(result)
 
       when 0xEA # NOP
         @pc += 1
