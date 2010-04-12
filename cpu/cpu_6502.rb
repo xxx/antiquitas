@@ -490,6 +490,20 @@ class Cpu6502
         set_zero(@ram[address])
         set_sign(@ram[address])
 
+      when 0xCE # DEC absolute
+        @pc += 3
+        address = (oper1 << 8) | oper2
+        @ram[address] -= 0x01
+        set_zero(@ram[address])
+        set_sign(@ram[address])
+
+      when 0xDE # DEC absolutex
+        @pc += 3
+        address = ((oper1 << 8) | oper2) + @register[:X]
+        @ram[address] -= 0x01
+        set_zero(@ram[address])
+        set_sign(@ram[address])
+
       when 0xEA # NOP
         @pc += 1
 

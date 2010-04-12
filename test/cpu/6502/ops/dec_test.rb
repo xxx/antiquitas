@@ -90,5 +90,84 @@ class Cpu6502DecTest < Test::Unit::TestCase
         assert_equal pc + 2, @cpu.pc
       end
     end
+    
+    context "absolute mode" do
+      setup do
+        @cpu.ram[0x165B] = 0x69
+      end
+
+      should "decrement the value at the correct address by 1" do
+        @cpu.runop(0xCE, 0x16, 0x5B)
+        assert_equal 0x68, @cpu.ram[0x165B]
+      end
+
+      should "set the zero flag if the result is 0" do
+        @cpu.ram[0x165B] = 0x01
+        @cpu.runop(0xCE, 0x16, 0x5B)
+        assert_equal 1, @cpu.flag[:Z]
+      end
+
+      should "clear the zero flag if the result is not 0" do
+        @cpu.runop(0xCE, 0x16, 0x5B)
+        assert_equal 0, @cpu.flag[:Z]
+      end
+
+      should "set the sign flag if bit 7 of the result is set" do
+        @cpu.ram[0x165B] = 0x81
+        @cpu.runop(0xCE, 0x16, 0x5B)
+        assert_equal 1, @cpu.flag[:S]
+      end
+
+      should "clear the sign flag if bit 7 of the result is not set" do
+        @cpu.runop(0xCE, 0x16, 0x5B)
+        assert_equal 0, @cpu.flag[:S]
+      end
+
+      should "increase the pc by the number of bytes for this op" do
+        pc = @cpu.pc
+        @cpu.runop(0xCE, 0x16, 0x5B)
+        assert_equal pc + 3, @cpu.pc
+      end
+    end
+    
+    context "absolutex mode" do
+      setup do
+        @cpu.register[:X] = 0x04
+        @cpu.ram[0x165F] = 0x69
+      end
+
+      should "decrement the value at the correct address by 1" do
+        @cpu.runop(0xDE, 0x16, 0x5B)
+        assert_equal 0x68, @cpu.ram[0x165F]
+      end
+
+      should "set the zero flag if the result is 0" do
+        @cpu.ram[0x165F] = 0x01
+        @cpu.runop(0xDE, 0x16, 0x5B)
+        assert_equal 1, @cpu.flag[:Z]
+      end
+
+      should "clear the zero flag if the result is not 0" do
+        @cpu.runop(0xDE, 0x16, 0x5B)
+        assert_equal 0, @cpu.flag[:Z]
+      end
+
+      should "set the sign flag if bit 7 of the result is set" do
+        @cpu.ram[0x165F] = 0x81
+        @cpu.runop(0xDE, 0x16, 0x5B)
+        assert_equal 1, @cpu.flag[:S]
+      end
+
+      should "clear the sign flag if bit 7 of the result is not set" do
+        @cpu.runop(0xDE, 0x16, 0x5B)
+        assert_equal 0, @cpu.flag[:S]
+      end
+
+      should "increase the pc by the number of bytes for this op" do
+        pc = @cpu.pc
+        @cpu.runop(0xDE, 0x16, 0x5B)
+        assert_equal pc + 3, @cpu.pc
+      end
+    end
   end
 end
