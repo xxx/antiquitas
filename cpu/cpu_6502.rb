@@ -433,8 +433,18 @@ class Cpu6502
         set_sign(result)
 
       when 0XC1 # CMP indirectx
-        @pc += 3
-        address = ((@ram[oper1] << 8) | @ram[oper2]) + @register[:X]
+        @pc += 2
+        address = indirect_x_address(oper1)
+        # address -= 0xFF while address > 0xFF
+        set_carry(@register[:A] >= @ram[address])
+        result = (@register[:A] - @ram[address]) & 0xFF
+        set_zero(result)
+        set_sign(result)
+
+      when 0XD1 # CMP indirecty
+        @pc += 2
+        address = indirect_y_address(oper1)
+        # address -= 0xFF while address > 0xFF
         set_carry(@register[:A] >= @ram[address])
         result = (@register[:A] - @ram[address]) & 0xFF
         set_zero(result)
