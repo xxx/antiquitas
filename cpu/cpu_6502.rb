@@ -221,9 +221,9 @@ class Cpu6502
 
         lsb -= 0xFF while lsb > 0xFF
         hsb = lsb == 0xFF ? 0x00 : lsb + 1
-        tmp_address = @ram[hsb] << 8 | @ram[lsb]
+        address = @ram[hsb] << 8 | @ram[lsb]
 
-        op_adc(@ram[tmp_address + @register[:Y]])
+        op_adc(@ram[address + @register[:Y]])
 
       when 0x29 # AND immediate
         @pc += 2
@@ -234,6 +234,14 @@ class Cpu6502
       when 0x25 # AND zeropage
         @pc += 2
         @register[:A] &= @ram[oper1]
+        set_zero(@register[:A])
+        set_sign(@register[:A])
+
+      when 0x35 # AND zeropagex
+        @pc += 2
+        address = oper1 + @register[:X]
+        address -= 0xFF while address > 0xFF
+        @register[:A] &= @ram[address]
         set_zero(@register[:A])
         set_sign(@register[:A])
 
@@ -279,7 +287,7 @@ class Cpu6502
     else
       result = @register[:A] + @flag[:C] + arg
     end
-    set_zero result
+    set_zero(result)
     set_sign(result)
 
     if @flag[:D] == 1
