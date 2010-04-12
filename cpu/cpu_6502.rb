@@ -42,6 +42,7 @@ class Cpu6502
     0x90 => [ "BCC", :relative,    2, [2, 3, 4] ],
     0xB0 => [ "BCS", :relative,    2, [2, 3, 4] ],
     0xF0 => [ "BEQ", :relative,    2, [2, 3, 4] ],
+    0x30 => [ "BMI", :relative,    2, [2, 3, 4] ],
     0x24 => [ "BIT", :zeropage,    2, 3 ],
     0x2C => [ "BIT", :absolute,    3, 4 ]
   }
@@ -312,6 +313,12 @@ class Cpu6502
       when 0xF0 # BEQ relative
         @pc += 2
         if @flag[:Z] == 1
+          branch_pc(oper1)
+        end
+
+      when 0x30 # BMI relative
+        @pc += 2
+        if @flag[:S] == 1
           branch_pc(oper1)
         end
 
