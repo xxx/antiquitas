@@ -393,8 +393,9 @@ class Cpu6502
 
       when 0XC5 # CMP zeropage
         @pc += 2
-        set_carry(@register[:A] >= @ram[oper1])
-        result = (@register[:A] - @ram[oper1]) & 0xFF
+        address = oper1
+        set_carry(@register[:A] >= @ram[address])
+        result = (@register[:A] - @ram[address]) & 0xFF
         set_zero(result)
         set_sign(result)
 
@@ -403,7 +404,31 @@ class Cpu6502
         address = oper1 + @register[:X]
         address -= 0xFF while address > 0xFF
         set_carry(@register[:A] >= @ram[address])
-        result = (@register[:A] - @ram[address])
+        result = (@register[:A] - @ram[address]) & 0xFF
+        set_zero(result)
+        set_sign(result)
+
+      when 0XCD # CMP absolute
+        @pc += 3
+        address = (oper1 << 8) | oper2
+        set_carry(@register[:A] >= @ram[address])
+        result = (@register[:A] - @ram[address]) & 0xFF
+        set_zero(result)
+        set_sign(result)
+
+      when 0XDD # CMP absolutex
+        @pc += 3
+        address = ((oper1 << 8) | oper2) + @register[:X]
+        set_carry(@register[:A] >= @ram[address])
+        result = (@register[:A] - @ram[address]) & 0xFF
+        set_zero(result)
+        set_sign(result)
+
+      when 0XD9 # CMP absolutex
+        @pc += 3
+        address = ((oper1 << 8) | oper2) + @register[:Y]
+        set_carry(@register[:A] >= @ram[address])
+        result = (@register[:A] - @ram[address]) & 0xFF
         set_zero(result)
         set_sign(result)
 
