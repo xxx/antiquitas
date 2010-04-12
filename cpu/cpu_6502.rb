@@ -25,7 +25,15 @@ class Cpu6502
     0x7D => [ "ADC", :absolutex, 3, [4, 5] ],
     0x79 => [ "ADC", :absolutey, 3, [4, 5] ],
     0x61 => [ "ADC", :indirectx, 2, 6 ],
-    0x71 => [ "ADC", :indirecty, 2, [5, 6] ]
+    0x71 => [ "ADC", :indirecty, 2, [5, 6] ],
+    0x29 => [ "AND", :immediate, 2, 2 ],
+    0x25 => [ "AND", :zeropage,  2, 3 ],
+    0x35 => [ "AND", :zeropagex, 2, 4 ],
+    0x2D => [ "AND", :absolute,  2, 4 ],
+    0x3D => [ "AND", :absolutex, 2, [4, 5] ],
+    0x39 => [ "AND", :absolutey, 2, [4, 5] ],
+    0x21 => [ "AND", :indirectx, 2, 6 ],
+    0x31 => [ "AND", :indirecty, 2, [5, 6] ]
   }
 
   # tables cribbed from py65. illegal bytes not supported. don't use 'em.
@@ -216,6 +224,12 @@ class Cpu6502
         tmp_address = @ram[hsb] << 8 | @ram[lsb]
 
         op_adc(@ram[tmp_address + @register[:Y]])
+
+      when 0x29 # AND immediate
+        @pc += 2
+        @register[:A] &= oper1
+        set_zero(@register[:A])
+        set_sign(@register[:A])
 
       when 0xEA # NOP
         @pc += 1
