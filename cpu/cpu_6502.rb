@@ -67,7 +67,9 @@ class Cpu6502
     0xC6 => [ "DEC", :zeropage,    2, 5 ],
     0xD6 => [ "DEC", :zeropagex,   2, 6 ],
     0xCE => [ "DEC", :absolute,    3, 6 ],
-    0xDE => [ "DEC", :absolutex,   3, 7 ]
+    0xDE => [ "DEC", :absolutex,   3, 7 ],
+    0xCA => [ "DEX", :implied,     1, 2 ],
+    0x88 => [ "DEY", :implied,     1, 2 ]
   }
 
   # tables cribbed from py65. illegal bytes not supported. don't use 'em.
@@ -503,6 +505,12 @@ class Cpu6502
         @ram[address] -= 0x01
         set_zero(@ram[address])
         set_sign(@ram[address])
+
+      when 0xCA # DEX implied
+        @pc += 1
+        @register[:X] = (@register[:X] - 1) & 0xFF
+        set_zero(@register[:X])
+        set_sign(@register[:X])
 
       when 0xEA # NOP
         @pc += 1
