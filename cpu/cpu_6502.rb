@@ -208,12 +208,7 @@ class Cpu6502
 
       when 0x61 # ADC indirectx
         @pc += 2
-        lsb_address = oper1 + @register[:X]
-
-        lsb_address -= 0xFF while lsb_address > 0xFF
-        hsb_address = lsb_address == 0xFF ? 0x00 : lsb_address + 1
-
-        op_adc(@ram[@ram[hsb_address] << 8 | @ram[lsb_address]])
+        op_adc(@ram[indirect_x_address(oper1)])
 
       when 0x71 # ADC indirecty
         @pc += 2
@@ -263,6 +258,13 @@ class Cpu6502
         set_zero(@register[:A])
         set_sign(@register[:A])
 
+      when 0x21 # AND indirectx
+        @pc += 2
+
+        @register[:A] &= @ram[indirect_x_address(oper1)]
+        set_zero(@register[:A])
+        set_sign(@register[:A])
+
       when 0xEA # NOP
         @pc += 1
 
@@ -298,6 +300,15 @@ class Cpu6502
   end
 
   private
+
+  def indirect_x_address(arg)
+    lsb_address = arg + @register[:X]
+
+    lsb_address -= 0xFF while lsb_address > 0xFF
+    hsb_address = lsb_address == 0xFF ? 0x00 : lsb_address + 1
+
+    @ram[hsb_address] << 8 | @ram[lsb_address]
+  end
 
   def op_adc(arg)
     if @flag[:D] == 1
