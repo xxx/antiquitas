@@ -46,7 +46,11 @@ class Cpu6502
     0x10 => [ "BPL", :relative,    2, [2, 3, 4] ],
     0x50 => [ "BVC", :relative,    2, [2, 3, 4] ],
     0x24 => [ "BIT", :zeropage,    2, 3 ],
-    0x2C => [ "BIT", :absolute,    3, 4 ]
+    0x2C => [ "BIT", :absolute,    3, 4 ],
+    0x18 => [ "CLC", :implied,     1, 2 ],
+    0xD8 => [ "CLD", :implied,     1, 2 ],
+    0x58 => [ "CLI", :implied,     1, 2 ],
+    0xB8 => [ "CLV", :implied,     1, 2 ]
   }
 
   # tables cribbed from py65. illegal bytes not supported. don't use 'em.
@@ -354,6 +358,22 @@ class Cpu6502
         set_zero(@register[:A] & @ram[address])
         set_sign(@ram[address])
         set_overflow(@ram[address] & 0x40 == 0x40 ? 1 : 0)
+
+      when 0x18 # CLC implied
+        @pc += 1
+        @flag[:C] = 0
+
+      when 0xD8 # CLD implied
+        @pc += 1
+        @flag[:D] = 0
+
+      when 0x58 # CLI implied
+        @pc += 1
+        @flag[:I] = 0
+
+      when 0xB8 # CLV implied
+        @pc += 1
+        @flag[:V] = 0
 
       when 0xEA # NOP
         @pc += 1
