@@ -182,7 +182,15 @@ class Cpu6502
       when 0xE4 # CPX zeropage
         @pc += 2
         tmp = @register[:X] - @ram[oper1]
-        set_carry(@register[:X] >= @ram[oper1]) #was < 0x100
+        set_carry(@register[:X] >= @ram[oper1])
+        set_sign(tmp)
+        set_zero(tmp)
+
+      when 0xEC # CPX absolute
+        @pc += 3
+        address = (oper1 << 8) | oper2
+        tmp = @register[:X] - @ram[address]
+        set_carry(@register[:X] >= @ram[address])
         set_sign(tmp)
         set_zero(tmp)
 
