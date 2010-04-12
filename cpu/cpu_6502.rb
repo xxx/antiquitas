@@ -18,6 +18,9 @@ class Cpu6502
     0xE0 => [ "CPX", :absolute,    2, 2 ],
     0xE4 => [ "CPX", :zeropage,    2, 3 ],
     0xEC => [ "CPX", :absolute,    2, 4 ],
+    0xC0 => [ "CPY", :absolute,    2, 2 ],
+    0xC4 => [ "CPY", :zeropage,    2, 3 ],
+    0xCC => [ "CPY", :absolute,    2, 4 ],
     0xD0 => [ "BNE", :relative,    2, [2, 3, 4] ],
     0x00 => [ "BRK", :absolute,    2, 7 ],
     0x69 => [ "ADC", :immediate,   2, 2 ],
@@ -191,6 +194,28 @@ class Cpu6502
         address = (oper1 << 8) | oper2
         tmp = @register[:X] - @ram[address]
         set_carry(@register[:X] >= @ram[address])
+        set_sign(tmp)
+        set_zero(tmp)
+
+      when 0xC0 # CPY immediate
+        @pc += 2
+        tmp = @register[:Y] - oper1
+        set_carry(@register[:Y] >= oper1) #was < 0x100
+        set_sign(tmp)
+        set_zero(tmp)
+
+      when 0xC4 # CPY zeropage
+        @pc += 2
+        tmp = @register[:Y] - @ram[oper1]
+        set_carry(@register[:Y] >= @ram[oper1])
+        set_sign(tmp)
+        set_zero(tmp)
+
+      when 0xCC # CPY absolute
+        @pc += 3
+        address = (oper1 << 8) | oper2
+        tmp = @register[:Y] - @ram[address]
+        set_carry(@register[:Y] >= @ram[address])
         set_sign(tmp)
         set_zero(tmp)
 
