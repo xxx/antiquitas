@@ -482,6 +482,14 @@ class Cpu6502
         set_zero(@ram[oper1])
         set_sign(@ram[oper1])
 
+      when 0xD6 # DEC zeropagex
+        @pc += 2
+        address = (oper1 + @register[:X])
+        address -= 0xFF while address > 0xFF
+        @ram[address] -= 0x01
+        set_zero(@ram[address])
+        set_sign(@ram[address])
+
       when 0xEA # NOP
         @pc += 1
 
