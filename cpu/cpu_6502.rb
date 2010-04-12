@@ -230,6 +230,12 @@ class Cpu6502
         @register[:A] &= oper1
         set_zero(@register[:A])
         set_sign(@register[:A])
+      
+      when 0x25 # AND zeropage
+        @pc += 2
+        @register[:A] &= @ram[oper1]
+        set_zero(@register[:A])
+        set_sign(@register[:A])
 
       when 0xEA # NOP
         @pc += 1

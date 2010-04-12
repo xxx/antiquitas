@@ -43,5 +43,48 @@ class Cpu6502AndTest < Test::Unit::TestCase
         assert_equal pc + 2, @cpu.pc
       end
     end
+
+    context "zeropage mode" do
+      should "do a bitwise AND of the accumulator and the value at the memory location of the passed arg, storing the result in the accumulator" do
+        @cpu.register[:A] = 0x69
+        @cpu.ram[0x22] = 0x12
+        @cpu.runop(0x25, 0x22)
+        assert_equal 0x69 & 0x12, @cpu.register[:A]
+      end
+
+      should "set the zero flag if the resulting accumulator is 0" do
+        @cpu.register[:A] = 0x69
+        @cpu.ram[0x22] = 0x00
+        @cpu.runop(0x25, 0x22)
+        assert_equal 1, @cpu.flag[:Z]
+      end
+
+      should "not set the zero flag if the resulting accumulator is not 0" do
+        @cpu.register[:A] = 0x07
+        @cpu.ram[0x22] = 0x04
+        @cpu.runop(0x25, 0x22)
+        assert_equal 0, @cpu.flag[:Z]
+      end
+
+      should "set the sign flag if bit 7 of the resulting accumulator is set" do
+        @cpu.register[:A] = 0x80
+        @cpu.ram[0x22] = 0x80
+        @cpu.runop(0x25, 0x22)
+        assert_equal 1, @cpu.flag[:S]
+      end
+
+      should "not set the sign flag if bit 7 of the resulting accumulator is set" do
+        @cpu.register[:A] = 0x80
+        @cpu.ram[0x22] = 0x7F
+        @cpu.runop(0x25, 0x22)
+        assert_equal 0, @cpu.flag[:S]
+      end
+
+      should "increase the pc by the correct number of bytes" do
+        pc = @cpu.pc
+        @cpu.runop(0x25, 0x48)
+        assert_equal pc + 2, @cpu.pc
+      end
+    end
   end
 end
