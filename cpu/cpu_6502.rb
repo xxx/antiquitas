@@ -207,6 +207,16 @@ class Cpu6502
 
         op_adc(@ram[@ram[hsb_address] << 8 | @ram[lsb_address]])
 
+      when 0x71 # ADC indirecty
+        @pc += 2
+        lsb = oper1
+
+        lsb -= 0xFF while lsb > 0xFF
+        hsb = lsb == 0xFF ? 0x00 : lsb + 1
+        tmp_address = @ram[hsb] << 8 | @ram[lsb]
+
+        op_adc(@ram[tmp_address + @register[:Y]])
+
       when 0xEA # NOP
         @pc += 1
 
