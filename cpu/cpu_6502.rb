@@ -16,6 +16,8 @@ class Cpu6502
     0x20 => [ "JSR", :absolute,    3, 6 ],
     0xE8 => [ "INX", :absolute,    1, 2 ],
     0xE0 => [ "CPX", :absolute,    2, 2 ],
+    0xE4 => [ "CPX", :zeropage,    2, 3 ],
+    0xEC => [ "CPX", :absolute,    2, 4 ],
     0xD0 => [ "BNE", :relative,    2, [2, 3, 4] ],
     0x00 => [ "BRK", :absolute,    2, 7 ],
     0x69 => [ "ADC", :immediate,   2, 2 ],
@@ -169,17 +171,27 @@ class Cpu6502
         @register[:X] = (@register[:X]+1) & 0xff
         set_sign(@register[:X])
         set_zero(@register[:X])
-      when 0xE0 #CPX
+
+      when 0xE0 # CPX immediate
         @pc += 2
         tmp = @register[:X] - oper1
         set_carry(@register[:X] >= oper1) #was < 0x100
         set_sign(tmp)
         set_zero(tmp)
+
+      when 0xE4 # CPX zeropage
+        @pc += 2
+        tmp = @register[:X] - @ram[oper1]
+        set_carry(@register[:X] >= @ram[oper1]) #was < 0x100
+        set_sign(tmp)
+        set_zero(tmp)
+
       when 0xD0 #BNE
         @pc += 2
         if (@flag[:Z] == 0)
           branch_pc(oper1)
         end
+
       when 0xA9 #LDA
         @pc += 2
         set_sign(oper1)
