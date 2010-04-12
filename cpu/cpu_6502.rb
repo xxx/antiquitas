@@ -287,6 +287,15 @@ class Cpu6502
         set_zero(@ram[oper1])
         set_sign(@ram[oper1])
 
+      when 0x16 # ASL zeropagex
+        @pc += 2
+        val = @ram[oper1 + @register[:X]]
+        set_carry(val & 0x80 == 0x80)
+        val = (val << 1) & 0xFF
+        set_zero(val)
+        set_sign(val)
+        @ram[oper1 + @register[:X]] = val
+
       when 0xEA # NOP
         @pc += 1
 
