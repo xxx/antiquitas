@@ -16,7 +16,7 @@ class Cpu6502
     0x20 => [ "JSR", :absolute,    3, 6 ],
     0xE8 => [ "INX", :absolute,    1, 2 ],
     0xE0 => [ "CPX", :absolute,    2, 2 ],
-    0xD0 => [ "BNE", :absolute,    2, [2, 3, 4] ],
+    0xD0 => [ "BNE", :relative,    2, [2, 3, 4] ],
     0x00 => [ "BRK", :absolute,    2, 7 ],
     0x69 => [ "ADC", :immediate,   2, 2 ],
     0x65 => [ "ADC", :zeropage,    2, 3 ],
@@ -38,7 +38,8 @@ class Cpu6502
     0x06 => [ "ASL", :zeropage,    2, 5 ],
     0x16 => [ "ASL", :zeropagex,   2, 6 ],
     0x0E => [ "ASL", :absolute,    3, 6 ],
-    0x1E => [ "ASL", :absolutex,   3, 7 ]
+    0x1E => [ "ASL", :absolutex,   3, 7 ],
+    0x90 => [ "BCC", :relative,    2, [2, 3, 4] ]
   }
 
   # tables cribbed from py65. illegal bytes not supported. don't use 'em.
@@ -86,7 +87,6 @@ class Cpu6502
   end
 
   def push(oper1)
-    #display_status
     @ram[@register[:SP]+0x100] = oper1
     @register[:SP]-=1
   end
@@ -118,7 +118,6 @@ class Cpu6502
   end
 
   def runop(opcode, oper1 = nil, oper2 = nil)
-#    display_status
     case opcode
       when 0xA2 #LDX
         @register[:X] = oper1
@@ -160,9 +159,9 @@ class Cpu6502
         @pc += 2
         if (@flag[:Z] == 0)
           if (oper1 > 0x7F)
-            @pc = @pc - (~(oper1) & 0x00FF)
+            @pc -= ~oper1 & 0xFF
           else
-            @pc = @pc + (oper1 & 0x00FF)
+            @pc += oper1 & 0xFF
           end
         end
       when 0xA9 #LDA
@@ -297,6 +296,16 @@ class Cpu6502
         @pc += 3
         address = ((oper1 << 8) | oper2) + @register[:X]
         op_asl(address)
+
+      when 0x90 # BCC relative
+        @pc += 2
+        if @flag[:C] == 0
+          if (oper1 > 0x7F)
+            @pc -= ~oper1 & 0x00FF
+          else
+            @pc += oper1 & 0x00FF
+          end
+        end
 
       when 0xEA # NOP
         @pc += 1
