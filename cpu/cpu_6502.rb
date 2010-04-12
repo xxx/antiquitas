@@ -281,39 +281,22 @@ class Cpu6502
 
       when 0x06 # ASL zeropage
         @pc += 2
-        set_carry(@ram[oper1] & 0x80 == 0x80)
-        @ram[oper1] <<= 1
-        @ram[oper1] &= 0xFF
-        set_zero(@ram[oper1])
-        set_sign(@ram[oper1])
+        op_asl(oper1)
 
       when 0x16 # ASL zeropagex
         @pc += 2
-        val = @ram[oper1 + @register[:X]]
-        set_carry(val & 0x80 == 0x80)
-        val = (val << 1) & 0xFF
-        set_zero(val)
-        set_sign(val)
-        @ram[oper1 + @register[:X]] = val
+        address = oper1 + @register[:X]
+        op_asl(address)
 
       when 0x0E # ASL absolute
         @pc += 3
-        val = @ram[(oper1 << 8) | oper2]
-        set_carry(val & 0x80 == 0x80)
-        val = (val << 1) & 0xFF
-        set_zero(val)
-        set_sign(val)
-        @ram[(oper1 << 8) | oper2] = val
+        address = (oper1 << 8) | oper2
+        op_asl(address)
 
       when 0x1E # ASL absolutex
         @pc += 3
-        index = ((oper1 << 8) | oper2) + @register[:X]
-        val = @ram[index]
-        set_carry(val & 0x80 == 0x80)
-        val = (val << 1) & 0xFF
-        set_zero(val)
-        set_sign(val)
-        @ram[index] = val
+        address = ((oper1 << 8) | oper2) + @register[:X]
+        op_asl(address)
 
       when 0xEA # NOP
         @pc += 1
@@ -395,8 +378,15 @@ class Cpu6502
       result &= 0xFF
       @register[:A] = result
     end
-
   end
+
+  def op_asl(address)
+    set_carry(@ram[address] & 0x80 == 0x80)
+    @ram[address] = (@ram[address] << 1) & 0xFF
+    set_zero(@ram[address])
+    set_sign(@ram[address])
+  end
+
 
 end
 
