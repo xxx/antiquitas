@@ -12,7 +12,7 @@ class Cpu6502JsrTest < Test::Unit::TestCase
         @cpu.runop(0x20, 0x40, 0x25)
         low_end = @cpu.pull
         high_end = @cpu.pull
-        assert_equal 2102, (high_end << 8) | low_end
+        assert_equal 2099, (high_end << 8) | low_end
       end
 
       should "set the program counter to the passed 16-bit memory address" do
