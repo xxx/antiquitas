@@ -41,7 +41,9 @@ class Cpu6502
     0x1E => [ "ASL", :absolutex,   3, 7 ],
     0x90 => [ "BCC", :relative,    2, [2, 3, 4] ],
     0xB0 => [ "BCS", :relative,    2, [2, 3, 4] ],
-    0xF0 => [ "BEQ", :relative,    2, [2, 3, 4] ]
+    0xF0 => [ "BEQ", :relative,    2, [2, 3, 4] ],
+    0x24 => [ "BIT", :zeropage,    2, 3 ],
+    0x2C => [ "BIT", :absolute,    3, 4 ]
   }
 
   # tables cribbed from py65. illegal bytes not supported. don't use 'em.
@@ -312,6 +314,19 @@ class Cpu6502
         if @flag[:Z] == 1
           branch_pc(oper1)
         end
+
+      when 0x24 # BIT zeropage
+        @pc += 2
+        set_zero(@register[:A] & @ram[oper1])
+        set_sign(@ram[oper1])
+        set_overflow(@ram[oper1] & 0x40 == 0x40 ? 1 : 0)
+
+      when 0x2C # BIT absolute
+        @pc += 3
+        address = (oper1 << 8) | oper2
+        set_zero(@register[:A] & @ram[address])
+        set_sign(@ram[address])
+        set_overflow(@ram[address] & 0x40 == 0x40 ? 1 : 0)
 
       when 0xEA # NOP
         @pc += 1
