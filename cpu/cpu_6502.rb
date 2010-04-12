@@ -40,7 +40,8 @@ class Cpu6502
     0x0E => [ "ASL", :absolute,    3, 6 ],
     0x1E => [ "ASL", :absolutex,   3, 7 ],
     0x90 => [ "BCC", :relative,    2, [2, 3, 4] ],
-    0xB0 => [ "BCS", :relative,    2, [2, 3, 4] ]
+    0xB0 => [ "BCS", :relative,    2, [2, 3, 4] ],
+    0xF0 => [ "BEQ", :relative,    2, [2, 3, 4] ]
   }
 
   # tables cribbed from py65. illegal bytes not supported. don't use 'em.
@@ -303,6 +304,12 @@ class Cpu6502
       when 0xB0 # BCS relative
         @pc += 2
         if @flag[:C] == 1
+          branch_pc(oper1)
+        end
+
+      when 0xF0 # BEQ relative
+        @pc += 2
+        if @flag[:Z] == 1
           branch_pc(oper1)
         end
 
