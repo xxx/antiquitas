@@ -2,8 +2,11 @@ class Cpu6502
   attr_accessor :debug, :register, :flag, :ram, :pc
   attr_reader :imagesize
 
+  class << self
+    attr_reader :opcodes, :to_bin, :to_bcd
+  end
 
-  @@opcodes = {
+  @opcodes = {
     # mnemonic, mode, bytes, cycles
     0x69 => [ "ADC", :immediate,   2, 2 ],
     0x65 => [ "ADC", :zeropage,    2, 3 ],
@@ -152,7 +155,7 @@ class Cpu6502
   }
 
   # tables cribbed from py65. illegal bytes not supported. don't use 'em.
-  @@to_bin = [
+  @to_bin = [
       0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, # 0x00
      10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, # 0x10
      20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, # 0x20
@@ -165,7 +168,7 @@ class Cpu6502
      90, 91, 92, 93, 94, 95, 96, 97, 98, 99                          # 0x90
   ]
   
-  @@to_bcd = [
+  @to_bcd = [
     0x00,0x01,0x02,0x03,0x04,0x05,0x06,0x07,0x08,0x09,
     0x10,0x11,0x12,0x13,0x14,0x15,0x16,0x17,0x18,0x19,
     0x20,0x21,0x22,0x23,0x24,0x25,0x26,0x27,0x28,0x29,
@@ -861,7 +864,7 @@ class Cpu6502
 
   def op_adc(arg)
     if @flag[:D] == 1
-      result = @@to_bin[@register[:A]] + @flag[:C] + @@to_bin[arg]
+      result = self.class.to_bin[@register[:A]] + @flag[:C] + self.class.to_bin[arg]
     else
       result = @register[:A] + @flag[:C] + arg
     end
@@ -872,7 +875,7 @@ class Cpu6502
       set_carry(result > 99)
       set_overflow(result > 99) # no idea what to do here.
       result -= 100 while result > 100
-      @register[:A] = @@to_bcd[result]
+      @register[:A] = self.class.to_bcd[result]
     else
       set_carry(result > 255)
 
