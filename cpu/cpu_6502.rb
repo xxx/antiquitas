@@ -662,6 +662,8 @@ class Cpu6502
       when 0x4C # JMP absolute
         address = (oper1 << 8) | oper2
         lo_byte = @ram[address]
+
+        # bug emulation
         hi_byte = (address & 0xFF == 0xFF) ? @ram[address - 0xFF] : @ram[address + 1]
         @pc = (hi_byte << 8) | lo_byte
 
@@ -673,6 +675,7 @@ class Cpu6502
         new_address = (hi_byte << 8) | lo_byte
         real_lo_byte = @ram[new_address]
 
+        # bug emulation
         real_hi_byte = (new_address & 0xFF == 0xFF) ? @ram[new_address - 0xFF] : @ram[new_address + 1]
 
         @pc = (real_hi_byte << 8) | real_lo_byte
@@ -694,6 +697,29 @@ class Cpu6502
         @pc += 2
         address = oper1 + @register[:X]
         address -= 0xFF while address > 0xFF
+        value = @ram[address]
+        set_sign(value)
+        set_zero(value)
+        @register[:A] = value
+      
+      when 0xAD # LDA absolute
+        @pc += 3
+        value = @ram[(oper1 << 8) | oper2]
+        set_sign(value)
+        set_zero(value)
+        @register[:A] = value
+
+      when 0xBD # LDA absolutex
+        @pc += 3
+        address = ((oper1 << 8) | oper2) + @register[:X]
+        value = @ram[address]
+        set_sign(value)
+        set_zero(value)
+        @register[:A] = value
+
+      when 0xB9 # LDA absolutey
+        @pc += 3
+        address = ((oper1 << 8) | oper2) + @register[:Y]
         value = @ram[address]
         set_sign(value)
         set_zero(value)
