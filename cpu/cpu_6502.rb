@@ -5,24 +5,6 @@ class Cpu6502
 
   @@opcodes = {
     # mnemonic, mode, bytes, cycles
-    0xA9 => [ "LDA", :immediate,   2, 2 ],
-    0xA2 => [ "LDX", :immediate,   2, 2 ],
-    0xA6 => [ "LDX", :zeropage,    2, 3 ],
-    0xB6 => [ "LDX", :zeropagey,   2, 4 ],
-    0xAE => [ "LDX", :absolute,    3, 4 ],
-    0xBE => [ "LDX", :absolutey,   3, [4, 5] ],
-    0x8A => [ "TXA", :implied,     1, 2 ],
-    0x98 => [ "TYA", :implied,     1, 2 ],
-    0x20 => [ "JSR", :absolute,    3, 6 ],
-    0xE8 => [ "INX", :implied,     1, 2 ],
-    0xE0 => [ "CPX", :immediate,   2, 2 ],
-    0xE4 => [ "CPX", :zeropage,    2, 3 ],
-    0xEC => [ "CPX", :absolute,    3, 4 ],
-    0xC0 => [ "CPY", :immediate,   2, 2 ],
-    0xC4 => [ "CPY", :zeropage,    2, 3 ],
-    0xCC => [ "CPY", :absolute,    3, 4 ],
-    0xD0 => [ "BNE", :relative,    2, [2, 3, 4] ],
-    0x00 => [ "BRK", :absolute,    2, 7 ],
     0x69 => [ "ADC", :immediate,   2, 2 ],
     0x65 => [ "ADC", :zeropage,    2, 3 ],
     0x75 => [ "ADC", :zeropagex,   2, 4 ],
@@ -31,6 +13,7 @@ class Cpu6502
     0x79 => [ "ADC", :absolutey,   3, [4, 5] ],
     0x61 => [ "ADC", :indirectx,   2, 6 ],
     0x71 => [ "ADC", :indirecty,   2, [5, 6] ],
+
     0x29 => [ "AND", :immediate,   2, 2 ],
     0x25 => [ "AND", :zeropage,    2, 3 ],
     0x35 => [ "AND", :zeropagex,   2, 4 ],
@@ -39,37 +22,68 @@ class Cpu6502
     0x39 => [ "AND", :absolutey,   3, [4, 5] ],
     0x21 => [ "AND", :indirectx,   2, 6 ],
     0x31 => [ "AND", :indirecty,   2, [5, 6] ],
+
     0x0A => [ "ASL", :accumulator, 1, 2 ],
     0x06 => [ "ASL", :zeropage,    2, 5 ],
     0x16 => [ "ASL", :zeropagex,   2, 6 ],
     0x0E => [ "ASL", :absolute,    3, 6 ],
     0x1E => [ "ASL", :absolutex,   3, 7 ],
+
     0x90 => [ "BCC", :relative,    2, [2, 3, 4] ],
+
     0xB0 => [ "BCS", :relative,    2, [2, 3, 4] ],
+
     0xF0 => [ "BEQ", :relative,    2, [2, 3, 4] ],
-    0x30 => [ "BMI", :relative,    2, [2, 3, 4] ],
-    0x10 => [ "BPL", :relative,    2, [2, 3, 4] ],
-    0x50 => [ "BVC", :relative,    2, [2, 3, 4] ],
+
     0x24 => [ "BIT", :zeropage,    2, 3 ],
     0x2C => [ "BIT", :absolute,    3, 4 ],
+
+    0x30 => [ "BMI", :relative,    2, [2, 3, 4] ],
+
+    0xD0 => [ "BNE", :relative,    2, [2, 3, 4] ],
+
+    0x10 => [ "BPL", :relative,    2, [2, 3, 4] ],
+
+    0x00 => [ "BRK", :implied,     1, 7 ],
+    
+    0x50 => [ "BVC", :relative,    2, [2, 3, 4] ],
+
+    0x70 => [ "BVS", :relative,    2, [2, 3, 4] ],
+
     0x18 => [ "CLC", :implied,     1, 2 ],
+
     0xD8 => [ "CLD", :implied,     1, 2 ],
+
     0x58 => [ "CLI", :implied,     1, 2 ],
+
     0xB8 => [ "CLV", :implied,     1, 2 ],
+
     0xC9 => [ "CMP", :immediate,   2, 2 ],
-    0xC5 => [ "CMP", :zeropage,    2, 2 ],
-    0xD5 => [ "CMP", :zeropagex,   2, 2 ],
-    0xCD => [ "CMP", :absolute,    3, 2 ],
-    0xDD => [ "CMP", :absolutex,   3, 2 ],
-    0xD9 => [ "CMP", :absolutey,   3, 2 ],
-    0xC1 => [ "CMP", :indirectx,   2, 2 ],
-    0xD1 => [ "CMP", :indirecty,   2, 2 ],
+    0xC5 => [ "CMP", :zeropage,    2, 3 ],
+    0xD5 => [ "CMP", :zeropagex,   2, 4 ],
+    0xCD => [ "CMP", :absolute,    3, 4 ],
+    0xDD => [ "CMP", :absolutex,   3, [4, 5] ],
+    0xD9 => [ "CMP", :absolutey,   3, [4, 5] ],
+    0xC1 => [ "CMP", :indirectx,   2, 6 ],
+    0xD1 => [ "CMP", :indirecty,   2, [5, 6] ],
+
+    0xE0 => [ "CPX", :immediate,   2, 2 ],
+    0xE4 => [ "CPX", :zeropage,    2, 3 ],
+    0xEC => [ "CPX", :absolute,    3, 4 ],
+
+    0xC0 => [ "CPY", :immediate,   2, 2 ],
+    0xC4 => [ "CPY", :zeropage,    2, 3 ],
+    0xCC => [ "CPY", :absolute,    3, 4 ],
+
     0xC6 => [ "DEC", :zeropage,    2, 5 ],
     0xD6 => [ "DEC", :zeropagex,   2, 6 ],
     0xCE => [ "DEC", :absolute,    3, 6 ],
     0xDE => [ "DEC", :absolutex,   3, 7 ],
+
     0xCA => [ "DEX", :implied,     1, 2 ],
+
     0x88 => [ "DEY", :implied,     1, 2 ],
+
     0x49 => [ "EOR", :immediate,   2, 2 ],
     0x45 => [ "EOR", :zeropage,    2, 3 ],
     0x55 => [ "EOR", :zeropagex,   2, 4 ],
@@ -77,7 +91,24 @@ class Cpu6502
     0x5D => [ "EOR", :absolutex,   3, [4, 5] ],
     0x59 => [ "EOR", :absolutey,   3, [4, 5] ],
     0x41 => [ "EOR", :indirectx,   2, 6 ],
-    0x51 => [ "EOR", :indirecty,   2, [5, 6] ]
+    0x51 => [ "EOR", :indirecty,   2, [5, 6] ],
+
+    0xE8 => [ "INX", :implied,     1, 2 ],
+
+    0x20 => [ "JSR", :absolute,    3, 6 ],
+
+    0xA9 => [ "LDA", :immediate,   2, 2 ],
+
+    0xA2 => [ "LDX", :immediate,   2, 2 ],
+    0xA6 => [ "LDX", :zeropage,    2, 3 ],
+    0xB6 => [ "LDX", :zeropagey,   2, 4 ],
+    0xAE => [ "LDX", :absolute,    3, 4 ],
+    0xBE => [ "LDX", :absolutey,   3, [4, 5] ],
+
+    0x8A => [ "TXA", :implied,     1, 2 ],
+
+    0x98 => [ "TYA", :implied,     1, 2 ],
+
   }
 
   # tables cribbed from py65. illegal bytes not supported. don't use 'em.
