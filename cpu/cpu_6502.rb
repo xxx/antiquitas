@@ -128,6 +128,12 @@ class Cpu6502
     0xAC => [ "LDY", :absolute,    3, 4 ],
     0xBC => [ "LDY", :absolutex,   3, [4, 5] ],
 
+    0x4A => [ "LSR", :accumulator, 1, 2 ],
+    0x46 => [ "LSR", :zeropage,    1, 5 ],
+    0x56 => [ "LSR", :zeropagex,   1, 6 ],
+    0x4E => [ "LSR", :absolute,    3, 6 ],
+    0x5E => [ "LSR", :absolutex,   3, 7 ],
+
     0x8A => [ "TXA", :implied,     1, 2 ],
 
     0x98 => [ "TYA", :implied,     1, 2 ],
@@ -741,6 +747,40 @@ class Cpu6502
         @pc += 3
         @register[:Y] = @ram[((oper1 << 8) | oper2) + @register[:X]]
         set_sz(@register[:Y])
+
+      when 0x4A # LSR accumulator
+        @pc += 1
+        @flag[:C] = @register[:A] & 0x01 == 0x01 ? 1 : 0
+        @register[:A] >>= 1
+        set_zero(@register[:A])
+      
+      when 0x46 # LSR zeropage
+        @pc += 2
+        @flag[:C] = @ram[oper1] & 0x01 == 0x01 ? 1 : 0
+        @ram[oper1] >>= 1
+        set_zero(@ram[oper1])
+
+      when 0x56 # LSR zeropagex
+        @pc += 2
+        address = oper1 + @register[:X]
+        address -= 0xFF while address > 0xFF
+        @flag[:C] = @ram[address] & 0x01 == 0x01 ? 1 : 0
+        @ram[address] >>= 1
+        set_zero(@ram[address])
+
+      when 0x4E # LSR absolute
+        @pc += 3
+        address = (oper1 << 8) | oper2
+        @flag[:C] = @ram[address] & 0x01 == 0x01 ? 1 : 0
+        @ram[address] >>= 1
+        set_zero(@ram[address])
+
+      when 0x5E # LSR absolutex
+        @pc += 3
+        address = ((oper1 << 8) | oper2) + @register[:X]
+        @flag[:C] = @ram[address] & 0x01 == 0x01 ? 1 : 0
+        @ram[address] >>= 1
+        set_zero(@ram[address])
 
       when 0xEA # NOP
         @pc += 1
