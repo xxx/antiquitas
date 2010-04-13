@@ -205,96 +205,6 @@ class Cpu6502
 
   def runop(opcode, oper1 = nil, oper2 = nil)
     case opcode
-      when 0xA2 #LDX
-        @register[:X] = oper1
-        @pc += 2
-        set_sign(@register[:X])
-        set_zero(@register[:X])
-      when 0x8A #TXA
-        set_sign(@register[:X])
-        set_zero(@register[:X])
-        @register[:A] = @register[:X]
-        @pc += 1
-      when 0x20 #JSR
-#        @pc = @pc + 3 - 1 # we subtract 1 because the JSR docs say to
-        @pc -= 1 # we subtract 1 because the JSR docs say to
-
-        # push one byte at a time ont the stack
-        push((@pc >> 8) & 0xFF)
-        push(@pc & 0xFF)
-
-        @pc = (oper1 << 8) | oper2
-#        if @pc == 0xFFEE
-#          putc(@register[:A])
-#        end
-#        display_status
-#        @pc = pull
-#        @pc |= (pull << 8)
-#        @pc += 1
-      when 0xE0 # CPX immediate
-        @pc += 2
-        tmp = @register[:X] - oper1
-        set_carry(@register[:X] >= oper1) #was < 0x100
-        set_sign(tmp)
-        set_zero(tmp)
-
-      when 0xE4 # CPX zeropage
-        @pc += 2
-        tmp = @register[:X] - @ram[oper1]
-        set_carry(@register[:X] >= @ram[oper1])
-        set_sign(tmp)
-        set_zero(tmp)
-
-      when 0xEC # CPX absolute
-        @pc += 3
-        address = (oper1 << 8) | oper2
-        tmp = @register[:X] - @ram[address]
-        set_carry(@register[:X] >= @ram[address])
-        set_sign(tmp)
-        set_zero(tmp)
-
-      when 0xC0 # CPY immediate
-        @pc += 2
-        tmp = @register[:Y] - oper1
-        set_carry(@register[:Y] >= oper1) #was < 0x100
-        set_sign(tmp)
-        set_zero(tmp)
-
-      when 0xC4 # CPY zeropage
-        @pc += 2
-        tmp = @register[:Y] - @ram[oper1]
-        set_carry(@register[:Y] >= @ram[oper1])
-        set_sign(tmp)
-        set_zero(tmp)
-
-      when 0xCC # CPY absolute
-        @pc += 3
-        address = (oper1 << 8) | oper2
-        tmp = @register[:Y] - @ram[address]
-        set_carry(@register[:Y] >= @ram[address])
-        set_sign(tmp)
-        set_zero(tmp)
-
-      when 0xD0 #BNE
-        @pc += 2
-        if (@flag[:Z] == 0)
-          branch_pc(oper1)
-        end
-
-      when 0x98 # TYA
-        @pc += 1
-        @register[:A] = @register[:Y]
-        set_sign(@register[:A])
-        set_zero(@register[:A])
-      when 0x00 #BRK
-        #puts "************** IN BREAK **************"
-        # 
-        @pc += 1
-        push(@pc >> 8)
-        push(@pc & 0x00FF)
-        push(register[:SR])
-        @flag[:B] = 1
-        @pc = (@ram[0xFFFE] << 8) | @ram[0xFFFF]
       when 0x69 # ADC immediate
         @pc += 2
         op_adc(oper1)
@@ -433,12 +343,28 @@ class Cpu6502
           branch_pc(oper1)
         end
 
+      when 0xD0 # BNE relative
+        @pc += 2
+        if (@flag[:Z] == 0)
+          branch_pc(oper1)
+        end
+
       when 0x10 # BPL relative
         @pc += 2
         if @flag[:S] == 0
           branch_pc(oper1)
         end
 
+      when 0x00 # BRK implied
+        #puts "************** IN BREAK **************"
+        #
+        @pc += 1
+        push(@pc >> 8)
+        push(@pc & 0x00FF)
+        push(register[:SR])
+        @flag[:B] = 1
+        @pc = (@ram[0xFFFE] << 8) | @ram[0xFFFF]
+      
       when 0x50 # BVC relative
         @pc += 2
         if @flag[:V] == 0
@@ -522,6 +448,50 @@ class Cpu6502
         @pc += 2
         address = indirect_y_address(oper1)
         op_cmp(address)
+
+      when 0xE0 # CPX immediate
+        @pc += 2
+        tmp = @register[:X] - oper1
+        set_carry(@register[:X] >= oper1) #was < 0x100
+        set_sign(tmp)
+        set_zero(tmp)
+
+      when 0xE4 # CPX zeropage
+        @pc += 2
+        tmp = @register[:X] - @ram[oper1]
+        set_carry(@register[:X] >= @ram[oper1])
+        set_sign(tmp)
+        set_zero(tmp)
+
+      when 0xEC # CPX absolute
+        @pc += 3
+        address = (oper1 << 8) | oper2
+        tmp = @register[:X] - @ram[address]
+        set_carry(@register[:X] >= @ram[address])
+        set_sign(tmp)
+        set_zero(tmp)
+
+      when 0xC0 # CPY immediate
+        @pc += 2
+        tmp = @register[:Y] - oper1
+        set_carry(@register[:Y] >= oper1) #was < 0x100
+        set_sign(tmp)
+        set_zero(tmp)
+
+      when 0xC4 # CPY zeropage
+        @pc += 2
+        tmp = @register[:Y] - @ram[oper1]
+        set_carry(@register[:Y] >= @ram[oper1])
+        set_sign(tmp)
+        set_zero(tmp)
+
+      when 0xCC # CPY absolute
+        @pc += 3
+        address = (oper1 << 8) | oper2
+        tmp = @register[:Y] - @ram[address]
+        set_carry(@register[:Y] >= @ram[address])
+        set_sign(tmp)
+        set_zero(tmp)
 
       when 0xC6 # DEC zeropage
         @pc += 2
@@ -680,6 +650,23 @@ class Cpu6502
 
         @pc = (real_hi_byte << 8) | real_lo_byte
 
+      when 0x20 # JSR absolute
+#        @pc = @pc + 3 - 1 # we subtract 1 because the JSR docs say to
+        @pc -= 1 # we subtract 1 because the JSR docs say to
+
+        # push one byte at a time ont the stack
+        push((@pc >> 8) & 0xFF)
+        push(@pc & 0xFF)
+
+        @pc = (oper1 << 8) | oper2
+#        if @pc == 0xFFEE
+#          putc(@register[:A])
+#        end
+#        display_status
+#        @pc = pull
+#        @pc |= (pull << 8)
+#        @pc += 1
+      
       when 0xA9 # LDA immediate
         @pc += 2
         set_sign(oper1)
@@ -739,8 +726,52 @@ class Cpu6502
         set_zero(value)
         @register[:A] = value
 
+      when 0xA2 # LDX immediate
+        @pc += 2
+        @register[:X] = oper1
+        set_sign(@register[:X])
+        set_zero(@register[:X])
+      
+      when 0xA6 # LDX zeropage
+        @pc += 2
+        @register[:X] = @ram[oper1]
+        set_sign(@register[:X])
+        set_zero(@register[:X])
+
+      when 0xB6 # LDX zeropagey
+        @pc += 2
+        address = oper1 + register[:Y]
+        address -= 0xFF while address > 0xFF
+        @register[:X] = @ram[address]
+        set_sign(@register[:X])
+        set_zero(@register[:X])
+
+      when 0xAE # LDX absolute
+        @pc += 3
+        @register[:X] = @ram[(oper1 << 8) | oper2]
+        set_sign(@register[:X])
+        set_zero(@register[:X])
+
+      when 0xBE # LDX absolutey
+        @pc += 3
+        @register[:X] = @ram[((oper1 << 8) | oper2) + @register[:Y]]
+        set_sign(@register[:X])
+        set_zero(@register[:X])
+
       when 0xEA # NOP
         @pc += 1
+
+      when 0x8A #TXA
+        @pc += 1
+        set_sign(@register[:X])
+        set_zero(@register[:X])
+        @register[:A] = @register[:X]
+
+      when 0x98 # TYA
+        @pc += 1
+        @register[:A] = @register[:Y]
+        set_sign(@register[:A])
+        set_zero(@register[:A])
 
     end
     #display_status
