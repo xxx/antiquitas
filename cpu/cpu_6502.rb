@@ -568,6 +568,36 @@ class Cpu6502
         @register[:A] = (@register[:A] ^ @ram[oper1]) & 0xFF
         set_zero(@register[:A])
         set_sign(@register[:A])
+
+      when 0x55 # EOR zeropagex
+        @pc += 2
+        address = oper1 + @register[:X]
+        address -= 0xFF while address > 0xFF
+        @register[:A] = (@register[:A] ^ @ram[address]) & 0xFF
+        set_zero(@register[:A])
+        set_sign(@register[:A])
+      
+      when 0x4D # EOR absolute
+        @pc += 3
+        address = (oper1 << 8) | oper2
+        @register[:A] = (@register[:A] ^ @ram[address]) & 0xFF
+        set_zero(@register[:A])
+        set_sign(@register[:A])
+
+      when 0x5D # EOR absolutex
+        @pc += 3
+        address = ((oper1 << 8) | oper2) + @register[:X]
+        @register[:A] = (@register[:A] ^ @ram[address]) & 0xFF
+        set_zero(@register[:A])
+        set_sign(@register[:A])
+
+      when 0x59 # EOR absolutey
+        @pc += 3
+        address = ((oper1 << 8) | oper2) + @register[:Y]
+        @register[:A] = (@register[:A] ^ @ram[address]) & 0xFF
+        set_zero(@register[:A])
+        set_sign(@register[:A])
+
       when 0xEA # NOP
         @pc += 1
 
