@@ -100,6 +100,8 @@ class Cpu6502
 
     0xE8 => [ "INX", :implied,     1, 2 ],
 
+    0xC8 => [ "INY", :implied,     1, 2 ],
+
     0x20 => [ "JSR", :absolute,    3, 6 ],
 
     0xA9 => [ "LDA", :immediate,   2, 2 ],
@@ -208,8 +210,8 @@ class Cpu6502
         @pc -= 1 # we subtract 1 because the JSR docs say to
 
         # push one byte at a time ont the stack
-        push((@pc >> 8) & 0xff)
-        push(@pc & 0xff)
+        push((@pc >> 8) & 0xFF)
+        push(@pc & 0xFF)
 
         @pc = (oper1 << 8) | oper2
 #        if @pc == 0xFFEE
@@ -219,12 +221,6 @@ class Cpu6502
 #        @pc = pull
 #        @pc |= (pull << 8)
 #        @pc += 1
-      when 0xE8 #INX
-        @pc += 1
-        @register[:X] = (@register[:X]+1) & 0xff
-        set_sign(@register[:X])
-        set_zero(@register[:X])
-
       when 0xE0 # CPX immediate
         @pc += 2
         tmp = @register[:X] - oper1
@@ -645,6 +641,18 @@ class Cpu6502
         @ram[address] = (@ram[address] + 1) & 0xFF
         set_zero(@ram[address])
         set_sign(@ram[address])
+
+      when 0xE8 # INX implied
+        @pc += 1
+        @register[:X] = (@register[:X] + 1) & 0xFF
+        set_sign(@register[:X])
+        set_zero(@register[:X])
+      
+      when 0xC8 # INY implied
+        @pc += 1
+        @register[:Y] = (@register[:Y] + 1) & 0xFF
+        set_sign(@register[:Y])
+        set_zero(@register[:Y])
 
       when 0xEA # NOP
         @pc += 1

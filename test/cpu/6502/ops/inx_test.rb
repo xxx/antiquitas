@@ -31,7 +31,7 @@ class Cpu6502InxTest < Test::Unit::TestCase
         assert_equal 1, @cpu.flag[:Z]
       end
 
-      should "clear the zero flag if the X register is now 0" do
+      should "clear the zero flag if the X register is not 0" do
         @cpu.register = {:X => 0}
         @cpu.runop(0xE8)
         assert_equal 0, @cpu.flag[:Z]
@@ -39,7 +39,7 @@ class Cpu6502InxTest < Test::Unit::TestCase
 
       should "increase the pc by the number of bytes for the op" do
         pc = @cpu.pc
-        @cpu.runop(0x8A)
+        @cpu.runop(0xE8)
         assert_equal pc + 1, @cpu.pc
       end
     end
