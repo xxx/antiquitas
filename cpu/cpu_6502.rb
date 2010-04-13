@@ -598,6 +598,20 @@ class Cpu6502
         set_zero(@register[:A])
         set_sign(@register[:A])
 
+      when 0x41 # EOR indirectx
+        @pc += 2
+        address = indirect_x_address(oper1)
+        @register[:A] = (@register[:A] ^ @ram[address]) & 0xFF
+        set_zero(@register[:A])
+        set_sign(@register[:A])
+
+      when 0x51 # EOR indirecty
+        @pc += 2
+        address = indirect_y_address(oper1)
+        @register[:A] = (@register[:A] ^ @ram[address]) & 0xFF
+        set_zero(@register[:A])
+        set_sign(@register[:A])
+
       when 0xEA # NOP
         @pc += 1
 
