@@ -122,6 +122,12 @@ class Cpu6502
     0xAE => [ "LDX", :absolute,    3, 4 ],
     0xBE => [ "LDX", :absolutey,   3, [4, 5] ],
 
+    0xA0 => [ "LDY", :immediate,   2, 2 ],
+    0xA4 => [ "LDY", :zeropage,    2, 3 ],
+    0xB4 => [ "LDY", :zeropagex,   2, 4 ],
+    0xAC => [ "LDY", :absolute,    3, 4 ],
+    0xBC => [ "LDY", :absolutex,   3, [4, 5] ],
+
     0x8A => [ "TXA", :implied,     1, 2 ],
 
     0x98 => [ "TYA", :implied,     1, 2 ],
@@ -757,6 +763,38 @@ class Cpu6502
         @register[:X] = @ram[((oper1 << 8) | oper2) + @register[:Y]]
         set_sign(@register[:X])
         set_zero(@register[:X])
+
+      when 0xA0 # LDY immediate
+        @pc += 2
+        @register[:Y] = oper1
+        set_sign(@register[:Y])
+        set_zero(@register[:Y])
+
+      when 0xA4 # LDY zeropage
+        @pc += 2
+        @register[:Y] = @ram[oper1]
+        set_sign(@register[:Y])
+        set_zero(@register[:Y])
+
+      when 0xB4 # LDY zeropagex
+        @pc += 2
+        address = oper1 + register[:X]
+        address -= 0xFF while address > 0xFF
+        @register[:Y] = @ram[address]
+        set_sign(@register[:Y])
+        set_zero(@register[:Y])
+
+      when 0xAC # LDY absolute
+        @pc += 3
+        @register[:Y] = @ram[(oper1 << 8) | oper2]
+        set_sign(@register[:Y])
+        set_zero(@register[:Y])
+
+      when 0xBC # LDY absolutex
+        @pc += 3
+        @register[:Y] = @ram[((oper1 << 8) | oper2) + @register[:X]]
+        set_sign(@register[:Y])
+        set_zero(@register[:Y])
 
       when 0xEA # NOP
         @pc += 1
