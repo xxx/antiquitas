@@ -93,6 +93,11 @@ class Cpu6502
     0x41 => [ "EOR", :indirectx,   2, 6 ],
     0x51 => [ "EOR", :indirecty,   2, [5, 6] ],
 
+    0xE6 => [ "INC", :zeropage,    2, 5 ],
+    0xF6 => [ "INC", :zeropagex,   2, 6 ],
+    0xEE => [ "INC", :absolute,    3, 6 ],
+    0xFE => [ "INC", :absolutex,   3, 7 ],
+
     0xE8 => [ "INX", :implied,     1, 2 ],
 
     0x20 => [ "JSR", :absolute,    3, 6 ],
@@ -611,6 +616,35 @@ class Cpu6502
         @register[:A] = (@register[:A] ^ @ram[address]) & 0xFF
         set_zero(@register[:A])
         set_sign(@register[:A])
+
+      when 0xE6 # INC zeropage
+        @pc += 2
+        address = oper1
+        @ram[address] = (@ram[address] + 1) & 0xFF
+        set_zero(@ram[address])
+        set_sign(@ram[address])
+
+      when 0xF6 # INC zeropagex
+        @pc += 2
+        address = oper1 + @register[:X]
+        address -= 0xFF while address > 0xFF
+        @ram[address] = (@ram[address] + 1) & 0xFF
+        set_zero(@ram[address])
+        set_sign(@ram[address])
+
+      when 0xEE # INC absolute
+        @pc += 3
+        address = (oper1 << 8) | oper2
+        @ram[address] = (@ram[address] + 1) & 0xFF
+        set_zero(@ram[address])
+        set_sign(@ram[address])
+
+      when 0xFE # INC absolutex
+        @pc += 3
+        address = ((oper1 << 8) | oper2) + register[:X]
+        @ram[address] = (@ram[address] + 1) & 0xFF
+        set_zero(@ram[address])
+        set_sign(@ram[address])
 
       when 0xEA # NOP
         @pc += 1
