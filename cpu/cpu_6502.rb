@@ -108,6 +108,13 @@ class Cpu6502
     0x20 => [ "JSR", :absolute,    3, 6 ],
 
     0xA9 => [ "LDA", :immediate,   2, 2 ],
+    0xA5 => [ "LDA", :zeropage,    2, 3 ],
+    0xB5 => [ "LDA", :zeropagex,   2, 4 ],
+    0xAD => [ "LDA", :absolute,    3, 4 ],
+    0xBD => [ "LDA", :absolutex,   3, [4, 5] ],
+    0xB9 => [ "LDA", :absolutey,   3, [4, 5] ],
+    0xA1 => [ "LDA", :indirectx,   2, 6 ],
+    0xB1 => [ "LDA", :indirecty,   2, [5, 6] ],
 
     0xA2 => [ "LDX", :immediate,   2, 2 ],
     0xA6 => [ "LDX", :zeropage,    2, 3 ],
@@ -274,11 +281,6 @@ class Cpu6502
           branch_pc(oper1)
         end
 
-      when 0xA9 #LDA
-        @pc += 2
-        set_sign(oper1)
-        set_zero(oper1)
-        @register[:A] = oper1
       when 0x98 # TYA
         @pc += 1
         @register[:A] = @register[:Y]
@@ -674,6 +676,28 @@ class Cpu6502
         real_hi_byte = (new_address & 0xFF == 0xFF) ? @ram[new_address - 0xFF] : @ram[new_address + 1]
 
         @pc = (real_hi_byte << 8) | real_lo_byte
+
+      when 0xA9 # LDA immediate
+        @pc += 2
+        set_sign(oper1)
+        set_zero(oper1)
+        @register[:A] = oper1
+
+      when 0xA5 # LDA zeropage
+        @pc += 2
+        value = @ram[oper1]
+        set_sign(value)
+        set_zero(value)
+        @register[:A] = value
+
+      when 0xB5 # LDA zeropagex
+        @pc += 2
+        address = oper1 + @register[:X]
+        address -= 0xFF while address > 0xFF
+        value = @ram[address]
+        set_sign(value)
+        set_zero(value)
+        @register[:A] = value
 
       when 0xEA # NOP
         @pc += 1
