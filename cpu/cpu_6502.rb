@@ -557,6 +557,17 @@ class Cpu6502
         set_zero(@register[:Y])
         set_sign(@register[:Y])
 
+      when 0x49 # EOR immediate
+        @pc += 2
+        @register[:A] = (@register[:A] ^ oper1) & 0xFF
+        set_zero(@register[:A])
+        set_sign(@register[:A])
+
+      when 0x45 # EOR zeropage
+        @pc += 2
+        @register[:A] = (@register[:A] ^ @ram[oper1]) & 0xFF
+        set_zero(@register[:A])
+        set_sign(@register[:A])
       when 0xEA # NOP
         @pc += 1
 
