@@ -725,6 +725,13 @@ class Cpu6502
         set_zero(value)
         @register[:A] = value
 
+      when 0xA1 # LDA indirectx
+        @pc += 2
+        value = @ram[indirect_x_address(oper1)]
+        set_sign(value)
+        set_zero(value)
+        @register[:A] = value
+
       when 0xEA # NOP
         @pc += 1
 
