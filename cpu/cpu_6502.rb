@@ -134,6 +134,17 @@ class Cpu6502
     0x4E => [ "LSR", :absolute,    3, 6 ],
     0x5E => [ "LSR", :absolutex,   3, 7 ],
 
+    0xEA => [ "NOP", :implied,     1, 2 ],
+
+    0x09 => [ "ORA", :immediate,   2, 2 ],
+    0x05 => [ "ORA", :immediate,   2, 3 ],
+    0x15 => [ "ORA", :immediate,   2, 4 ],
+    0x0D => [ "ORA", :immediate,   3, 4 ],
+    0x1D => [ "ORA", :immediate,   3, [4, 5] ],
+    0x19 => [ "ORA", :immediate,   3, [4, 5] ],
+    0x01 => [ "ORA", :immediate,   2, 6 ],
+    0x11 => [ "ORA", :immediate,   2, [5, 6] ],
+
     0x8A => [ "TXA", :implied,     1, 2 ],
 
     0x98 => [ "TYA", :implied,     1, 2 ],
