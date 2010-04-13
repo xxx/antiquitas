@@ -298,5 +298,49 @@ class Cpu6502LdaTest < Test::Unit::TestCase
       end
     end
 
+    context "indirecty mode" do
+      setup do
+        @cpu.register[:Y] = 0x04
+        @cpu.ram[0x16] = 0x24
+        @cpu.ram[0x17] = 0x51
+      end
+
+      should "load the accumulator with the correct value" do
+        @cpu.ram[0x5128] = 0x69
+        @cpu.runop(0xB1, 0x16)
+        assert_equal 0x69, @cpu.register[:A]
+      end
+
+      should "set the zero flag if the accumulator is zero" do
+        @cpu.ram[0x5128] = 0x00
+        @cpu.runop(0xB1, 0x16)
+        assert_equal 1, @cpu.flag[:Z]
+      end
+
+      should "clear the zero flag if the accumulator is not zero" do
+        @cpu.ram[0x5128] = 0x04
+        @cpu.runop(0xB1, 0x16)
+        assert_equal 0, @cpu.flag[:Z]
+      end
+
+      should "set the sign flag if bit 7 of the accumulator is set" do
+        @cpu.ram[0x5128] = 0xFF
+        @cpu.runop(0xB1, 0x16)
+        assert_equal 1, @cpu.flag[:S]
+      end
+
+      should "clear the sign flag if bit 7 of the accumulator is not set" do
+        @cpu.ram[0x5128] = 0x01
+        @cpu.runop(0xB1, 0x16)
+        assert_equal 0, @cpu.flag[:S]
+      end
+
+      should "increase the pc by the number of bytes for the op" do
+        pc = @cpu.pc
+        @cpu.runop(0xB1, 0x01)
+        assert_equal pc + 2, @cpu.pc
+      end
+    end
+
   end
 end
