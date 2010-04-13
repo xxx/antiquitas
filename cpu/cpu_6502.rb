@@ -102,6 +102,9 @@ class Cpu6502
 
     0xC8 => [ "INY", :implied,     1, 2 ],
 
+    0x4C => [ "JMP", :absolute,    3, 3 ],
+    0x6C => [ "JMP", :indirect,    3, 5 ],
+
     0x20 => [ "JSR", :absolute,    3, 6 ],
 
     0xA9 => [ "LDA", :immediate,   2, 2 ],
@@ -653,6 +656,24 @@ class Cpu6502
         @register[:Y] = (@register[:Y] + 1) & 0xFF
         set_sign(@register[:Y])
         set_zero(@register[:Y])
+
+      when 0x4C # JMP absolute
+        address = (oper1 << 8) | oper2
+        lo_byte = @ram[address]
+        hi_byte = (address & 0xFF == 0xFF) ? @ram[address - 0xFF] : @ram[address + 1]
+        @pc = (hi_byte << 8) | lo_byte
+
+      when 0x6C # JMP indirect
+        address = (oper1 << 8) | oper2
+        lo_byte = @ram[address]
+        hi_byte = @ram[address + 1]
+
+        new_address = (hi_byte << 8) | lo_byte
+        real_lo_byte = @ram[new_address]
+
+        real_hi_byte = (new_address & 0xFF == 0xFF) ? @ram[new_address - 0xFF] : @ram[new_address + 1]
+
+        @pc = (real_hi_byte << 8) | real_lo_byte
 
       when 0xEA # NOP
         @pc += 1
