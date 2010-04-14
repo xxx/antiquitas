@@ -156,6 +156,12 @@ class Cpu6502
 
     0x28 => [ "PLP", :implied,     1, 4 ],
 
+    0x2A => [ "ROL", :accumulator, 1, 2],
+    0x26 => [ "ROL", :zeropage,    2, 5],
+    0x36 => [ "ROL", :zeropagex,   2, 6],
+    0x2E => [ "ROL", :absolute,    3, 6],
+    0x3E => [ "ROL", :absolutex,   3, 7],
+
     0x8A => [ "TXA", :implied,     1, 2 ],
 
     0x98 => [ "TYA", :implied,     1, 2 ],
@@ -887,17 +893,44 @@ class Cpu6502
         @flag[:Z] = val & 0x02 == 0 ? 0 : 1
         @flag[:C] = val & 0x01 == 0 ? 0 : 1
 
+      when 0x2A # ROL accumulator
+        @pc += op[2]
+        carry = @flag[:C]
+        @flag[:C] = @register[:A] & 0x80 == 0x80 ? 1 : 0
+        @register[:A] = (@register[:A] << 1) & 0xFF
+        @register[:A] |= carry
+        set_sz(@register[:A])
+        
+      when 0x26 # ROL zeropage
+        @pc += op[2]
+        address = oper1
+        op_rol(address)
+
+      when 0x36 # ROL zeropagex
+        @pc += op[2]
+        address = oper1 + @register[:X]
+        address -= 0xFF while address > 0xFF
+        op_rol(address)
+
+      when 0x2E # ROL absolute
+        @pc += op[2]
+        address = (oper1 << 8) | oper2
+        op_rol(address)
+
+      when 0x3E # ROL absolutex
+        @pc += op[2]
+        address = ((oper1 << 8) | oper2) + @register[:X]
+        op_rol(address)
+
       when 0x8A #TXA
         @pc += op[2]
-        set_sign(@register[:X])
-        set_zero(@register[:X])
+        set_sz(@register[:X])
         @register[:A] = @register[:X]
 
       when 0x98 # TYA
         @pc += op[2]
         @register[:A] = @register[:Y]
-        set_sign(@register[:A])
-        set_zero(@register[:A])
+        set_sz(@register[:A])
 
     end
     #display_status
@@ -987,6 +1020,14 @@ class Cpu6502
     set_carry(@register[:A] >= @ram[address])
     result = (@register[:A] - @ram[address]) & 0xFF
     set_sz(result)
+  end
+
+  def op_rol(address)
+    carry = @flag[:C]
+    @flag[:C] = @ram[address] & 0x80 == 0x80 ? 1 : 0
+    @ram[address] = (@ram[address] << 1) & 0xFF
+    @ram[address] |= carry
+    set_sz(@ram[address])
   end
 
   def branch_pc(arg)
