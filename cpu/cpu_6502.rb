@@ -152,6 +152,8 @@ class Cpu6502
 
     0x08 => [ "PHP", :implied,     1, 3 ],
 
+    0x68 => [ "PLA", :implied,     1, 4 ],
+
     0x8A => [ "TXA", :implied,     1, 2 ],
 
     0x98 => [ "TYA", :implied,     1, 2 ],
@@ -867,6 +869,10 @@ class Cpu6502
           )
         push(value)
 
+      when 0x68 # PLA implied
+        @pc += 1
+        @register[:A] = pull
+        set_sz(@register[:A])
 
       when 0x8A #TXA
         @pc += op[2]
