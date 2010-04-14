@@ -170,6 +170,8 @@ class Cpu6502
 
     0x40 => [ "RTI", :implied,     1, 6],
 
+    0x60 => [ "RTS", :implied,     1, 6],
+
     0x8A => [ "TXA", :implied,     1, 2 ],
 
     0x98 => [ "TYA", :implied,     1, 2 ],
@@ -857,6 +859,11 @@ class Cpu6502
         lo = pull
         hi = pull
         @pc = (hi << 8) | lo
+
+      when 0x60 # RTS implied
+        lo = pull
+        hi = pull
+        @pc = ((hi << 8) | lo) + 1
       
       when 0x8A #TXA
         set_sz(@register[:X])
