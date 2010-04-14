@@ -654,8 +654,7 @@ class Cpu6502
         @pc = (real_hi_byte << 8) | real_lo_byte
 
       when 0x20 # JSR absolute
-#        @pc = @pc + 3 - 1 # we subtract 1 because the JSR docs say to
-        @pc -= 1 # we subtract 1 because the JSR docs say to
+        @pc = @pc + 3 - 1 # we subtract 1 because the JSR docs say to
 
         # push one byte at a time ont the stack
         push((@pc >> 8) & 0xFF)
@@ -958,15 +957,14 @@ class Cpu6502
       result = @register[:A] + @flag[:C] + arg
     end
 
-    set_sz(result)
 
     if @flag[:D] == 1
       set_carry(result > 99)
-      set_overflow(result > 99) # no idea what to do here.
       result -= 100 while result > 100
       @register[:A] = self.class.to_bcd[result]
     else
       set_carry(result > 255)
+      set_sz(result)
 
       if ( ~(@register[:A] ^ arg) & (@register[:A] ^ result) ) & 0x80 > 0
         set_overflow(1)
