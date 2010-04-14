@@ -7,20 +7,16 @@ class Cpu6502BmiTest < Test::Unit::TestCase
     end
     
     context "relative mode" do
+      setup do
+        @op = 0x30
+      end
+
       context "sign flag is set" do
         setup do
           @cpu.flag[:S] = 1
         end
 
-        should "increase or decrease the pc by the number of bytes for the op" do
-          pc = @cpu.pc
-          @cpu.runop(0x30, 0x20)
-          assert_equal pc + 0x20 + 2, @cpu.pc
-
-          pc = @cpu.pc
-          @cpu.runop(0x30, 0xE0)
-          assert_equal (pc - (~0xE0 & 0xFF)) + 2, @cpu.pc
-        end
+        should_branch_correctly
       end
 
       context "sign flag is clear" do
@@ -30,7 +26,7 @@ class Cpu6502BmiTest < Test::Unit::TestCase
 
         should "increase the pc by the number of bytes for the op" do
           pc = @cpu.pc
-          @cpu.runop(0x30, 0xA0)
+          @cpu.runop(@op, 0xA0)
           assert_equal pc + 2, @cpu.pc
         end
       end
