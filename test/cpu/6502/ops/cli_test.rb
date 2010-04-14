@@ -7,15 +7,19 @@ class Cpu6502CliTest < Test::Unit::TestCase
     end
     
     context "implied mode" do
+      setup do
+        @op = 0x58
+      end
+
       should "clear the interrupt-disable flag" do
         @cpu.flag[:I] = 1
-        @cpu.runop(0x58)
+        @cpu.runop(@op)
         assert_equal 0, @cpu.flag[:I]
       end
 
       should "increase the pc by the number of bytes for this op" do
         pc = @cpu.pc
-        @cpu.runop(0x58)
+        @cpu.runop(@op)
         assert_equal pc + 1, @cpu.pc
       end
     end
