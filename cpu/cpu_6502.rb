@@ -255,144 +255,116 @@ class Cpu6502
 
   def runop(opcode, oper1 = nil, oper2 = nil)
     op = opcodes[opcode]
+    @pc += op[2]
     case opcode
       when 0x69 # ADC immediate
-        @pc += op[2]
         op_adc(oper1)
 
       when 0x65 # ADC zeropage
-        @pc += op[2]
         op_adc(@ram[oper1])
       
       when 0x75 # ADC zeropagex
-        @pc += op[2]
         address = oper1 + @register[:X]
         address -= 0xFF while address > 0xFF 
 
         op_adc(@ram[address])
 
       when 0x6D # ADC absolute
-        @pc += op[2]
         op_adc(@ram[(oper1 << 8) | oper2])
 
       when 0x7D # ADC absolutex
-        @pc += op[2]
         op_adc(@ram[((oper1 << 8) | oper2) + @register[:X]])
 
       when 0x79 # ADC absolutey
-        @pc += op[2]
         op_adc(@ram[((oper1 << 8) | oper2) + @register[:Y]])
 
       when 0x61 # ADC indirectx
-        @pc += op[2]
         op_adc(@ram[indirect_x_address(oper1)])
 
       when 0x71 # ADC indirecty
-        @pc += op[2]
         op_adc(@ram[indirect_y_address(oper1)])
 
       when 0x29 # AND immediate
-        @pc += op[2]
         @register[:A] &= oper1
         set_sz(@register[:A])
 
       when 0x25 # AND zeropage
-        @pc += op[2]
         @register[:A] &= @ram[oper1]
         set_sz(@register[:A])
 
       when 0x35 # AND zeropagex
-        @pc += op[2]
         address = oper1 + @register[:X]
         address -= 0xFF while address > 0xFF
         @register[:A] &= @ram[address]
         set_sz(@register[:A])
 
       when 0x2D # AND absolute
-        @pc += op[2]
         @register[:A] &= @ram[(oper1 << 8) | oper2]
         set_sz(@register[:A])
 
       when 0x3D # AND absolutex
-        @pc += op[2]
         @register[:A] &= @ram[((oper1 << 8) | oper2) + @register[:X]]
         set_sz(@register[:A])
 
       when 0x39 # AND absolutey
-        @pc += op[2]
         @register[:A] &= @ram[((oper1 << 8) | oper2) + @register[:Y]]
         set_sz(@register[:A])
 
       when 0x21 # AND indirectx
-        @pc += op[2]
-
         @register[:A] &= @ram[indirect_x_address(oper1)]
         set_sz(@register[:A])
 
       when 0x31 # AND indirecty
-        @pc += op[2]
-
         @register[:A] &= @ram[indirect_y_address(oper1)]
         set_sz(@register[:A])
 
       when 0x0A # ASL accumulator
-        @pc += op[2]
         set_carry(@register[:A] & 0x80 == 0x80)
         @register[:A] <<= 1
         @register[:A] &= 0xFF
         set_sz(@register[:A])
 
       when 0x06 # ASL zeropage
-        @pc += op[2]
         op_asl(oper1)
 
       when 0x16 # ASL zeropagex
-        @pc += op[2]
         address = oper1 + @register[:X]
         op_asl(address)
 
       when 0x0E # ASL absolute
-        @pc += op[2]
         address = (oper1 << 8) | oper2
         op_asl(address)
 
       when 0x1E # ASL absolutex
-        @pc += op[2]
         address = ((oper1 << 8) | oper2) + @register[:X]
         op_asl(address)
 
       when 0x90 # BCC relative
-        @pc += op[2]
         if @flag[:C] == 0
           branch_pc(oper1)
         end
 
       when 0xB0 # BCS relative
-        @pc += op[2]
         if @flag[:C] == 1
           branch_pc(oper1)
         end
 
       when 0xF0 # BEQ relative
-        @pc += op[2]
         if @flag[:Z] == 1
           branch_pc(oper1)
         end
 
       when 0x30 # BMI relative
-        @pc += op[2]
         if @flag[:S] == 1
           branch_pc(oper1)
         end
 
       when 0xD0 # BNE relative
-        @pc += op[2]
         if (@flag[:Z] == 0)
           branch_pc(oper1)
         end
 
       when 0x10 # BPL relative
-        @pc += op[2]
         if @flag[:S] == 0
           branch_pc(oper1)
         end
@@ -400,7 +372,6 @@ class Cpu6502
       when 0x00 # BRK implied
         #puts "************** IN BREAK **************"
         #
-        @pc += op[2]
         push(@pc >> 8)
         push(@pc & 0x00FF)
         push(register[:SR])
@@ -408,239 +379,197 @@ class Cpu6502
         @pc = (@ram[0xFFFE] << 8) | @ram[0xFFFF]
       
       when 0x50 # BVC relative
-        @pc += op[2]
         if @flag[:V] == 0
           branch_pc(oper1)
         end
 
       when 0x70 # BVS relative
-        @pc += op[2]
         if @flag[:V] == 1
           branch_pc(oper1)
         end
 
       when 0x24 # BIT zeropage
-        @pc += op[2]
         set_zero(@register[:A] & @ram[oper1])
         set_sign(@ram[oper1])
         set_overflow(@ram[oper1] & 0x40 == 0x40 ? 1 : 0)
 
       when 0x2C # BIT absolute
-        @pc += op[2]
         address = (oper1 << 8) | oper2
         set_zero(@register[:A] & @ram[address])
         set_sign(@ram[address])
         set_overflow(@ram[address] & 0x40 == 0x40 ? 1 : 0)
 
       when 0x18 # CLC implied
-        @pc += op[2]
         @flag[:C] = 0
 
       when 0xD8 # CLD implied
-        @pc += op[2]
         @flag[:D] = 0
 
       when 0x58 # CLI implied
-        @pc += op[2]
         @flag[:I] = 0
 
       when 0xB8 # CLV implied
-        @pc += op[2]
         @flag[:V] = 0
 
       when 0XC9 # CMP immediate
-        @pc += op[2]
         set_carry(@register[:A] >= oper1)
         result = (@register[:A] - oper1) & 0xFF
         set_sz(result)
 
       when 0XC5 # CMP zeropage
-        @pc += op[2]
         address = oper1
         op_cmp(address)
 
       when 0XD5 # CMP zeropagex
-        @pc += op[2]
         address = oper1 + @register[:X]
         address -= 0xFF while address > 0xFF
         op_cmp(address)
 
       when 0XCD # CMP absolute
-        @pc += op[2]
         address = (oper1 << 8) | oper2
         op_cmp(address)
 
       when 0XDD # CMP absolutex
-        @pc += op[2]
         address = ((oper1 << 8) | oper2) + @register[:X]
         op_cmp(address)
 
       when 0XD9 # CMP absolutey
-        @pc += op[2]
         address = ((oper1 << 8) | oper2) + @register[:Y]
         op_cmp(address)
 
       when 0XC1 # CMP indirectx
-        @pc += op[2]
         address = indirect_x_address(oper1)
         op_cmp(address)
 
       when 0XD1 # CMP indirecty
-        @pc += op[2]
         address = indirect_y_address(oper1)
         op_cmp(address)
 
       when 0xE0 # CPX immediate
-        @pc += op[2]
         tmp = @register[:X] - oper1
         set_carry(@register[:X] >= oper1) #was < 0x100
         set_sz(tmp)
 
       when 0xE4 # CPX zeropage
-        @pc += op[2]
         tmp = @register[:X] - @ram[oper1]
         set_carry(@register[:X] >= @ram[oper1])
         set_sz(tmp)
 
       when 0xEC # CPX absolute
-        @pc += op[2]
         address = (oper1 << 8) | oper2
         tmp = @register[:X] - @ram[address]
         set_carry(@register[:X] >= @ram[address])
         set_sz(tmp)
 
       when 0xC0 # CPY immediate
-        @pc += op[2]
         tmp = @register[:Y] - oper1
         set_carry(@register[:Y] >= oper1) #was < 0x100
         set_sz(tmp)
 
       when 0xC4 # CPY zeropage
-        @pc += op[2]
         tmp = @register[:Y] - @ram[oper1]
         set_carry(@register[:Y] >= @ram[oper1])
         set_sz(tmp)
 
       when 0xCC # CPY absolute
-        @pc += op[2]
         address = (oper1 << 8) | oper2
         tmp = @register[:Y] - @ram[address]
         set_carry(@register[:Y] >= @ram[address])
         set_sz(tmp)
 
       when 0xC6 # DEC zeropage
-        @pc += op[2]
         @ram[oper1] -= 0x01
         set_sz(@ram[oper1])
 
       when 0xD6 # DEC zeropagex
-        @pc += op[2]
         address = (oper1 + @register[:X])
         address -= 0xFF while address > 0xFF
         @ram[address] -= 0x01
         set_sz(@ram[address])
 
       when 0xCE # DEC absolute
-        @pc += op[2]
         address = (oper1 << 8) | oper2
         @ram[address] -= 0x01
         set_sz(@ram[address])
 
       when 0xDE # DEC absolutex
-        @pc += op[2]
         address = ((oper1 << 8) | oper2) + @register[:X]
         @ram[address] -= 0x01
         set_sz(@ram[address])
 
       when 0xCA # DEX implied
-        @pc += op[2]
         @register[:X] = (@register[:X] - 1) & 0xFF
         set_sz(@register[:X])
 
       when 0x88 # DEY implied
-        @pc += op[2]
         @register[:Y] = (@register[:Y] - 1) & 0xFF
         set_sz(@register[:Y])
 
       when 0x49 # EOR immediate
-        @pc += op[2]
         @register[:A] = (@register[:A] ^ oper1) & 0xFF
         set_sz(@register[:A])
 
       when 0x45 # EOR zeropage
-        @pc += op[2]
         @register[:A] = (@register[:A] ^ @ram[oper1]) & 0xFF
         set_sz(@register[:A])
 
       when 0x55 # EOR zeropagex
-        @pc += op[2]
         address = oper1 + @register[:X]
         address -= 0xFF while address > 0xFF
         @register[:A] = (@register[:A] ^ @ram[address]) & 0xFF
         set_sz(@register[:A])
 
       when 0x4D # EOR absolute
-        @pc += op[2]
         address = (oper1 << 8) | oper2
         @register[:A] = (@register[:A] ^ @ram[address]) & 0xFF
         set_sz(@register[:A])
 
       when 0x5D # EOR absolutex
-        @pc += op[2]
         address = ((oper1 << 8) | oper2) + @register[:X]
         @register[:A] = (@register[:A] ^ @ram[address]) & 0xFF
         set_sz(@register[:A])
 
       when 0x59 # EOR absolutey
-        @pc += op[2]
         address = ((oper1 << 8) | oper2) + @register[:Y]
         @register[:A] = (@register[:A] ^ @ram[address]) & 0xFF
         set_sz(@register[:A])
 
       when 0x41 # EOR indirectx
-        @pc += op[2]
         address = indirect_x_address(oper1)
         @register[:A] = (@register[:A] ^ @ram[address]) & 0xFF
         set_sz(@register[:A])
 
       when 0x51 # EOR indirecty
-        @pc += op[2]
         address = indirect_y_address(oper1)
         @register[:A] = (@register[:A] ^ @ram[address]) & 0xFF
         set_sz(@register[:A])
 
       when 0xE6 # INC zeropage
-        @pc += op[2]
         address = oper1
         @ram[address] = (@ram[address] + 1) & 0xFF
         set_sz(@ram[address])
 
       when 0xF6 # INC zeropagex
-        @pc += op[2]
         address = oper1 + @register[:X]
         address -= 0xFF while address > 0xFF
         @ram[address] = (@ram[address] + 1) & 0xFF
         set_sz(@ram[address])
 
       when 0xEE # INC absolute
-        @pc += op[2]
         address = (oper1 << 8) | oper2
         @ram[address] = (@ram[address] + 1) & 0xFF
         set_sz(@ram[address])
 
       when 0xFE # INC absolutex
-        @pc += op[2]
         address = ((oper1 << 8) | oper2) + register[:X]
         @ram[address] = (@ram[address] + 1) & 0xFF
         set_sz(@ram[address])
 
       when 0xE8 # INX implied
-        @pc += op[2]
         @register[:X] = (@register[:X] + 1) & 0xFF
         set_sz(register[:X])
 
       when 0xC8 # INY implied
-        @pc += op[2]
         @register[:Y] = (@register[:Y] + 1) & 0xFF
         set_sz(@register[:Y])
 
@@ -666,9 +595,9 @@ class Cpu6502
         @pc = (real_hi_byte << 8) | real_lo_byte
 
       when 0x20 # JSR absolute
-        @pc = @pc + 3 - 1 # we subtract 1 because the JSR docs say to
+        @pc -= 1 # we subtract 1 because the JSR docs say to
 
-        # push one byte at a time ont the stack
+        # push one byte at a time onto the stack
         push((@pc >> 8) & 0xFF)
         push(@pc & 0xFF)
 
@@ -682,18 +611,15 @@ class Cpu6502
 #        @pc += 1
       
       when 0xA9 # LDA immediate
-        @pc += op[2]
         @register[:A] = oper1
         set_sz(oper1)
 
       when 0xA5 # LDA zeropage
-        @pc += op[2]
         value = @ram[oper1]
         @register[:A] = value
         set_sz(value)
 
       when 0xB5 # LDA zeropagex
-        @pc += op[2]
         address = oper1 + @register[:X]
         address -= 0xFF while address > 0xFF
         value = @ram[address]
@@ -701,105 +627,87 @@ class Cpu6502
         set_sz(value)
 
       when 0xAD # LDA absolute
-        @pc += op[2]
         value = @ram[(oper1 << 8) | oper2]
         @register[:A] = value
         set_sz(value)
 
       when 0xBD # LDA absolutex
-        @pc += op[2]
         address = ((oper1 << 8) | oper2) + @register[:X]
         value = @ram[address]
         @register[:A] = value
         set_sz(value)
 
       when 0xB9 # LDA absolutey
-        @pc += op[2]
         address = ((oper1 << 8) | oper2) + @register[:Y]
         value = @ram[address]
         @register[:A] = value
         set_sz(value)
 
       when 0xA1 # LDA indirectx
-        @pc += op[2]
         value = @ram[indirect_x_address(oper1)]
         @register[:A] = value
         set_sz(value)
 
       when 0xB1 # LDA indirecty
-        @pc += op[2]
         value = @ram[indirect_y_address(oper1)]
         @register[:A] = value
         set_sz(value)
 
       when 0xA2 # LDX immediate
-        @pc += op[2]
         @register[:X] = oper1
         set_sz(@register[:X])
       
       when 0xA6 # LDX zeropage
-        @pc += op[2]
         @register[:X] = @ram[oper1]
         set_sz(@register[:X])
 
       when 0xB6 # LDX zeropagey
-        @pc += op[2]
         address = oper1 + register[:Y]
         address -= 0xFF while address > 0xFF
         @register[:X] = @ram[address]
         set_sz(@register[:X])
 
       when 0xAE # LDX absolute
-        @pc += op[2]
         @register[:X] = @ram[(oper1 << 8) | oper2]
         set_sz(@register[:X])
 
       when 0xBE # LDX absolutey
-        @pc += op[2]
         @register[:X] = @ram[((oper1 << 8) | oper2) + @register[:Y]]
         set_sz(@register[:X])
 
       when 0xA0 # LDY immediate
-        @pc += op[2]
         @register[:Y] = oper1
         set_sz(@register[:Y])
 
       when 0xA4 # LDY zeropage
-        @pc += op[2]
         @register[:Y] = @ram[oper1]
         set_sz(@register[:Y])
 
       when 0xB4 # LDY zeropagex
-        @pc += op[2]
         address = oper1 + register[:X]
         address -= 0xFF while address > 0xFF
         @register[:Y] = @ram[address]
         set_sz(@register[:Y])
 
       when 0xAC # LDY absolute
-        @pc += op[2]
         @register[:Y] = @ram[(oper1 << 8) | oper2]
         set_sz(@register[:Y])
 
       when 0xBC # LDY absolutex
-        @pc += op[2]
         @register[:Y] = @ram[((oper1 << 8) | oper2) + @register[:X]]
         set_sz(@register[:Y])
 
       when 0x4A # LSR accumulator
-        @pc += op[2]
         @flag[:C] = @register[:A] & 0x01 == 0x01 ? 1 : 0
         @register[:A] >>= 1
         set_zero(@register[:A])
       
       when 0x46 # LSR zeropage
-        @pc += op[2]
         @flag[:C] = @ram[oper1] & 0x01 == 0x01 ? 1 : 0
         @ram[oper1] >>= 1
         set_zero(@ram[oper1])
 
       when 0x56 # LSR zeropagex
-        @pc += op[2]
         address = oper1 + @register[:X]
         address -= 0xFF while address > 0xFF
         @flag[:C] = @ram[address] & 0x01 == 0x01 ? 1 : 0
@@ -807,70 +715,57 @@ class Cpu6502
         set_zero(@ram[address])
 
       when 0x4E # LSR absolute
-        @pc += op[2]
         address = (oper1 << 8) | oper2
         @flag[:C] = @ram[address] & 0x01 == 0x01 ? 1 : 0
         @ram[address] >>= 1
         set_zero(@ram[address])
 
       when 0x5E # LSR absolutex
-        @pc += op[2]
         address = ((oper1 << 8) | oper2) + @register[:X]
         @flag[:C] = @ram[address] & 0x01 == 0x01 ? 1 : 0
         @ram[address] >>= 1
         set_zero(@ram[address])
 
       when 0xEA # NOP
-        @pc += op[2]
 
       when 0x09 # ORA immediate
-        @pc += op[2]
         @register[:A] |= oper1
         set_sz(@register[:A])
 
       when 0x05 # ORA zeropage
-        @pc += op[2]
         @register[:A] |= @ram[oper1]
         set_sz(@register[:A])
 
       when 0x15 # ORA zeropagex
-        @pc += op[2]
         address = oper1 + @register[:X]
         address -= 0xFF while address > 0xFF
         @register[:A] |= @ram[address]
         set_sz(@register[:A])
 
       when 0x0D # ORA absolute
-        @pc += op[2]
         @register[:A] |= @ram[(oper1 << 8) | oper2]
         set_sz(@register[:A])
 
       when 0x1D # ORA absolutex
-        @pc += op[2]
         @register[:A] |= @ram[((oper1 << 8) | oper2) + @register[:X]]
         set_sz(@register[:A])
 
       when 0x19 # ORA absolutey
-        @pc += op[2]
         @register[:A] |= @ram[((oper1 << 8) | oper2) + @register[:Y]]
         set_sz(@register[:A])
 
       when 0x01 # ORA indirectx
-        @pc += op[2]
         @register[:A] |= @ram[indirect_x_address(oper1)]
         set_sz(@register[:A])
 
       when 0x11 # ORA indirecty
-        @pc += op[2]
         @register[:A] |= @ram[indirect_y_address(oper1)]
         set_sz(@register[:A])
 
       when 0x48 # PHA implied
-        @pc += op[2]
         push(@register[:A])
 
       when 0x08 # PHP implied
-        @pc += op[2]
         value = (
             (@flag[:S] << 7) |
             (@flag[:V] << 6) |
@@ -883,12 +778,10 @@ class Cpu6502
         push(value)
 
       when 0x68 # PLA implied
-        @pc += op[2]
         @register[:A] = pull
         set_sz(@register[:A])
 
       when 0x28 # PLP implied
-        @pc += op[2]
         val = pull
         @flag[:S] = val & 0x80 == 0 ? 0 : 1
         @flag[:V] = val & 0x40 == 0 ? 0 : 1
@@ -900,7 +793,6 @@ class Cpu6502
         @flag[:C] = val & 0x01 == 0 ? 0 : 1
 
       when 0x2A # ROL accumulator
-        @pc += op[2]
         carry = @flag[:C]
         @flag[:C] = @register[:A] & 0x80 == 0x80 ? 1 : 0
         @register[:A] = (@register[:A] << 1) & 0xFF
@@ -908,28 +800,23 @@ class Cpu6502
         set_sz(@register[:A])
         
       when 0x26 # ROL zeropage
-        @pc += op[2]
         address = oper1
         op_rol(address)
 
       when 0x36 # ROL zeropagex
-        @pc += op[2]
         address = oper1 + @register[:X]
         address -= 0xFF while address > 0xFF
         op_rol(address)
 
       when 0x2E # ROL absolute
-        @pc += op[2]
         address = (oper1 << 8) | oper2
         op_rol(address)
 
       when 0x3E # ROL absolutex
-        @pc += op[2]
         address = ((oper1 << 8) | oper2) + @register[:X]
         op_rol(address)
 
       when 0x6A # ROR accumulator
-        @pc += op[2]
         carry = @flag[:C]
         @flag[:C] = @register[:A] & 0x01 == 0x01 ? 1 : 0
         @register[:A] = (@register[:A] >> 1) & 0xFF
@@ -937,33 +824,27 @@ class Cpu6502
         set_sz(@register[:A])
 
       when 0x66 # ROR zeropage
-        @pc += op[2]
         address = oper1
         op_ror(address)
 
       when 0x76 # ROR zeropagex
-        @pc += op[2]
         address = oper1 + @register[:X]
         address -= 0xFF while address > 0xFF
         op_ror(address)
 
       when 0x6E # ROR absolute
-        @pc += op[2]
         address = (oper1 << 8) | oper2
         op_ror(address)
 
       when 0x7E # ROR absolutex
-        @pc += op[2]
         address = ((oper1 << 8) | oper2) + @register[:X]
         op_ror(address)
 
       when 0x8A #TXA
-        @pc += op[2]
         set_sz(@register[:X])
         @register[:A] = @register[:X]
 
       when 0x98 # TYA
-        @pc += op[2]
         @register[:A] = @register[:Y]
         set_sz(@register[:A])
 
