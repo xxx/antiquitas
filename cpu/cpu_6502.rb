@@ -150,6 +150,8 @@ class Cpu6502
 
     0x48 => [ "PHA", :implied,     1, 3 ],
 
+    0x08 => [ "PHP", :implied,     1, 3 ],
+
     0x8A => [ "TXA", :implied,     1, 2 ],
 
     0x98 => [ "TYA", :implied,     1, 2 ],
@@ -852,6 +854,18 @@ class Cpu6502
         @pc += 1
         push(@register[:A])
 
+      when 0x08 # PHP implied
+        @pc += 1
+        value = (
+            (@flag[:S] << 7) |
+            (@flag[:V] << 6) |
+            (@flag[:B] << 4) |
+            (@flag[:D] << 3) |
+            (@flag[:I] << 2) |
+            (@flag[:Z] << 1) |
+            (@flag[:C])
+          )
+        push(value)
 
 
       when 0x8A #TXA
