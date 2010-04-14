@@ -47,7 +47,7 @@ class Cpu6502
 
     0x10 => [ "BPL", :relative,    2, [2, 3, 4] ],
 
-    0x00 => [ "BRK", :implied,     1, 7 ],
+    0x00 => [ "BRK", :implied,     2, 7 ],
     
     0x50 => [ "BVC", :relative,    2, [2, 3, 4] ],
 
@@ -376,11 +376,12 @@ class Cpu6502
       when 0x00 # BRK implied
         #puts "************** IN BREAK **************"
         #
-        push(@pc >> 8)
-        push(@pc & 0x00FF)
-        push(register[:SR])
         @flag[:B] = 1
-        @pc = (@ram[0xFFFE] << 8) | @ram[0xFFFF]
+        push(@pc >> 8)
+        push(@pc & 0xFF)
+        push(packed_flags)
+        @flag[:I] = 1
+        @pc = (@ram[0xFFFF] << 8) | @ram[0xFFFE]
       
       when 0x50 # BVC relative
         if @flag[:V] == 0
@@ -770,16 +771,7 @@ class Cpu6502
         push(@register[:A])
 
       when 0x08 # PHP implied
-        value = (
-            (@flag[:S] << 7) |
-            (@flag[:V] << 6) |
-            (@flag[:B] << 4) |
-            (@flag[:D] << 3) |
-            (@flag[:I] << 2) |
-            (@flag[:Z] << 1) |
-            (@flag[:C])
-          )
-        push(value)
+        push(packed_flags)
 
       when 0x68 # PLA implied
         @register[:A] = pull
@@ -991,6 +983,16 @@ class Cpu6502
   def set_sz(arg)
     set_sign(arg)
     set_zero(arg)
+  end
+
+  def packed_flags
+    (@flag[:S] << 7) |
+    (@flag[:V] << 6) |
+    (@flag[:B] << 4) |
+    (@flag[:D] << 3) |
+    (@flag[:I] << 2) |
+    (@flag[:Z] << 1) |
+    (@flag[:C])
   end
 end
 
