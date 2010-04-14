@@ -168,6 +168,8 @@ class Cpu6502
     0x6E => [ "ROR", :absolute,    3, 6],
     0x7E => [ "ROR", :absolutex,   3, 7],
 
+    0x40 => [ "RTI", :implied,     1, 6],
+
     0x8A => [ "TXA", :implied,     1, 2 ],
 
     0x98 => [ "TYA", :implied,     1, 2 ],
@@ -840,6 +842,22 @@ class Cpu6502
         address = ((oper1 << 8) | oper2) + @register[:X]
         op_ror(address)
 
+      when 0x40 # RTI implied
+        status = pull
+        # flag bits 7 to 0 are: S V - B D I Z C
+
+        # break flag is ignored per documentation
+        @flag[:C] = status & 0x01 == 0x01 ? 1 : 0
+        @flag[:Z] = status & 0x02 == 0x02 ? 1 : 0
+        @flag[:I] = status & 0x04 == 0x04 ? 1 : 0
+        @flag[:D] = status & 0x08 == 0x08 ? 1 : 0
+        @flag[:V] = status & 0x40 == 0x40 ? 1 : 0
+        @flag[:S] = status & 0x80 == 0x80 ? 1 : 0
+
+        lo = pull
+        hi = pull
+        @pc = (hi << 8) | lo
+      
       when 0x8A #TXA
         set_sz(@register[:X])
         @register[:A] = @register[:X]
