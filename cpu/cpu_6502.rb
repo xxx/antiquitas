@@ -154,6 +154,8 @@ class Cpu6502
 
     0x68 => [ "PLA", :implied,     1, 4 ],
 
+    0x28 => [ "PLP", :implied,     1, 4 ],
+
     0x8A => [ "TXA", :implied,     1, 2 ],
 
     0x98 => [ "TYA", :implied,     1, 2 ],
@@ -853,11 +855,11 @@ class Cpu6502
         set_sz(@register[:A])
 
       when 0x48 # PHA implied
-        @pc += 1
+        @pc += op[2]
         push(@register[:A])
 
       when 0x08 # PHP implied
-        @pc += 1
+        @pc += op[2]
         value = (
             (@flag[:S] << 7) |
             (@flag[:V] << 6) |
@@ -870,9 +872,21 @@ class Cpu6502
         push(value)
 
       when 0x68 # PLA implied
-        @pc += 1
+        @pc += op[2]
         @register[:A] = pull
         set_sz(@register[:A])
+
+      when 0x28 # PLP implied
+        @pc += op[2]
+        val = pull
+        @flag[:S] = val & 0x80 == 0 ? 0 : 1
+        @flag[:V] = val & 0x40 == 0 ? 0 : 1
+        # no flag at 0x20
+        @flag[:B] = val & 0x10 == 0 ? 0 : 1
+        @flag[:D] = val & 0x08 == 0 ? 0 : 1
+        @flag[:I] = val & 0x04 == 0 ? 0 : 1
+        @flag[:Z] = val & 0x02 == 0 ? 0 : 1
+        @flag[:C] = val & 0x01 == 0 ? 0 : 1
 
       when 0x8A #TXA
         @pc += op[2]
