@@ -973,9 +973,9 @@ class Cpu6502
 
   def branch_pc(arg)
     if (arg > 0x7F)
-      @pc -= ~arg & 0x00FF
+      @pc -= ~arg & 0xFF
     else
-      @pc += arg & 0x00FF
+      @pc += arg & 0xFF
     end
   end
 
