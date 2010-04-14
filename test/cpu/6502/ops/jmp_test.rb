@@ -7,10 +7,14 @@ class Cpu6502JmpTest < Test::Unit::TestCase
     end
 
     context "absolute mode" do
+      setup do
+        @op = 0x4C
+      end
+
       should "use the passed-in address as the lsb of the address to jump to" do
         @cpu.ram[0x6960] = 0x20
         @cpu.ram[0x6961] = 0x4A
-        @cpu.runop(0x4C, 0x69, 0x60)
+        @cpu.runop(@op, 0x69, 0x60)
         assert_equal (0x4A << 8) | 0x20, @cpu.pc
       end
 
@@ -18,12 +22,16 @@ class Cpu6502JmpTest < Test::Unit::TestCase
         @cpu.ram[0x23FF] = 0x20
         @cpu.ram[0x2400] = 0x01 # would be correct except for the bug
         @cpu.ram[0x2300] = 0x77 # bugged, but is what we want
-        @cpu.runop(0x4C, 0x23, 0xFF)
+        @cpu.runop(@op, 0x23, 0xFF)
         assert_equal (0x77 << 8) | 0x20, @cpu.pc
       end
     end
 
     context "indirect mode" do
+      setup do
+        @op = 0x6C
+      end
+
       should "use the passed-in address as the lsb of the that holds the lsb of the REAL address we will eventually make it to" do
         @cpu.ram[0x6960] = 0x20
         @cpu.ram[0x6961] = 0x4A
@@ -31,7 +39,7 @@ class Cpu6502JmpTest < Test::Unit::TestCase
         @cpu.ram[0x4A20] = 0x3D
         @cpu.ram[0x4A21] = 0x67
 
-        @cpu.runop(0x6C, 0x69, 0x60)
+        @cpu.runop(@op, 0x69, 0x60)
         assert_equal (0x67 << 8) | 0x3D, @cpu.pc
       end
 
@@ -43,7 +51,7 @@ class Cpu6502JmpTest < Test::Unit::TestCase
         @cpu.ram[0x1100] = 0x01 # would be correct except for the bug
         @cpu.ram[0x1000] = 0x77 # bugged, but is what we want
 
-        @cpu.runop(0x6C, 0x23, 0x05)
+        @cpu.runop(@op, 0x23, 0x05)
         assert_equal (0x77 << 8) | 0x20, @cpu.pc
       end
     end
