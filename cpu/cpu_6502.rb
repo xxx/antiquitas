@@ -206,6 +206,10 @@ class Cpu6502
   ]
 
   def initialize
+    reset
+  end
+
+  def reset
     @debug = false
     @imagesize = 0
     @pc = 0
@@ -213,6 +217,7 @@ class Cpu6502
     @ram = Array.new(65536, 0)
     @register = { :A => 0, :X => 0, :Y => 0, :SP => 0xFF, :SR => 0 }
     # unused flag is always 1, according to the bug lists
+    # real bits 7 to 1 are: S V - B D I Z C
     @flag = { :S => 0, :V => 0, :B => 0, :D => 0, :I => 0, :Z => 0, :C => 0, :U => 1 }
     @operand = Array.new(2)
   end
@@ -772,7 +777,8 @@ class Cpu6502
         push(@register[:A])
 
       when 0x08 # PHP implied
-        push(packed_flags)
+        # break flag is always set to 1 per bug list
+        push(packed_flags | 0x10)
 
       when 0x68 # PLA implied
         @register[:A] = pull
