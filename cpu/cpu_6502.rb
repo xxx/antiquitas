@@ -162,6 +162,12 @@ class Cpu6502
     0x2E => [ "ROL", :absolute,    3, 6],
     0x3E => [ "ROL", :absolutex,   3, 7],
 
+    0x6A => [ "ROR", :accumulator, 1, 2],
+    0x66 => [ "ROR", :zeropage,    2, 5],
+    0x76 => [ "ROR", :zeropagex,   2, 6],
+    0x6E => [ "ROR", :absolute,    3, 6],
+    0x7E => [ "ROR", :absolutex,   3, 7],
+
     0x8A => [ "TXA", :implied,     1, 2 ],
 
     0x98 => [ "TYA", :implied,     1, 2 ],
@@ -922,6 +928,35 @@ class Cpu6502
         address = ((oper1 << 8) | oper2) + @register[:X]
         op_rol(address)
 
+      when 0x6A # ROR accumulator
+        @pc += op[2]
+        carry = @flag[:C]
+        @flag[:C] = @register[:A] & 0x01 == 0x01 ? 1 : 0
+        @register[:A] = (@register[:A] >> 1) & 0xFF
+        @register[:A] |= (carry << 7)
+        set_sz(@register[:A])
+
+      when 0x66 # ROR zeropage
+        @pc += op[2]
+        address = oper1
+        op_ror(address)
+
+      when 0x76 # ROR zeropagex
+        @pc += op[2]
+        address = oper1 + @register[:X]
+        address -= 0xFF while address > 0xFF
+        op_ror(address)
+
+      when 0x6E # ROR absolute
+        @pc += op[2]
+        address = (oper1 << 8) | oper2
+        op_ror(address)
+
+      when 0x7E # ROR absolutex
+        @pc += op[2]
+        address = ((oper1 << 8) | oper2) + @register[:X]
+        op_ror(address)
+
       when 0x8A #TXA
         @pc += op[2]
         set_sz(@register[:X])
@@ -1027,6 +1062,14 @@ class Cpu6502
     @flag[:C] = @ram[address] & 0x80 == 0x80 ? 1 : 0
     @ram[address] = (@ram[address] << 1) & 0xFF
     @ram[address] |= carry
+    set_sz(@ram[address])
+  end
+
+  def op_ror(address)
+    carry = @flag[:C]
+    @flag[:C] = @ram[address] & 0x01 == 0x01 ? 1 : 0
+    @ram[address] = (@ram[address] >> 1) & 0xFF
+    @ram[address] |= (carry << 7)
     set_sz(@ram[address])
   end
 
