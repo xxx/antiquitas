@@ -1,0 +1,422 @@
+require File.join(File.dirname(__FILE__), '..', '..', '..', 'test_helper')
+
+class Cpu6502OraTest < Test::Unit::TestCase
+  context "ORA" do
+    setup do
+      @cpu = Cpu6502.new
+    end
+    
+    context "immediate mode" do
+      setup do
+        @op = 0x09
+      end
+
+      should "do a bitwise OR of the accumulator and the passed arg, storing the result in the accumulator" do
+        @cpu.register[:A] = 0x69
+        @cpu.runop(@op, 0x22)
+        assert_equal 0x69 | 0x22, @cpu.register[:A]
+      end
+
+      should "set the zero flag if the resulting accumulator is 0" do
+        @cpu.register[:A] = 0x00
+        @cpu.runop(@op, 0x00)
+        assert_equal 1, @cpu.flag[:Z]
+      end
+
+      should "not set the zero flag if the resulting accumulator is not 0" do
+        @cpu.register[:A] = 0x07
+        @cpu.runop(@op, 0x04)
+        assert_equal 0, @cpu.flag[:Z]
+      end
+
+      should "set the sign flag if bit 7 of the resulting accumulator is set" do
+        @cpu.register[:A] = 0x80
+        @cpu.runop(@op, 0x80)
+        assert_equal 1, @cpu.flag[:S]
+      end
+
+      should "not set the sign flag if bit 7 of the resulting accumulator is set" do
+        @cpu.register[:A] = 0x20
+        @cpu.runop(@op, 0x05)
+        assert_equal 0, @cpu.flag[:S]
+      end
+
+      should "increase the pc by the correct number of bytes" do
+        pc = @cpu.pc
+        @cpu.runop(@op, 0x48)
+        assert_equal pc + 2, @cpu.pc
+      end
+    end
+
+    context "zeropage mode" do
+      setup do
+        @op = 0x05
+      end
+
+      should "do a bitwise OR of the accumulator and the value at the memory location of the passed arg, storing the result in the accumulator" do
+        @cpu.register[:A] = 0x69
+        @cpu.ram[0x22] = 0x12
+        @cpu.runop(@op, 0x22)
+        assert_equal 0x69 | 0x12, @cpu.register[:A]
+      end
+
+      should "set the zero flag if the resulting accumulator is 0" do
+        @cpu.register[:A] = 0x00
+        @cpu.ram[0x22] = 0x00
+        @cpu.runop(@op, 0x22)
+        assert_equal 1, @cpu.flag[:Z]
+      end
+
+      should "not set the zero flag if the resulting accumulator is not 0" do
+        @cpu.register[:A] = 0x07
+        @cpu.ram[0x22] = 0x04
+        @cpu.runop(@op, 0x22)
+        assert_equal 0, @cpu.flag[:Z]
+      end
+
+      should "set the sign flag if bit 7 of the resulting accumulator is set" do
+        @cpu.register[:A] = 0x80
+        @cpu.ram[0x22] = 0x80
+        @cpu.runop(@op, 0x22)
+        assert_equal 1, @cpu.flag[:S]
+      end
+
+      should "not set the sign flag if bit 7 of the resulting accumulator is set" do
+        @cpu.register[:A] = 0x20
+        @cpu.ram[0x22] = 0x05
+        @cpu.runop(@op, 0x22)
+        assert_equal 0, @cpu.flag[:S]
+      end
+
+      should "increase the pc by the correct number of bytes" do
+        pc = @cpu.pc
+        @cpu.runop(@op, 0x48)
+        assert_equal pc + 2, @cpu.pc
+      end
+    end
+
+    context "zeropagex mode" do
+      setup do
+        @op = 0x15
+        @cpu.register[:X] = 0x04
+      end
+
+      should "do a bitwise OR of the accumulator and the value at the memory location of the passed arg, storing the result in the accumulator" do
+        @cpu.register[:A] = 0x69
+        @cpu.ram[0x22] = 0x12
+        @cpu.runop(@op, 0x1E)
+        assert_equal 0x69 | 0x12, @cpu.register[:A]
+      end
+
+      should "set the zero flag if the resulting accumulator is 0" do
+        @cpu.register[:A] = 0x00
+        @cpu.ram[0x22] = 0x00
+        @cpu.runop(@op, 0x1E)
+        assert_equal 1, @cpu.flag[:Z]
+      end
+
+      should "not set the zero flag if the resulting accumulator is not 0" do
+        @cpu.register[:A] = 0x07
+        @cpu.ram[0x22] = 0x04
+        @cpu.runop(@op, 0x1E)
+        assert_equal 0, @cpu.flag[:Z]
+      end
+
+      should "set the sign flag if bit 7 of the resulting accumulator is set" do
+        @cpu.register[:A] = 0x80
+        @cpu.ram[0x22] = 0x80
+        @cpu.runop(@op, 0x1E)
+        assert_equal 1, @cpu.flag[:S]
+      end
+
+      should "not set the sign flag if bit 7 of the resulting accumulator is set" do
+        @cpu.register[:A] = 0x20
+        @cpu.ram[0x22] = 0x05
+        @cpu.runop(@op, 0x1E)
+        assert_equal 0, @cpu.flag[:S]
+      end
+
+      should "correct any overflow in the resulting address to stay on the zero page" do
+        @cpu.register[:A] = 0x10
+        @cpu.register[:X] = 0xFF
+        @cpu.ram[0xFE] = 0x33
+        @cpu.runop(@op, 0xFE)
+        assert_equal 0x10 | 0x33, @cpu.register[:A]
+      end
+
+      should "increase the pc by the correct number of bytes" do
+        pc = @cpu.pc
+        @cpu.runop(@op, 0x1E)
+        assert_equal pc + 2, @cpu.pc
+      end
+    end
+
+    context "absolute mode" do
+      setup do
+        @op = 0x0D
+      end
+
+      should "do a bitwise OR of the accumulator and the value at the memory location of the passed args, storing the result in the accumulator" do
+        @cpu.register[:A] = 0x69
+        @cpu.ram[0x22FC] = 0x12
+        @cpu.runop(@op, 0x22, 0xFC)
+        assert_equal 0x69 | 0x12, @cpu.register[:A]
+      end
+
+      should "set the zero flag if the resulting accumulator is 0" do
+        @cpu.register[:A] = 0x00
+        @cpu.ram[0x22FC] = 0x00
+        @cpu.runop(@op, 0x22, 0xFC)
+        assert_equal 1, @cpu.flag[:Z]
+      end
+
+      should "not set the zero flag if the resulting accumulator is not 0" do
+        @cpu.register[:A] = 0x07
+        @cpu.ram[0x22FC] = 0x04
+        @cpu.runop(@op, 0x22, 0xFC)
+        assert_equal 0, @cpu.flag[:Z]
+      end
+
+      should "set the sign flag if bit 7 of the resulting accumulator is set" do
+        @cpu.register[:A] = 0x80
+        @cpu.ram[0x22FC] = 0x80
+        @cpu.runop(@op, 0x22, 0xFC)
+        assert_equal 1, @cpu.flag[:S]
+      end
+
+      should "not set the sign flag if bit 7 of the resulting accumulator is set" do
+        @cpu.register[:A] = 0x20
+        @cpu.ram[0x22FC] = 0x05
+        @cpu.runop(@op, 0x22, 0xFC)
+        assert_equal 0, @cpu.flag[:S]
+      end
+
+      should "increase the pc by the correct number of bytes" do
+        pc = @cpu.pc
+        @cpu.runop(@op, 0x22, 0xFC)
+        assert_equal pc + 3, @cpu.pc
+      end
+    end
+
+    context "absolutex mode" do
+      setup do
+        @op = 0x1D
+        @cpu.register[:X] = 0x04
+      end
+
+      should "add the value in the X register to the value at the memory location specified by the arguments and do a bitwise OR with the accumulator, storing the result in the accumulator" do
+        @cpu.register[:A] = 0x69
+        @cpu.ram[0x22FC] = 0x12
+        @cpu.runop(@op, 0x22, 0xF8)
+        assert_equal 0x69 | 0x12, @cpu.register[:A]
+      end
+
+      should "set the zero flag if the resulting accumulator is 0" do
+        @cpu.register[:A] = 0x00
+        @cpu.ram[0x22FC] = 0x00
+        @cpu.runop(@op, 0x22, 0xF8)
+        assert_equal 1, @cpu.flag[:Z]
+      end
+
+      should "not set the zero flag if the resulting accumulator is not 0" do
+        @cpu.register[:A] = 0x07
+        @cpu.ram[0x22FC] = 0x04
+        @cpu.runop(@op, 0x22, 0xF8)
+        assert_equal 0, @cpu.flag[:Z]
+      end
+
+      should "set the sign flag if bit 7 of the resulting accumulator is set" do
+        @cpu.register[:A] = 0x80
+        @cpu.ram[0x22FC] = 0x80
+        @cpu.runop(@op, 0x22, 0xF8)
+        assert_equal 1, @cpu.flag[:S]
+      end
+
+      should "not set the sign flag if bit 7 of the resulting accumulator is set" do
+        @cpu.register[:A] = 0x20
+        @cpu.ram[0x22FC] = 0x05
+        @cpu.runop(@op, 0x22, 0xF8)
+        assert_equal 0, @cpu.flag[:S]
+      end
+
+      should "increase the pc by the correct number of bytes" do
+        pc = @cpu.pc
+        @cpu.runop(@op, 0x22, 0xF8)
+        assert_equal pc + 3, @cpu.pc
+      end
+    end
+
+    context "absolutey mode" do
+      setup do
+        @op = 0x19
+        @cpu.register[:Y] = 0x04
+      end
+
+      should "add the value in the X register to the value at the memory location specified by the arguments and do a bitwise OR with the accumulator, storing the result in the accumulator" do
+        @cpu.register[:A] = 0x69
+        @cpu.ram[0x22FC] = 0x12
+        @cpu.runop(@op, 0x22, 0xF8)
+        assert_equal 0x69 | 0x12, @cpu.register[:A]
+      end
+
+      should "set the zero flag if the resulting accumulator is 0" do
+        @cpu.register[:A] = 0x00
+        @cpu.ram[0x22FC] = 0x00
+        @cpu.runop(@op, 0x22, 0xF8)
+        assert_equal 1, @cpu.flag[:Z]
+      end
+
+      should "not set the zero flag if the resulting accumulator is not 0" do
+        @cpu.register[:A] = 0x07
+        @cpu.ram[0x22FC] = 0x04
+        @cpu.runop(@op, 0x22, 0xF8)
+        assert_equal 0, @cpu.flag[:Z]
+      end
+
+      should "set the sign flag if bit 7 of the resulting accumulator is set" do
+        @cpu.register[:A] = 0x80
+        @cpu.ram[0x22FC] = 0x80
+        @cpu.runop(@op, 0x22, 0xF8)
+        assert_equal 1, @cpu.flag[:S]
+      end
+
+      should "not set the sign flag if bit 7 of the resulting accumulator is set" do
+        @cpu.register[:A] = 0x20
+        @cpu.ram[0x22FC] = 0x05
+        @cpu.runop(@op, 0x22, 0xF8)
+        assert_equal 0, @cpu.flag[:S]
+      end
+
+      should "increase the pc by the correct number of bytes" do
+        pc = @cpu.pc
+        @cpu.runop(@op, 0x22, 0xF8)
+        assert_equal pc + 3, @cpu.pc
+      end
+    end
+
+    context "indirectx mode" do
+      setup do
+        @op = 0x01
+        @cpu.register[:X] = 0x04
+        @cpu.ram[0x1E] = 0x22
+        @cpu.ram[0x1F] = 0x45
+      end
+
+      should "do a bitwise OR of the accumulator and the correct memory location, storing the result in the accumulator" do
+        @cpu.register[:A] = 0x69
+        @cpu.ram[0x4522] = 0x12
+        @cpu.runop(@op, 0x1A)
+        assert_equal 0x69 | 0x12, @cpu.register[:A]
+      end
+
+      should "set the zero flag if the resulting accumulator is 0" do
+        @cpu.register[:A] = 0x00
+        @cpu.ram[0x4522] = 0x00
+        @cpu.runop(@op, 0x1A)
+        assert_equal 1, @cpu.flag[:Z]
+      end
+
+      should "not set the zero flag if the resulting accumulator is not 0" do
+        @cpu.register[:A] = 0x07
+        @cpu.ram[0x4522] = 0x04
+        @cpu.runop(@op, 0x1A)
+        assert_equal 0, @cpu.flag[:Z]
+      end
+
+      should "set the sign flag if bit 7 of the resulting accumulator is set" do
+        @cpu.register[:A] = 0x80
+        @cpu.ram[0x4522] = 0x80
+        @cpu.runop(@op, 0x1A)
+        assert_equal 1, @cpu.flag[:S]
+      end
+
+      should "not set the sign flag if bit 7 of the resulting accumulator is set" do
+        @cpu.register[:A] = 0x20
+        @cpu.ram[0x4522] = 0x05
+        @cpu.runop(@op, 0x1A)
+        assert_equal 0, @cpu.flag[:S]
+      end
+
+      should "wrap too-large addresses around so they fit on the zero page" do
+        @cpu.register[:A] = 0x1A
+        @cpu.register[:X] = 0x04
+        @cpu.ram[0x00] = 0x0A
+        @cpu.ram[0xFF] = 0x02
+        @cpu.ram[0xFF + 1] = 0x10
+        @cpu.ram[((0x10 << 8) | 0x02)] = 0xB0
+        @cpu.ram[((0x0A << 8) | 0x02)] = 0x69
+        @cpu.runop(@op, 0xFB)
+        assert_equal 0x1A | 0x69, @cpu.register[:A]
+      end
+
+      should "increase the pc by the correct number of bytes" do
+        pc = @cpu.pc
+        @cpu.runop(@op, 0x1A)
+        assert_equal pc + 2, @cpu.pc
+      end
+    end
+
+    context "indirecty mode" do
+      setup do
+        @op = 0x11
+        @cpu.register[:Y] = 0x04
+        @cpu.ram[0x1E] = 0x22
+        @cpu.ram[0x1F] = 0x45
+        @cpu.ram[0x4526] = 0x77
+      end
+
+      should "do a bitwise OR of the accumulator and the correct memory location, storing the result in the accumulator" do
+        @cpu.register[:A] = 0x69
+        @cpu.runop(@op, 0x1E)
+        assert_equal 0x69 | 0x77, @cpu.register[:A]
+      end
+
+      should "set the zero flag if the resulting accumulator is 0" do
+        @cpu.register[:A] = 0x00
+        @cpu.ram[0x4526] = 0x00
+        @cpu.runop(@op, 0x1E)
+        assert_equal 1, @cpu.flag[:Z]
+      end
+
+      should "not set the zero flag if the resulting accumulator is not 0" do
+        @cpu.register[:A] = 0x07
+        @cpu.ram[0x4526] = 0x04
+        @cpu.runop(@op, 0x1E)
+        assert_equal 0, @cpu.flag[:Z]
+      end
+
+      should "set the sign flag if bit 7 of the resulting accumulator is set" do
+        @cpu.register[:A] = 0x80
+        @cpu.ram[0x4526] = 0x80
+        @cpu.runop(@op, 0x1E)
+        assert_equal 1, @cpu.flag[:S]
+      end
+
+      should "not set the sign flag if bit 7 of the resulting accumulator is set" do
+        @cpu.register[:A] = 0x01
+        @cpu.ram[0x4526] = 0x20
+        @cpu.runop(@op, 0x1E)
+        assert_equal 0, @cpu.flag[:S]
+      end
+
+#      should "wrap too-large addresses around so they fit on the zero page" do
+#        @cpu.register[:A] = 0x80
+#        @cpu.register[:Y] = 0x04
+#        @cpu.ram[0x00] = 0x0A
+#        @cpu.ram[0xFF] = 0x02
+#        @cpu.ram[0xFF + 1] = 0x10
+#        @cpu.ram[((0x10 << 8) | 0x06)] = 0xB0 # WRONG - didn't wrap
+#        @cpu.ram[((0x0A << 8) | 0x06)] = 0x69 # correct
+#        @cpu.runop(@op, 0xFF)
+#        assert_equal 0x80 & 0x69, @cpu.register[:A]
+#      end
+#
+      should "increase the pc by the correct number of bytes" do
+        pc = @cpu.pc
+        @cpu.runop(@op, 0x1E)
+        assert_equal pc + 2, @cpu.pc
+      end
+    end
+
+  end
+end

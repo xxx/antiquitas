@@ -140,13 +140,13 @@ class Cpu6502
     0xEA => [ "NOP", :implied,     1, 2 ],
 
     0x09 => [ "ORA", :immediate,   2, 2 ],
-    0x05 => [ "ORA", :immediate,   2, 3 ],
-    0x15 => [ "ORA", :immediate,   2, 4 ],
-    0x0D => [ "ORA", :immediate,   3, 4 ],
-    0x1D => [ "ORA", :immediate,   3, [4, 5] ],
-    0x19 => [ "ORA", :immediate,   3, [4, 5] ],
-    0x01 => [ "ORA", :immediate,   2, 6 ],
-    0x11 => [ "ORA", :immediate,   2, [5, 6] ],
+    0x05 => [ "ORA", :zeropage,    2, 3 ],
+    0x15 => [ "ORA", :zeropagex,   2, 4 ],
+    0x0D => [ "ORA", :absolute,    3, 4 ],
+    0x1D => [ "ORA", :absolutex,   3, [4, 5] ],
+    0x19 => [ "ORA", :absolutey,   3, [4, 5] ],
+    0x01 => [ "ORA", :indirectx,   2, 6 ],
+    0x11 => [ "ORA", :indirecty,   2, [5, 6] ],
 
     0x8A => [ "TXA", :implied,     1, 2 ],
 
@@ -798,6 +798,50 @@ class Cpu6502
 
       when 0xEA # NOP
         @pc += 1
+
+      when 0x09 # ORA immediate
+        @pc += 2
+        @register[:A] |= oper1
+        set_sz(@register[:A])
+
+      when 0x05 # ORA zeropage
+        @pc += 2
+        @register[:A] |= @ram[oper1]
+        set_sz(@register[:A])
+
+      when 0x15 # ORA zeropagex
+        @pc += 2
+        address = oper1 + @register[:X]
+        address -= 0xFF while address > 0xFF
+        @register[:A] |= @ram[address]
+        set_sz(@register[:A])
+
+      when 0x0D # ORA absolute
+        @pc += 3
+        @register[:A] |= @ram[(oper1 << 8) | oper2]
+        set_sz(@register[:A])
+
+      when 0x1D # ORA absolutex
+        @pc += 3
+        @register[:A] |= @ram[((oper1 << 8) | oper2) + @register[:X]]
+        set_sz(@register[:A])
+
+      when 0x19 # ORA absolutey
+        @pc += 3
+        @register[:A] |= @ram[((oper1 << 8) | oper2) + @register[:Y]]
+        set_sz(@register[:A])
+
+      when 0x01 # ORA indirectx
+        @pc += 2
+        @register[:A] |= @ram[indirect_x_address(oper1)]
+        set_sz(@register[:A])
+
+      when 0x11 # ORA indirecty
+        @pc += 2
+        @register[:A] |= @ram[indirect_y_address(oper1)]
+        set_sz(@register[:A])
+
+
 
       when 0x8A #TXA
         @pc += 1
