@@ -7,7 +7,7 @@ class Cpu6502
   end
 
   @opcodes = {
-    # mnemonic, mode, bytes, cycles
+    # mnemonic, addressing mode, bytes, cycles
     0x69 => [ "ADC", :immediate,   2, 2 ],
     0x65 => [ "ADC", :zeropage,    2, 3 ],
     0x75 => [ "ADC", :zeropagex,   2, 4 ],
