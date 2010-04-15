@@ -37,14 +37,14 @@ class Cpu6502CpyTest < Test::Unit::TestCase
         assert_equal 0, @cpu.flag[:Z]
       end
 
-      should "set the sign flag of the value if the result of Y minus the value is negative" do
+      should "set the negative flag of the value if the result of Y minus the value is negative" do
         @cpu.runop(@op, 0x40)
-        assert_equal 1, @cpu.flag[:S]
+        assert_equal 1, @cpu.flag[:N]
       end
 
-      should "clear the sign flag of the value if the result of Y minus the value is not negative" do
+      should "clear the negative flag of the value if the result of Y minus the value is not negative" do
         @cpu.runop(@op, 0x30)
-        assert_equal 0, @cpu.flag[:S]
+        assert_equal 0, @cpu.flag[:N]
       end
     end
 
@@ -83,15 +83,15 @@ class Cpu6502CpyTest < Test::Unit::TestCase
         assert_equal 0, @cpu.flag[:Z]
       end
 
-      should "set the sign flag of the value if the result of Y minus the value is negative" do
+      should "set the negative flag of the value if the result of Y minus the value is negative" do
         @cpu.runop(@op, 0x1A)
-        assert_equal 1, @cpu.flag[:S]
+        assert_equal 1, @cpu.flag[:N]
       end
 
-      should "clear the sign flag of the value if the result of Y minus the value is not negative" do
+      should "clear the negative flag of the value if the result of Y minus the value is not negative" do
         @cpu.ram[0x1A] = 0x01
         @cpu.runop(@op, 0x1A)
-        assert_equal 0, @cpu.flag[:S]
+        assert_equal 0, @cpu.flag[:N]
       end
     end
 
@@ -130,15 +130,15 @@ class Cpu6502CpyTest < Test::Unit::TestCase
         assert_equal 0, @cpu.flag[:Z]
       end
 
-      should "set the sign flag of the value if the result of Y minus the value is negative" do
+      should "set the negative flag of the value if the result of Y minus the value is negative" do
         @cpu.runop(@op, 0x1A, 0x34)
-        assert_equal 1, @cpu.flag[:S]
+        assert_equal 1, @cpu.flag[:N]
       end
 
-      should "clear the sign flag of the value if the result of Y minus the value is not negative" do
+      should "clear the negative flag of the value if the result of Y minus the value is not negative" do
         @cpu.ram[0x1A34] = 0x01
         @cpu.runop(@op, 0x1A, 0x34)
-        assert_equal 0, @cpu.flag[:S]
+        assert_equal 0, @cpu.flag[:N]
       end
     end
   end

@@ -19,16 +19,16 @@ class Cpu6502InyTest < Test::Unit::TestCase
         assert_equal 0x09, @cpu.register[:Y]
       end
 
-      should "set the sign flag of the bit 7 of the Y register is set" do
+      should "set the negative flag of the bit 7 of the Y register is set" do
         @cpu.register[:Y] = 0xFE
         @cpu.runop(@op)
-        assert_equal 1, @cpu.flag[:S]
+        assert_equal 1, @cpu.flag[:N]
       end
 
-      should "clear the sign flag of the bit 7 of the Y register is not set" do
+      should "clear the negative flag of the bit 7 of the Y register is not set" do
         @cpu.register[:Y] = 0xFF
         @cpu.runop(@op)
-        assert_equal 0, @cpu.flag[:S]
+        assert_equal 0, @cpu.flag[:N]
       end
 
       should "set the zero flag if the Y register is now 0" do

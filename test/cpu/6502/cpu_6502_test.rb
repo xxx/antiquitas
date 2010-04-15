@@ -17,7 +17,7 @@ class Cpu6502Test < Test::Unit::TestCase
     end
 
     should "zero the flags" do
-      assert_equal 0, @cpu.flag[:S]
+      assert_equal 0, @cpu.flag[:N]
       assert_equal 0, @cpu.flag[:V]
       assert_equal 0, @cpu.flag[:B]
       assert_equal 0, @cpu.flag[:D]

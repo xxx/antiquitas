@@ -28,14 +28,14 @@ class Cpu6502LdxTest < Test::Unit::TestCase
         assert_equal 0, @cpu.flag[:Z]
       end
 
-      should "set the sign flag if bit 7 of the X register is set" do
+      should "set the negative flag if bit 7 of the X register is set" do
         @cpu.runop(@op, 0xFF)
-        assert_equal 1, @cpu.flag[:S]
+        assert_equal 1, @cpu.flag[:N]
       end
 
-      should "clear the sign flag if bit 7 of the X register is not set" do
+      should "clear the negative flag if bit 7 of the X register is not set" do
         @cpu.runop(@op, 0x00)
-        assert_equal 0, @cpu.flag[:S]
+        assert_equal 0, @cpu.flag[:N]
       end
     end
 
@@ -64,16 +64,16 @@ class Cpu6502LdxTest < Test::Unit::TestCase
         assert_equal 0, @cpu.flag[:Z]
       end
 
-      should "set the sign flag if bit 7 of the X register is set" do
+      should "set the negative flag if bit 7 of the X register is set" do
         @cpu.ram[0x12] = 0xFF
         @cpu.runop(@op, 0x12)
-        assert_equal 1, @cpu.flag[:S]
+        assert_equal 1, @cpu.flag[:N]
       end
 
-      should "clear the sign flag if bit 7 of the X register is not set" do
+      should "clear the negative flag if bit 7 of the X register is not set" do
         @cpu.ram[0x12] = 0x00
         @cpu.runop(@op, 0x12)
-        assert_equal 0, @cpu.flag[:S]
+        assert_equal 0, @cpu.flag[:N]
       end
     end
     
@@ -103,16 +103,16 @@ class Cpu6502LdxTest < Test::Unit::TestCase
         assert_equal 0, @cpu.flag[:Z]
       end
 
-      should "set the sign flag if bit 7 of the X register is set" do
+      should "set the negative flag if bit 7 of the X register is set" do
         @cpu.ram[0x16] = 0xFF
         @cpu.runop(@op, 0x12)
-        assert_equal 1, @cpu.flag[:S]
+        assert_equal 1, @cpu.flag[:N]
       end
 
-      should "clear the sign flag if bit 7 of the X register is not set" do
+      should "clear the negative flag if bit 7 of the X register is not set" do
         @cpu.ram[0x16] = 0x00
         @cpu.runop(@op, 0x12)
-        assert_equal 0, @cpu.flag[:S]
+        assert_equal 0, @cpu.flag[:N]
       end
 
       should "correct the address so it stays on the zero page" do
@@ -148,16 +148,16 @@ class Cpu6502LdxTest < Test::Unit::TestCase
         assert_equal 0, @cpu.flag[:Z]
       end
 
-      should "set the sign flag if bit 7 of the X register is set" do
+      should "set the negative flag if bit 7 of the X register is set" do
         @cpu.ram[0x129F] = 0xFF
         @cpu.runop(@op, 0x12, 0x9F)
-        assert_equal 1, @cpu.flag[:S]
+        assert_equal 1, @cpu.flag[:N]
       end
 
-      should "clear the sign flag if bit 7 of the X register is not set" do
+      should "clear the negative flag if bit 7 of the X register is not set" do
         @cpu.ram[0x12, 0x9F] = 0x00
         @cpu.runop(@op, 0x12, 0x9F)
-        assert_equal 0, @cpu.flag[:S]
+        assert_equal 0, @cpu.flag[:N]
       end
     end
 
@@ -187,16 +187,16 @@ class Cpu6502LdxTest < Test::Unit::TestCase
         assert_equal 0, @cpu.flag[:Z]
       end
 
-      should "set the sign flag if bit 7 of the X register is set" do
+      should "set the negative flag if bit 7 of the X register is set" do
         @cpu.ram[0x129F] = 0xFF
         @cpu.runop(@op, 0x12, 0x9B)
-        assert_equal 1, @cpu.flag[:S]
+        assert_equal 1, @cpu.flag[:N]
       end
 
-      should "clear the sign flag if bit 7 of the X register is not set" do
+      should "clear the negative flag if bit 7 of the X register is not set" do
         @cpu.ram[0x12, 0x9F] = 0x00
         @cpu.runop(@op, 0x12, 0x9B)
-        assert_equal 0, @cpu.flag[:S]
+        assert_equal 0, @cpu.flag[:N]
       end
     end
   end

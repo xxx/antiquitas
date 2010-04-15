@@ -31,16 +31,16 @@ class Cpu6502AslTest < Test::Unit::TestCase
         assert_equal 0, @cpu.flag[:Z]
       end
 
-      should "set the sign flag if bit 7 of the result is set" do
+      should "set the negative flag if bit 7 of the result is set" do
         @cpu.register[:A] = 0x40
         @cpu.runop(@op)
-        assert_equal 1, @cpu.flag[:S]
+        assert_equal 1, @cpu.flag[:N]
       end
 
-      should "not set the sign flag if bit 7 of the result is not set" do
+      should "not set the negative flag if bit 7 of the result is not set" do
         @cpu.register[:A] = 0x03
         @cpu.runop(@op)
-        assert_equal 0, @cpu.flag[:S]
+        assert_equal 0, @cpu.flag[:N]
       end
 
       should "set the carry flag to pre-shift bit 7 of the item to get shifted" do
@@ -75,16 +75,16 @@ class Cpu6502AslTest < Test::Unit::TestCase
         assert_equal 0, @cpu.flag[:Z]
       end
 
-      should "set the sign flag if bit 7 of the result is set" do
+      should "set the negative flag if bit 7 of the result is set" do
         @cpu.ram[0x04] = 0x40
         @cpu.runop(@op, 0x04)
-        assert_equal 1, @cpu.flag[:S]
+        assert_equal 1, @cpu.flag[:N]
       end
 
-      should "not set the sign flag if bit 7 of the result is not set" do
+      should "not set the negative flag if bit 7 of the result is not set" do
         @cpu.ram[0x04] = 0x03
         @cpu.runop(@op, 0x04)
-        assert_equal 0, @cpu.flag[:S]
+        assert_equal 0, @cpu.flag[:N]
       end
 
       should "set the carry flag to pre-shift bit 7 of the item to get shifted" do
@@ -120,16 +120,16 @@ class Cpu6502AslTest < Test::Unit::TestCase
         assert_equal 0, @cpu.flag[:Z]
       end
 
-      should "set the sign flag if bit 7 of the result is set" do
+      should "set the negative flag if bit 7 of the result is set" do
         @cpu.ram[0x0A] = 0x40
         @cpu.runop(@op, 0x04)
-        assert_equal 1, @cpu.flag[:S]
+        assert_equal 1, @cpu.flag[:N]
       end
 
-      should "not set the sign flag if bit 7 of the result is not set" do
+      should "not set the negative flag if bit 7 of the result is not set" do
         @cpu.ram[0x0A] = 0x03
         @cpu.runop(@op, 0x04)
-        assert_equal 0, @cpu.flag[:S]
+        assert_equal 0, @cpu.flag[:N]
       end
 
       should "set the carry flag to pre-shift bit 7 of the item to get shifted" do
@@ -164,16 +164,16 @@ class Cpu6502AslTest < Test::Unit::TestCase
         assert_equal 0, @cpu.flag[:Z]
       end
 
-      should "set the sign flag if bit 7 of the result is set" do
+      should "set the negative flag if bit 7 of the result is set" do
         @cpu.ram[0x23B3] = 0x40
         @cpu.runop(@op, 0x23, 0xB3)
-        assert_equal 1, @cpu.flag[:S]
+        assert_equal 1, @cpu.flag[:N]
       end
 
-      should "not set the sign flag if bit 7 of the result is not set" do
+      should "not set the negative flag if bit 7 of the result is not set" do
         @cpu.ram[0x23B3] = 0x03
         @cpu.runop(@op, 0x23, 0xB3)
-        assert_equal 0, @cpu.flag[:S]
+        assert_equal 0, @cpu.flag[:N]
       end
 
       should "set the carry flag to pre-shift bit 7 of the item to get shifted" do
@@ -209,16 +209,16 @@ class Cpu6502AslTest < Test::Unit::TestCase
         assert_equal 0, @cpu.flag[:Z]
       end
 
-      should "set the sign flag if bit 7 of the result is set" do
+      should "set the negative flag if bit 7 of the result is set" do
         @cpu.ram[0x23B3] = 0x40
         @cpu.runop(@op, 0x23, 0xAF)
-        assert_equal 1, @cpu.flag[:S]
+        assert_equal 1, @cpu.flag[:N]
       end
 
-      should "not set the sign flag if bit 7 of the result is not set" do
+      should "not set the negative flag if bit 7 of the result is not set" do
         @cpu.ram[0x23B3] = 0x03
         @cpu.runop(@op, 0x23, 0xAF)
-        assert_equal 0, @cpu.flag[:S]
+        assert_equal 0, @cpu.flag[:N]
       end
 
       should "set the carry flag to pre-shift bit 7 of the item to get shifted" do

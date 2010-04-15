@@ -36,10 +36,10 @@ class Cpu6502BitTest < Test::Unit::TestCase
         assert_equal 1, @cpu.flag[:V]
       end
 
-      should "set the sign flag to bit 7 of the memory value" do
+      should "set the negative flag to bit 7 of the memory value" do
         @cpu.ram[0x45] = 0x84
         @cpu.runop(@op, 0x45)
-        assert_equal 1, @cpu.flag[:S]
+        assert_equal 1, @cpu.flag[:N]
       end
 
       should "not change the value in the accumulator" do
@@ -79,10 +79,10 @@ class Cpu6502BitTest < Test::Unit::TestCase
         assert_equal 1, @cpu.flag[:V]
       end
 
-      should "set the sign flag to bit 7 of the memory value" do
+      should "set the negative flag to bit 7 of the memory value" do
         @cpu.ram[0x456A] = 0x84
         @cpu.runop(@op, 0x45, 0x6A)
-        assert_equal 1, @cpu.flag[:S]
+        assert_equal 1, @cpu.flag[:N]
       end
 
       should "not change the value in the accumulator" do

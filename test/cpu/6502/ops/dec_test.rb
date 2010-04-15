@@ -30,15 +30,15 @@ class Cpu6502DecTest < Test::Unit::TestCase
         assert_equal 0, @cpu.flag[:Z]
       end
 
-      should "set the sign flag if bit 7 of the result is set" do
+      should "set the negative flag if bit 7 of the result is set" do
         @cpu.ram[0x12] = 0x81
         @cpu.runop(@op, 0x12)
-        assert_equal 1, @cpu.flag[:S]
+        assert_equal 1, @cpu.flag[:N]
       end
 
-      should "not set the sign flag if bit 7 of the result is not set" do
+      should "not set the negative flag if bit 7 of the result is not set" do
         @cpu.runop(@op, 0x12)
-        assert_equal 0, @cpu.flag[:S]
+        assert_equal 0, @cpu.flag[:N]
       end
     end
 
@@ -67,15 +67,15 @@ class Cpu6502DecTest < Test::Unit::TestCase
         assert_equal 0, @cpu.flag[:Z]
       end
 
-      should "set the sign flag if bit 7 of the result is set" do
+      should "set the negative flag if bit 7 of the result is set" do
         @cpu.ram[0x16] = 0x81
         @cpu.runop(@op, 0x12)
-        assert_equal 1, @cpu.flag[:S]
+        assert_equal 1, @cpu.flag[:N]
       end
 
-      should "clear the sign flag if bit 7 of the result is not set" do
+      should "clear the negative flag if bit 7 of the result is not set" do
         @cpu.runop(@op, 0x12)
-        assert_equal 0, @cpu.flag[:S]
+        assert_equal 0, @cpu.flag[:N]
       end
 
       should "correct the calculated address to stay on the zero page" do
@@ -109,15 +109,15 @@ class Cpu6502DecTest < Test::Unit::TestCase
         assert_equal 0, @cpu.flag[:Z]
       end
 
-      should "set the sign flag if bit 7 of the result is set" do
+      should "set the negative flag if bit 7 of the result is set" do
         @cpu.ram[0x165B] = 0x81
         @cpu.runop(@op, 0x16, 0x5B)
-        assert_equal 1, @cpu.flag[:S]
+        assert_equal 1, @cpu.flag[:N]
       end
 
-      should "clear the sign flag if bit 7 of the result is not set" do
+      should "clear the negative flag if bit 7 of the result is not set" do
         @cpu.runop(@op, 0x16, 0x5B)
-        assert_equal 0, @cpu.flag[:S]
+        assert_equal 0, @cpu.flag[:N]
       end
     end
     
@@ -146,15 +146,15 @@ class Cpu6502DecTest < Test::Unit::TestCase
         assert_equal 0, @cpu.flag[:Z]
       end
 
-      should "set the sign flag if bit 7 of the result is set" do
+      should "set the negative flag if bit 7 of the result is set" do
         @cpu.ram[0x165F] = 0x81
         @cpu.runop(@op, 0x16, 0x5B)
-        assert_equal 1, @cpu.flag[:S]
+        assert_equal 1, @cpu.flag[:N]
       end
 
-      should "clear the sign flag if bit 7 of the result is not set" do
+      should "clear the negative flag if bit 7 of the result is not set" do
         @cpu.runop(@op, 0x16, 0x5B)
-        assert_equal 0, @cpu.flag[:S]
+        assert_equal 0, @cpu.flag[:N]
       end
     end
   end

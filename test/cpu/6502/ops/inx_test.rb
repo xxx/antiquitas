@@ -19,16 +19,16 @@ class Cpu6502InxTest < Test::Unit::TestCase
         assert_equal 9, @cpu.register[:X]
       end
 
-      should "set the sign flag of the bit 7 of the X register is set" do
+      should "set the negative flag of the bit 7 of the X register is set" do
         @cpu.register = {:X => -2}
         @cpu.runop(@op)
-        assert_equal 1, @cpu.flag[:S]
+        assert_equal 1, @cpu.flag[:N]
       end
 
-      should "clear the sign flag of the bit 7 of the X register is not set" do
+      should "clear the negative flag of the bit 7 of the X register is not set" do
         @cpu.register = {:X => -1}
         @cpu.runop(@op)
-        assert_equal 0, @cpu.flag[:S]
+        assert_equal 0, @cpu.flag[:N]
       end
 
       should "set the zero flag if the X register is now 0" do

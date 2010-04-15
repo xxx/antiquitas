@@ -31,16 +31,16 @@ class Cpu6502CTaxTest < Test::Unit::TestCase
         assert_equal 0, @cpu.flag[:Z]
       end
 
-      should "set the sign flag if the transferred value has bit 7 set" do
+      should "set the negative flag if the transferred value has bit 7 set" do
         @cpu.register[:A] = 0x80
         @cpu.runop(@op)
-        assert_equal 1, @cpu.flag[:S]
+        assert_equal 1, @cpu.flag[:N]
       end
 
-      should "clear the sign flag if the transferred value does not have bit 7 set" do
+      should "clear the negative flag if the transferred value does not have bit 7 set" do
         @cpu.register[:A] = 0x08
         @cpu.runop(@op)
-        assert_equal 0, @cpu.flag[:S]
+        assert_equal 0, @cpu.flag[:N]
       end
     end
   end

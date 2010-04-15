@@ -17,7 +17,7 @@ class Cpu6502RtiTest < Test::Unit::TestCase
         @cpu.push(0x20)
         @cpu.push(0x03)
         @cpu.runop(@op)
-        # bits 7 to 0 are: S V - B D I Z C
+        # bits 7 to 0 are: N V - B D I Z C
         assert_equal 1, @cpu.flag[:C]
         assert_equal 1, @cpu.flag[:Z]
         assert_equal 0x8820, @cpu.pc

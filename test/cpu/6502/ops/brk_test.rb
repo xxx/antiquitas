@@ -17,7 +17,7 @@ class Cpu6502BrkTest < Test::Unit::TestCase
       end
 
       should "increment the pc by two, then push it, high byte first, then the status register contents onto the stack" do
-        # bits 7 to 0 are: S V - B D I Z C
+        # bits 7 to 0 are: N V - B D I Z C
         @cpu.pc = 0x1004
         @cpu.flag[:Z] = 1
         @cpu.flag[:C] = 1

@@ -30,15 +30,15 @@ class Cpu6502DeyTest < Test::Unit::TestCase
         assert_equal 0, @cpu.flag[:Z]
       end
 
-      should "set the sign flag if bit 7 of the result is set" do
+      should "set the negative flag if bit 7 of the result is set" do
         @cpu.register[:Y] = 0x81
         @cpu.runop(@op)
-        assert_equal 1, @cpu.flag[:S]
+        assert_equal 1, @cpu.flag[:N]
       end
 
-      should "clear the sign flag if bit 7 of the result is not set" do
+      should "clear the negative flag if bit 7 of the result is not set" do
         @cpu.runop(@op)
-        assert_equal 0, @cpu.flag[:S]
+        assert_equal 0, @cpu.flag[:N]
       end
     end
   end

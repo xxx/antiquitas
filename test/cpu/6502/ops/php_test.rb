@@ -18,7 +18,7 @@ class Cpu6502PhpTest < Test::Unit::TestCase
         @cpu.flag[:C] = 1
         @cpu.flag[:I] = 1
         @cpu.runop(@op)
-        # bits 7 to 0 are: S V - B D I Z C
+        # bits 7 to 0 are: N V - B D I Z C
         assert_equal 0x07 | 0x10, @cpu.pull # break
       end
 

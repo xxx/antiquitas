@@ -50,17 +50,17 @@ class Cpu6502SbcTest < Test::Unit::TestCase
           assert_equal 0, @cpu.flag[:Z]
         end
 
-        # sign flag in decimal mode is invalid on 6502
-        should "set the sign flag if bit 7 in the result is set" do
+        # negative flag in decimal mode is invalid on 6502
+        should "set the negative flag if bit 7 in the result is set" do
           @cpu.register[:A] = 0x09
           @cpu.runop(@op, 0x99)
-          assert_equal 1, @cpu.flag[:S]
+          assert_equal 1, @cpu.flag[:N]
         end
 
-        should "clear the sign flag if bit 7 in the result is not set" do
+        should "clear the negative flag if bit 7 in the result is not set" do
           @cpu.register[:A] = 0x15
           @cpu.runop(@op, 0x10)
-          assert_equal 0, @cpu.flag[:S]
+          assert_equal 0, @cpu.flag[:N]
         end
       end
 
@@ -108,16 +108,16 @@ class Cpu6502SbcTest < Test::Unit::TestCase
           assert_equal 0, @cpu.flag[:V]
         end
 
-        should "set the sign flag if bit 7 in the result is set" do
+        should "set the negative flag if bit 7 in the result is set" do
           @cpu.register[:A] = 0x90
           @cpu.runop(@op, 0x01)
-          assert_equal 1, @cpu.flag[:S]
+          assert_equal 1, @cpu.flag[:N]
         end
 
-        should "clear the sign flag if bit 7 in the result is not set" do
+        should "clear the negative flag if bit 7 in the result is not set" do
           @cpu.register[:A] = 0x0A
           @cpu.runop(@op, 0x05)
-          assert_equal 0, @cpu.flag[:S]
+          assert_equal 0, @cpu.flag[:N]
         end
       end
     end
@@ -170,19 +170,19 @@ class Cpu6502SbcTest < Test::Unit::TestCase
           assert_equal 0, @cpu.flag[:Z]
         end
 
-        # sign flag in decimal mode is undefined on 6502
-        should "set the sign flag if bit 7 in the result is set" do
+        # negative flag in decimal mode is undefined on 6502
+        should "set the negative flag if bit 7 in the result is set" do
           @cpu.register[:A] = 0x10
           @cpu.ram[0x42] = 0x11
           @cpu.runop(@op, 0x42)
-          assert_equal 1, @cpu.flag[:S]
+          assert_equal 1, @cpu.flag[:N]
         end
 
-        should "clear the sign flag if bit 7 in the result is not set" do
+        should "clear the negative flag if bit 7 in the result is not set" do
           @cpu.register[:A] = 0x10
           @cpu.ram[0x42] = 0x05
           @cpu.runop(@op, 0x42)
-          assert_equal 0, @cpu.flag[:S]
+          assert_equal 0, @cpu.flag[:N]
         end
       end
 
@@ -236,18 +236,18 @@ class Cpu6502SbcTest < Test::Unit::TestCase
           assert_equal 0, @cpu.flag[:V]
         end
 
-        should "set the sign flag if bit 7 in the result is set" do
+        should "set the negative flag if bit 7 in the result is set" do
           @cpu.register[:A] = 0x00
           @cpu.ram[0x42] = 0x10
           @cpu.runop(@op, 0x42)
-          assert_equal 1, @cpu.flag[:S]
+          assert_equal 1, @cpu.flag[:N]
         end
 
-        should "clear the sign flag if bit 7 in the result is not set" do
+        should "clear the negative flag if bit 7 in the result is not set" do
           @cpu.register[:A] = 0x05
           @cpu.ram[0x42] = 0x04
           @cpu.runop(@op, 0x42)
-          assert_equal 0, @cpu.flag[:S]
+          assert_equal 0, @cpu.flag[:N]
         end
       end
     end
@@ -301,19 +301,19 @@ class Cpu6502SbcTest < Test::Unit::TestCase
           assert_equal 0, @cpu.flag[:Z]
         end
 
-        # sign flag in decimal mode is undefined on 6502
-        should "set the sign flag if bit 7 in the result is set" do
+        # negative flag in decimal mode is undefined on 6502
+        should "set the negative flag if bit 7 in the result is set" do
           @cpu.register[:A] = 0x44
           @cpu.ram[0x42] = 0x90
           @cpu.runop(@op, 0x3E)
-          assert_equal 1, @cpu.flag[:S]
+          assert_equal 1, @cpu.flag[:N]
         end
 
-        should "clear the sign flag if bit 7 in the result is not set" do
+        should "clear the negative flag if bit 7 in the result is not set" do
           @cpu.register[:A] = 0x15
           @cpu.ram[0x42] = 0x10
           @cpu.runop(@op, 0x3E)
-          assert_equal 0, @cpu.flag[:S]
+          assert_equal 0, @cpu.flag[:N]
         end
       end
 
@@ -367,18 +367,18 @@ class Cpu6502SbcTest < Test::Unit::TestCase
           assert_equal 0, @cpu.flag[:V]
         end
 
-        should "set the sign flag if bit 7 in the result is set" do
+        should "set the negative flag if bit 7 in the result is set" do
           @cpu.register[:A] = 0xFF
           @cpu.ram[0x42] = 0x02
           @cpu.runop(@op, 0x3E)
-          assert_equal 1, @cpu.flag[:S]
+          assert_equal 1, @cpu.flag[:N]
         end
 
-        should "clear the sign flag if bit 7 in the result is not set" do
+        should "clear the negative flag if bit 7 in the result is not set" do
           @cpu.register[:A] = 0x0A
           @cpu.ram[0x42] = 0x05
           @cpu.runop(@op, 0x3E)
-          assert_equal 0, @cpu.flag[:S]
+          assert_equal 0, @cpu.flag[:N]
         end
       end
 
@@ -440,19 +440,19 @@ class Cpu6502SbcTest < Test::Unit::TestCase
           assert_equal 0, @cpu.flag[:Z]
         end
 
-        # sign flag in decimal mode is undefined on 6502
-        should "set the sign flag if bit 7 in the result is set" do
+        # negative flag in decimal mode is undefined on 6502
+        should "set the negative flag if bit 7 in the result is set" do
           @cpu.register[:A] = 0x87
           @cpu.ram[0x2436] = 0x88
           @cpu.runop(@op, 0x24, 0x36)
-          assert_equal 1, @cpu.flag[:S]
+          assert_equal 1, @cpu.flag[:N]
         end
 
-        should "clear the sign flag if bit 7 in the result is not set" do
+        should "clear the negative flag if bit 7 in the result is not set" do
           @cpu.register[:A] = 0x10
           @cpu.ram[0x2436] = 0x05
           @cpu.runop(@op, 0x24, 0x36)
-          assert_equal 0, @cpu.flag[:S]
+          assert_equal 0, @cpu.flag[:N]
         end
       end
 
@@ -506,18 +506,18 @@ class Cpu6502SbcTest < Test::Unit::TestCase
           assert_equal 0, @cpu.flag[:V]
         end
 
-        should "set the sign flag if bit 7 in the result is set" do
+        should "set the negative flag if bit 7 in the result is set" do
           @cpu.register[:A] = 0x02
           @cpu.ram[0x2436] = 0x10
           @cpu.runop(@op, 0x24, 0x36)
-          assert_equal 1, @cpu.flag[:S]
+          assert_equal 1, @cpu.flag[:N]
         end
 
-        should "clear the sign flag if bit 7 in the result is not set" do
+        should "clear the negative flag if bit 7 in the result is not set" do
           @cpu.register[:A] = 0x0A
           @cpu.ram[0x2436] = 0x05
           @cpu.runop(@op, 0x24, 0x36)
-          assert_equal 0, @cpu.flag[:S]
+          assert_equal 0, @cpu.flag[:N]
         end
       end
     end
@@ -571,19 +571,19 @@ class Cpu6502SbcTest < Test::Unit::TestCase
           assert_equal 0, @cpu.flag[:Z]
         end
 
-        # sign flag in decimal mode is undefined on 6502
-        should "set the sign flag if bit 7 in the result is set" do
+        # negative flag in decimal mode is undefined on 6502
+        should "set the negative flag if bit 7 in the result is set" do
           @cpu.register[:A] = 0x60
           @cpu.ram[0x2436] = 0x90
           @cpu.runop(@op, 0x24, 0x32)
-          assert_equal 1, @cpu.flag[:S]
+          assert_equal 1, @cpu.flag[:N]
         end
 
-        should "clear the sign flag if bit 7 in the result is clear" do
+        should "clear the negative flag if bit 7 in the result is clear" do
           @cpu.register[:A] = 0x15
           @cpu.ram[0x2436] = 0x10
           @cpu.runop(@op, 0x24, 0x32)
-          assert_equal 0, @cpu.flag[:S]
+          assert_equal 0, @cpu.flag[:N]
         end
       end
 
@@ -637,18 +637,18 @@ class Cpu6502SbcTest < Test::Unit::TestCase
           assert_equal 0, @cpu.flag[:V]
         end
 
-        should "set the sign flag if bit 7 in the result is set" do
+        should "set the negative flag if bit 7 in the result is set" do
           @cpu.register[:A] = 0x00
           @cpu.ram[0x2436] = 0x04
           @cpu.runop(@op, 0x24, 0x32)
-          assert_equal 1, @cpu.flag[:S]
+          assert_equal 1, @cpu.flag[:N]
         end
 
-        should "clear the sign flag if bit 7 in the result is not set" do
+        should "clear the negative flag if bit 7 in the result is not set" do
           @cpu.register[:A] = 0x05
           @cpu.ram[0x2436] = 0x03
           @cpu.runop(@op, 0x24, 0x32)
-          assert_equal 0, @cpu.flag[:S]
+          assert_equal 0, @cpu.flag[:N]
         end
       end
     end
@@ -702,19 +702,19 @@ class Cpu6502SbcTest < Test::Unit::TestCase
           assert_equal 0, @cpu.flag[:Z]
         end
 
-        # sign flag in decimal mode is undefined on 6502
-        should "set the sign flag if bit 7 in the result is set" do
+        # negative flag in decimal mode is undefined on 6502
+        should "set the negative flag if bit 7 in the result is set" do
           @cpu.register[:A] = 0x60
           @cpu.ram[0x2436] = 0x90
           @cpu.runop(@op, 0x24, 0x32)
-          assert_equal 1, @cpu.flag[:S]
+          assert_equal 1, @cpu.flag[:N]
         end
 
-        should "clear the sign flag if bit 7 in the result is not set" do
+        should "clear the negative flag if bit 7 in the result is not set" do
           @cpu.register[:A] = 0x15
           @cpu.ram[0x2436] = 0x10
           @cpu.runop(@op, 0x24, 0x32)
-          assert_equal 0, @cpu.flag[:S]
+          assert_equal 0, @cpu.flag[:N]
         end
       end
 
@@ -768,18 +768,18 @@ class Cpu6502SbcTest < Test::Unit::TestCase
           assert_equal 0, @cpu.flag[:V]
         end
 
-        should "set the sign flag if bit 7 in the result is set" do
+        should "set the negative flag if bit 7 in the result is set" do
           @cpu.register[:A] = 0x00
           @cpu.ram[0x2436] = 0x10
           @cpu.runop(@op, 0x24, 0x32)
-          assert_equal 1, @cpu.flag[:S]
+          assert_equal 1, @cpu.flag[:N]
         end
 
-        should "clear the sign flag if bit 7 in the result is not set" do
+        should "clear the negative flag if bit 7 in the result is not set" do
           @cpu.register[:A] = 0x05
           @cpu.ram[0x2436] = 0x03
           @cpu.runop(@op, 0x24, 0x32)
-          assert_equal 0, @cpu.flag[:S]
+          assert_equal 0, @cpu.flag[:N]
         end
       end
     end
@@ -832,18 +832,18 @@ class Cpu6502SbcTest < Test::Unit::TestCase
           assert_equal 0, @cpu.flag[:Z]
         end
 
-        # sign flag in decimal mode is undefined on 6502
-        should "set the sign flag if bit 7 in the result is set" do
+        # negative flag in decimal mode is undefined on 6502
+        should "set the negative flag if bit 7 in the result is set" do
           @cpu.register[:A] = 0x94
           @cpu.ram[(0x20 << 8) | 0x02] = 0x96
           @cpu.runop(@op, 0x31)
-          assert_equal 1, @cpu.flag[:S]
+          assert_equal 1, @cpu.flag[:N]
         end
 
-        should "clear the sign flag if bit 7 in the result is not set" do
+        should "clear the negative flag if bit 7 in the result is not set" do
           @cpu.register[:A] = 0x80
           @cpu.runop(@op, 0x31)
-          assert_equal 0, @cpu.flag[:S]
+          assert_equal 0, @cpu.flag[:N]
         end
       end
 
@@ -892,17 +892,17 @@ class Cpu6502SbcTest < Test::Unit::TestCase
           assert_equal 0, @cpu.flag[:V]
         end
 
-        should "set the sign flag if bit 7 in the result is set" do
+        should "set the negative flag if bit 7 in the result is set" do
           @cpu.register[:A] = 0x00
           @cpu.ram[(0x20 << 8) | 0x02] = 0x04
           @cpu.runop(@op, 0x31)
-          assert_equal 1, @cpu.flag[:S]
+          assert_equal 1, @cpu.flag[:N]
         end
 
-        should "clear the sign flag if bit 7 in the result is not set" do
+        should "clear the negative flag if bit 7 in the result is not set" do
           @cpu.register[:A] = 0x80
           @cpu.runop(@op, 0x31)
-          assert_equal 0, @cpu.flag[:S]
+          assert_equal 0, @cpu.flag[:N]
         end
       end
 
@@ -967,17 +967,17 @@ class Cpu6502SbcTest < Test::Unit::TestCase
           assert_equal 0, @cpu.flag[:Z]
         end
 
-        # sign flag in decimal mode is undefined on 6502
-        should "set the sign flag if bit 7 in the result is set" do
+        # negative flag in decimal mode is undefined on 6502
+        should "set the negative flag if bit 7 in the result is set" do
           @cpu.register[:A] = 0x44
           @cpu.runop(@op, 0x35)
-          assert_equal 1, @cpu.flag[:S]
+          assert_equal 1, @cpu.flag[:N]
         end
 
-        should "clear the sign flag if bit 7 in the result is not set" do
+        should "clear the negative flag if bit 7 in the result is not set" do
           @cpu.register[:A] = 0x80
           @cpu.runop(@op, 0x31)
-          assert_equal 0, @cpu.flag[:S]
+          assert_equal 0, @cpu.flag[:N]
         end
       end
 
@@ -1026,16 +1026,16 @@ class Cpu6502SbcTest < Test::Unit::TestCase
           assert_equal 0, @cpu.flag[:V]
         end
 
-        should "set the sign flag if bit 7 in the result is set" do
+        should "set the negative flag if bit 7 in the result is set" do
           @cpu.register[:A] = 0x10
           @cpu.runop(@op, 0x35)
-          assert_equal 1, @cpu.flag[:S]
+          assert_equal 1, @cpu.flag[:N]
         end
 
-        should "clear the sign flag if bit 7 in the result is not set" do
+        should "clear the negative flag if bit 7 in the result is not set" do
           @cpu.register[:A] = 0x85
           @cpu.runop(@op, 0x35)
-          assert_equal 0, @cpu.flag[:S]
+          assert_equal 0, @cpu.flag[:N]
         end
       end
 

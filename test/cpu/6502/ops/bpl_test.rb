@@ -11,17 +11,17 @@ class Cpu6502BplTest < Test::Unit::TestCase
         @op = 0x10
       end
 
-      context "sign flag is set" do
+      context "negative flag is set" do
         setup do
-          @cpu.flag[:S] = 1
+          @cpu.flag[:N] = 1
         end
 
         should_increase_pc_by 2
       end
 
-      context "sign flag is clear" do
+      context "negative flag is clear" do
         setup do
-          @cpu.flag[:S] = 0
+          @cpu.flag[:N] = 0
         end
         
         should_branch_correctly

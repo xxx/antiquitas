@@ -256,8 +256,8 @@ class Cpu6502
     @ram = Array.new(65536, 0)
     @register = { :A => 0, :X => 0, :Y => 0, :SP => 0xFF, :SR => 0 }
     # unused flag is always 1, according to the bug lists
-    # real bits 7 to 0 are: S V - B D I Z C
-    @flag = { :S => 0, :V => 0, :B => 0, :D => 0, :I => 0, :Z => 0, :C => 0}
+    # real bits 7 to 0 are: N V - B D I Z C
+    @flag = { :N => 0, :V => 0, :B => 0, :D => 0, :I => 0, :Z => 0, :C => 0}
     @operand = Array.new(2)
   end
 
@@ -267,7 +267,7 @@ class Cpu6502
 
   def display_status
     if (@debug)
-      printf("PC=%04x SP=%04x A=%02x X=%02x Y=%02x S=%02x C=%d Z=%d\n\n", @pc,@register[:SP],@register[:A],@register[:X],@register[:Y],@flag[:S],@flag[:C]?1:0,@flag[:Z])
+      printf("PC=%04x SP=%04x A=%02x X=%02x Y=%02x S=%02x C=%d Z=%d\n\n", @pc,@register[:SP],@register[:A],@register[:X],@register[:Y],@flag[:N],@flag[:C]?1:0,@flag[:Z])
     end
   end
 
@@ -282,7 +282,7 @@ class Cpu6502
   end
 
   def set_sign(accumulator)
-    @flag[:S] = (accumulator & 0x80) == 0x80 ? 1 : 0
+    @flag[:N] = (accumulator & 0x80) == 0x80 ? 1 : 0
   end
 
   def set_zero(accumulator)
@@ -404,7 +404,7 @@ class Cpu6502
         end
 
       when 0x30 # BMI relative
-        if @flag[:S] == 1
+        if @flag[:N] == 1
           branch_pc(oper1)
         end
 
@@ -414,7 +414,7 @@ class Cpu6502
         end
 
       when 0x10 # BPL relative
-        if @flag[:S] == 0
+        if @flag[:N] == 0
           branch_pc(oper1)
         end
 
@@ -825,7 +825,7 @@ class Cpu6502
 
       when 0x28 # PLP implied
         val = pull
-        @flag[:S] = val & 0x80 == 0 ? 0 : 1
+        @flag[:N] = val & 0x80 == 0 ? 0 : 1
         @flag[:V] = val & 0x40 == 0 ? 0 : 1
         # no flag at 0x20
         @flag[:B] = val & 0x10 == 0 ? 0 : 1
@@ -880,7 +880,7 @@ class Cpu6502
 
       when 0x40 # RTI implied
         status = pull
-        # flag bits 7 to 0 are: S V - B D I Z C
+        # flag bits 7 to 0 are: N V - B D I Z C
 
         # break flag is ignored per documentation
         @flag[:C] = status & 0x01 == 0x01 ? 1 : 0
@@ -888,7 +888,7 @@ class Cpu6502
         @flag[:I] = status & 0x04 == 0x04 ? 1 : 0
         @flag[:D] = status & 0x08 == 0x08 ? 1 : 0
         @flag[:V] = status & 0x40 == 0x40 ? 1 : 0
-        @flag[:S] = status & 0x80 == 0x80 ? 1 : 0
+        @flag[:N] = status & 0x80 == 0x80 ? 1 : 0
 
         lo = pull
         hi = pull
@@ -1153,7 +1153,7 @@ class Cpu6502
   end
 
   def packed_flags
-    (@flag[:S] << 7) |
+    (@flag[:N] << 7) |
     (@flag[:V] << 6) |
 #    (@flag[:U] << 5) |
     (@flag[:B] << 4) |

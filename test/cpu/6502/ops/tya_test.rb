@@ -30,15 +30,15 @@ class Cpu6502TyaTest < Test::Unit::TestCase
         assert_equal 0, @cpu.flag[:Z]
       end
 
-      should "set the sign flag if bit 7 of the accumulator is set" do
+      should "set the negative flag if bit 7 of the accumulator is set" do
         @cpu.register[:Y] = 0x80
         @cpu.runop(@op)
-        assert_equal 1, @cpu.flag[:S]
+        assert_equal 1, @cpu.flag[:N]
       end
 
-      should "clear the sign flag if bit 7 of the accumulator is not set" do
+      should "clear the negative flag if bit 7 of the accumulator is not set" do
         @cpu.runop(@op)
-        assert_equal 0, @cpu.flag[:S]
+        assert_equal 0, @cpu.flag[:N]
       end
     end
   end

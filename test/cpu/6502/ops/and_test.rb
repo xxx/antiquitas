@@ -31,16 +31,16 @@ class Cpu6502AndTest < Test::Unit::TestCase
         assert_equal 0, @cpu.flag[:Z]
       end
 
-      should "set the sign flag if bit 7 of the resulting accumulator is set" do
+      should "set the negative flag if bit 7 of the resulting accumulator is set" do
         @cpu.register[:A] = 0x80
         @cpu.runop(@op, 0x80)
-        assert_equal 1, @cpu.flag[:S]
+        assert_equal 1, @cpu.flag[:N]
       end
 
-      should "not set the sign flag if bit 7 of the resulting accumulator is set" do
+      should "not set the negative flag if bit 7 of the resulting accumulator is set" do
         @cpu.register[:A] = 0x80
         @cpu.runop(@op, 0x7F)
-        assert_equal 0, @cpu.flag[:S]
+        assert_equal 0, @cpu.flag[:N]
       end
     end
 
@@ -72,18 +72,18 @@ class Cpu6502AndTest < Test::Unit::TestCase
         assert_equal 0, @cpu.flag[:Z]
       end
 
-      should "set the sign flag if bit 7 of the resulting accumulator is set" do
+      should "set the negative flag if bit 7 of the resulting accumulator is set" do
         @cpu.register[:A] = 0x80
         @cpu.ram[0x22] = 0x80
         @cpu.runop(@op, 0x22)
-        assert_equal 1, @cpu.flag[:S]
+        assert_equal 1, @cpu.flag[:N]
       end
 
-      should "not set the sign flag if bit 7 of the resulting accumulator is set" do
+      should "not set the negative flag if bit 7 of the resulting accumulator is set" do
         @cpu.register[:A] = 0x80
         @cpu.ram[0x22] = 0x7F
         @cpu.runop(@op, 0x22)
-        assert_equal 0, @cpu.flag[:S]
+        assert_equal 0, @cpu.flag[:N]
       end
     end
 
@@ -116,18 +116,18 @@ class Cpu6502AndTest < Test::Unit::TestCase
         assert_equal 0, @cpu.flag[:Z]
       end
 
-      should "set the sign flag if bit 7 of the resulting accumulator is set" do
+      should "set the negative flag if bit 7 of the resulting accumulator is set" do
         @cpu.register[:A] = 0x80
         @cpu.ram[0x22] = 0x80
         @cpu.runop(@op, 0x1E)
-        assert_equal 1, @cpu.flag[:S]
+        assert_equal 1, @cpu.flag[:N]
       end
 
-      should "not set the sign flag if bit 7 of the resulting accumulator is set" do
+      should "not set the negative flag if bit 7 of the resulting accumulator is set" do
         @cpu.register[:A] = 0x80
         @cpu.ram[0x22] = 0x7F
         @cpu.runop(@op, 0x1E)
-        assert_equal 0, @cpu.flag[:S]
+        assert_equal 0, @cpu.flag[:N]
       end
 
       should "correct any overflow in the resulting address to stay on the zero page" do
@@ -167,18 +167,18 @@ class Cpu6502AndTest < Test::Unit::TestCase
         assert_equal 0, @cpu.flag[:Z]
       end
 
-      should "set the sign flag if bit 7 of the resulting accumulator is set" do
+      should "set the negative flag if bit 7 of the resulting accumulator is set" do
         @cpu.register[:A] = 0x80
         @cpu.ram[0x22FC] = 0x80
         @cpu.runop(@op, 0x22, 0xFC)
-        assert_equal 1, @cpu.flag[:S]
+        assert_equal 1, @cpu.flag[:N]
       end
 
-      should "not set the sign flag if bit 7 of the resulting accumulator is set" do
+      should "not set the negative flag if bit 7 of the resulting accumulator is set" do
         @cpu.register[:A] = 0x80
         @cpu.ram[0x22FC] = 0x7F
         @cpu.runop(@op, 0x22, 0xFC)
-        assert_equal 0, @cpu.flag[:S]
+        assert_equal 0, @cpu.flag[:N]
       end
     end
 
@@ -211,18 +211,18 @@ class Cpu6502AndTest < Test::Unit::TestCase
         assert_equal 0, @cpu.flag[:Z]
       end
 
-      should "set the sign flag if bit 7 of the resulting accumulator is set" do
+      should "set the negative flag if bit 7 of the resulting accumulator is set" do
         @cpu.register[:A] = 0x80
         @cpu.ram[0x22FC] = 0x80
         @cpu.runop(@op, 0x22, 0xF8)
-        assert_equal 1, @cpu.flag[:S]
+        assert_equal 1, @cpu.flag[:N]
       end
 
-      should "not set the sign flag if bit 7 of the resulting accumulator is set" do
+      should "not set the negative flag if bit 7 of the resulting accumulator is set" do
         @cpu.register[:A] = 0x80
         @cpu.ram[0x22FC] = 0x7F
         @cpu.runop(@op, 0x22, 0xF8)
-        assert_equal 0, @cpu.flag[:S]
+        assert_equal 0, @cpu.flag[:N]
       end
     end
 
@@ -255,18 +255,18 @@ class Cpu6502AndTest < Test::Unit::TestCase
         assert_equal 0, @cpu.flag[:Z]
       end
 
-      should "set the sign flag if bit 7 of the resulting accumulator is set" do
+      should "set the negative flag if bit 7 of the resulting accumulator is set" do
         @cpu.register[:A] = 0x80
         @cpu.ram[0x22FC] = 0x80
         @cpu.runop(@op, 0x22, 0xF8)
-        assert_equal 1, @cpu.flag[:S]
+        assert_equal 1, @cpu.flag[:N]
       end
 
-      should "not set the sign flag if bit 7 of the resulting accumulator is set" do
+      should "not set the negative flag if bit 7 of the resulting accumulator is set" do
         @cpu.register[:A] = 0x80
         @cpu.ram[0x22FC] = 0x7F
         @cpu.runop(@op, 0x22, 0xF8)
-        assert_equal 0, @cpu.flag[:S]
+        assert_equal 0, @cpu.flag[:N]
       end
     end
 
@@ -301,18 +301,18 @@ class Cpu6502AndTest < Test::Unit::TestCase
         assert_equal 0, @cpu.flag[:Z]
       end
 
-      should "set the sign flag if bit 7 of the resulting accumulator is set" do
+      should "set the negative flag if bit 7 of the resulting accumulator is set" do
         @cpu.register[:A] = 0x80
         @cpu.ram[0x4522] = 0x80
         @cpu.runop(@op, 0x1A)
-        assert_equal 1, @cpu.flag[:S]
+        assert_equal 1, @cpu.flag[:N]
       end
 
-      should "not set the sign flag if bit 7 of the resulting accumulator is set" do
+      should "not set the negative flag if bit 7 of the resulting accumulator is set" do
         @cpu.register[:A] = 0x80
         @cpu.ram[0x4522] = 0x7F
         @cpu.runop(@op, 0x1A)
-        assert_equal 0, @cpu.flag[:S]
+        assert_equal 0, @cpu.flag[:N]
       end
 
       should "wrap too-large addresses around so they fit on the zero page" do
@@ -359,18 +359,18 @@ class Cpu6502AndTest < Test::Unit::TestCase
         assert_equal 0, @cpu.flag[:Z]
       end
 
-      should "set the sign flag if bit 7 of the resulting accumulator is set" do
+      should "set the negative flag if bit 7 of the resulting accumulator is set" do
         @cpu.register[:A] = 0x80
         @cpu.ram[0x4526] = 0x80
         @cpu.runop(@op, 0x1E)
-        assert_equal 1, @cpu.flag[:S]
+        assert_equal 1, @cpu.flag[:N]
       end
 
-      should "not set the sign flag if bit 7 of the resulting accumulator is set" do
+      should "not set the negative flag if bit 7 of the resulting accumulator is set" do
         @cpu.register[:A] = 0x80
         @cpu.ram[0x4526] = 0x7F
         @cpu.runop(@op, 0x1E)
-        assert_equal 0, @cpu.flag[:S]
+        assert_equal 0, @cpu.flag[:N]
       end
 
       should "wrap too-large addresses around so they fit on the zero page" do
