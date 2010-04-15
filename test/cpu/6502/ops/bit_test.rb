@@ -12,6 +12,8 @@ class Cpu6502BitTest < Test::Unit::TestCase
         @cpu.register[:A] = 0x22
       end
 
+      should_increase_pc_by 2
+      
       context "one or more bits are set" do
         should "not set the zero flag" do
           @cpu.ram[0x45] = 0x12
@@ -45,12 +47,6 @@ class Cpu6502BitTest < Test::Unit::TestCase
         @cpu.runop(@op, 0x45)
         assert_equal 0x22, @cpu.register[:A]
       end
-      
-      should "increase the pc by the number of bytes for the op" do
-        pc = @cpu.pc
-        @cpu.runop(@op, 0xA0)
-        assert_equal pc + 2, @cpu.pc
-      end
     end
     
     context "absolute mode" do
@@ -58,6 +54,8 @@ class Cpu6502BitTest < Test::Unit::TestCase
         @op = 0x2C
         @cpu.register[:A] = 0x22
       end
+
+      should_increase_pc_by 3
 
       context "one or more bits are set" do
         should "not set the zero flag" do
@@ -91,12 +89,6 @@ class Cpu6502BitTest < Test::Unit::TestCase
         @cpu.ram[0x456A] = 0x80
         @cpu.runop(@op, 0x45, 0x6A)
         assert_equal 0x22, @cpu.register[:A]
-      end
-
-      should "increase the pc by the number of bytes for the op" do
-        pc = @cpu.pc
-        @cpu.runop(@op, 0xA0, 0x45)
-        assert_equal pc + 3, @cpu.pc
       end
     end
   end
