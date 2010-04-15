@@ -176,6 +176,15 @@ class Cpu6502
 
     0x98 => [ "TYA", :implied,     1, 2 ],
 
+    0xE9 => [ "SBC", :immediate,   2, 2 ],
+    0xE5 => [ "SBC", :zeropage,    2, 3 ],
+    0xF5 => [ "SBC", :zeropagex,   2, 4 ],
+    0xED => [ "SBC", :absolute,    3, 4 ],
+    0xFD => [ "SBC", :absolutex,   3, [4, 5] ],
+    0xF9 => [ "SBC", :absolutey,   3, [4, 5] ],
+    0xE1 => [ "SBC", :indirectx,   2, 6 ],
+    0xF1 => [ "SBC", :indirecty,   2, [5, 6] ],
+
   }
 
   # tables cribbed from py65. illegal bytes not supported. don't use 'em.
@@ -863,7 +872,34 @@ class Cpu6502
         lo = pull
         hi = pull
         @pc = ((hi << 8) | lo) + 1
-      
+
+      when 0xE9 # SBC immediate
+        op_sbc(oper1)
+
+      when 0xE5 # SBC zeropage
+        op_sbc(@ram[oper1])
+
+      when 0xF5 # SBC zeropagex
+        address = oper1 + @register[:X]
+        address -= 0xFF while address > 0xFF
+        op_sbc(@ram[address])
+
+#      when 0x6D # SBC absolute
+#        op_sbc(@ram[(oper1 << 8) | oper2])
+#
+#      when 0x7D # SBC absolutex
+#        op_sbc(@ram[((oper1 << 8) | oper2) + @register[:X]])
+#
+#      when 0x79 # SBC absolutey
+#        op_sbc(@ram[((oper1 << 8) | oper2) + @register[:Y]])
+#
+#      when 0x61 # SBC indirectx
+#        op_sbc(@ram[indirect_x_address(oper1)])
+#
+#      when 0x71 # SBC indirecty
+#        op_sbc(@ram[indirect_y_address(oper1)])
+
+
       when 0x8A #TXA
         set_sz(@register[:X])
         @register[:A] = @register[:X]
@@ -950,6 +986,33 @@ class Cpu6502
     end
   end
 
+  def op_sbc(arg)
+    if @flag[:D] == 1
+      result = to_bin(@register[:A]) - to_bin(arg) - (@flag[:C] == 0 ? 1 : 0)
+    else
+      result = @register[:A] - arg - (@flag[:C] == 0 ? 1 : 0)
+    end
+
+    set_carry(result > 0)
+
+    if @flag[:D] == 1
+      set_sz(result)
+      result &= 0xFF
+#      result += 100 while result < 0
+      @register[:A] = to_bcd(result)
+    else
+      set_sz(result)
+
+      if ( ~(@register[:A] ^ arg) & (@register[:A] ^ result) ) & 0x80 > 0
+        set_overflow(1)
+      else
+        set_overflow(0)
+      end
+
+      @register[:A] = result & 0xFF
+    end
+  end
+
   def op_asl(address)
     set_carry(@ram[address] & 0x80 == 0x80)
     @ram[address] = (@ram[address] << 1) & 0xFF
@@ -1001,6 +1064,14 @@ class Cpu6502
     (@flag[:I] << 2) |
     (@flag[:Z] << 1) |
     (@flag[:C])
+  end
+
+  def to_bcd(num)
+    self.class.to_bcd[num]
+  end
+
+  def to_bin(num)
+    self.class.to_bin[num]
   end
 end
 
