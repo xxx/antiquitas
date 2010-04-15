@@ -890,9 +890,9 @@ class Cpu6502
       when 0xFD # SBC absolutex
         op_sbc(@ram[((oper1 << 8) | oper2) + @register[:X]])
 
-#      when 0x79 # SBC absolutey
-#        op_sbc(@ram[((oper1 << 8) | oper2) + @register[:Y]])
-#
+      when 0xF9 # SBC absolutey
+        op_sbc(@ram[((oper1 << 8) | oper2) + @register[:Y]])
+
 #      when 0x61 # SBC indirectx
 #        op_sbc(@ram[indirect_x_address(oper1)])
 #
@@ -993,8 +993,8 @@ class Cpu6502
       result = @register[:A] - arg - (@flag[:C] == 0 ? 1 : 0)
     end
 
-    set_carry(result >= 0)
-
+    set_carry(result & 0x100 == 0)
+    
     if @flag[:D] == 1
       set_sz(result)
       result &= 0xFF
