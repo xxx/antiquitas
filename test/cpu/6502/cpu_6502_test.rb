@@ -13,7 +13,7 @@ class Cpu6502Test < Test::Unit::TestCase
       assert_equal 0, @cpu.register[:X]
       assert_equal 0, @cpu.register[:Y]
       assert_equal 0xFF, @cpu.register[:SP]
-      assert_equal 0, @cpu.register[:SR]
+      assert_equal 0, @cpu.register[:P]
     end
 
     should "zero the flags" do

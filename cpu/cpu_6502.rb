@@ -254,7 +254,7 @@ class Cpu6502
     @pc = 0
     @pc_offset = 0
     @ram = Array.new(65536, 0)
-    @register = { :A => 0, :X => 0, :Y => 0, :SP => 0xFF, :SR => 0 }
+    @register = { :A => 0, :X => 0, :Y => 0, :SP => 0xFF, :P => 0 }
     # unused flag is always 1, according to the bug lists
     # real bits 7 to 0 are: N V - B D I Z C
     @flag = { :N => 0, :V => 0, :B => 0, :D => 0, :I => 0, :Z => 0, :C => 0}
