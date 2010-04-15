@@ -12,6 +12,8 @@ class Cpu6502EorTest < Test::Unit::TestCase
         @cpu.register[:A] = 0x80
       end
 
+      should_increase_pc_by 2
+
       should "exclusive OR the contents of the accumulator with the correct value based on addressing mode, storing the results in the accumulator" do
         @cpu.runop(@op, 0x83)
         assert_equal 0x03, @cpu.register[:A]
@@ -36,12 +38,6 @@ class Cpu6502EorTest < Test::Unit::TestCase
         @cpu.runop(@op, 0x81)
         assert_equal 0, @cpu.flag[:S]
       end
-
-      should "increase the pc by the number of bytes for this op" do
-        pc = @cpu.pc
-        @cpu.runop(@op, 0x07)
-        assert_equal pc + 2, @cpu.pc
-      end
     end
 
     context "zeropage mode" do
@@ -49,6 +45,8 @@ class Cpu6502EorTest < Test::Unit::TestCase
         @op = 0x45
         @cpu.register[:A] = 0x80
       end
+
+      should_increase_pc_by 2
 
       should "exclusive OR the contents of the accumulator with the correct value based on addressing mode, storing the results in the accumulator" do
         @cpu.ram[0x50] = 0x83
@@ -79,12 +77,6 @@ class Cpu6502EorTest < Test::Unit::TestCase
         @cpu.runop(@op, 0x50)
         assert_equal 0, @cpu.flag[:S]
       end
-
-      should "increase the pc by the number of bytes for this op" do
-        pc = @cpu.pc
-        @cpu.runop(@op, 0x50)
-        assert_equal pc + 2, @cpu.pc
-      end
     end
     
     context "zeropagex mode" do
@@ -93,6 +85,8 @@ class Cpu6502EorTest < Test::Unit::TestCase
         @cpu.register[:A] = 0x80
         @cpu.register[:X] = 0x04
       end
+
+      should_increase_pc_by 2
 
       should "exclusive OR the contents of the accumulator with the correct value based on addressing mode, storing the results in the accumulator" do
         @cpu.ram[0x50] = 0x83
@@ -130,12 +124,6 @@ class Cpu6502EorTest < Test::Unit::TestCase
         @cpu.runop(@op, 0x50)
         assert_equal 0x03, @cpu.register[:A]
       end
-
-      should "increase the pc by the number of bytes for this op" do
-        pc = @cpu.pc
-        @cpu.runop(@op, 0x4C)
-        assert_equal pc + 2, @cpu.pc
-      end
     end
 
     context "absolute mode" do
@@ -143,6 +131,8 @@ class Cpu6502EorTest < Test::Unit::TestCase
         @op = 0x4D
         @cpu.register[:A] = 0x80
       end
+
+      should_increase_pc_by 3
 
       should "exclusive OR the contents of the accumulator with the correct value based on addressing mode, storing the results in the accumulator" do
         @cpu.ram[0x5150] = 0x83
@@ -172,12 +162,6 @@ class Cpu6502EorTest < Test::Unit::TestCase
         @cpu.ram[0x5150] = 0x81
         @cpu.runop(@op, 0x51, 0x50)
         assert_equal 0, @cpu.flag[:S]
-      end
-
-      should "increase the pc by the number of bytes for this op" do
-        pc = @cpu.pc
-        @cpu.runop(@op, 0x51, 0x50)
-        assert_equal pc + 3, @cpu.pc
       end
     end
 
@@ -188,6 +172,8 @@ class Cpu6502EorTest < Test::Unit::TestCase
         @cpu.register[:X] = 0x04
       end
 
+      should_increase_pc_by 3
+
       should "exclusive OR the contents of the accumulator with the correct value based on addressing mode, storing the results in the accumulator" do
         @cpu.ram[0x5150] = 0x83
         @cpu.runop(@op, 0x51, 0x4C)
@@ -216,12 +202,6 @@ class Cpu6502EorTest < Test::Unit::TestCase
         @cpu.ram[0x5150] = 0x81
         @cpu.runop(@op, 0x51, 0x4C)
         assert_equal 0, @cpu.flag[:S]
-      end
-
-      should "increase the pc by the number of bytes for this op" do
-        pc = @cpu.pc
-        @cpu.runop(@op, 0x51, 0x4C)
-        assert_equal pc + 3, @cpu.pc
       end
     end
 
@@ -232,6 +212,8 @@ class Cpu6502EorTest < Test::Unit::TestCase
         @cpu.register[:Y] = 0x04
       end
 
+      should_increase_pc_by 3
+
       should "exclusive OR the contents of the accumulator with the correct value based on addressing mode, storing the results in the accumulator" do
         @cpu.ram[0x5150] = 0x83
         @cpu.runop(@op, 0x51, 0x4C)
@@ -260,12 +242,6 @@ class Cpu6502EorTest < Test::Unit::TestCase
         @cpu.ram[0x5150] = 0x81
         @cpu.runop(@op, 0x51, 0x4C)
         assert_equal 0, @cpu.flag[:S]
-      end
-
-      should "increase the pc by the number of bytes for this op" do
-        pc = @cpu.pc
-        @cpu.runop(@op, 0x51, 0x4C)
-        assert_equal pc + 3, @cpu.pc
       end
     end
 
@@ -278,6 +254,8 @@ class Cpu6502EorTest < Test::Unit::TestCase
         @cpu.ram[0x21] = 0x51
       end
 
+      should_increase_pc_by 2
+      
       should "exclusive OR the contents of the accumulator with the correct value based on addressing mode, storing the results in the accumulator" do
         @cpu.ram[0x5150] = 0x83
         @cpu.runop(@op, 0x1C)
@@ -315,12 +293,6 @@ class Cpu6502EorTest < Test::Unit::TestCase
         @cpu.runop(@op, 0xFB)
         assert_equal 0x03, @cpu.register[:A]
       end
-
-      should "increase the pc by the number of bytes for this op" do
-        pc = @cpu.pc
-        @cpu.runop(@op, 0x1C)
-        assert_equal pc + 2, @cpu.pc
-      end
     end
     
     context "indirecty mode" do
@@ -331,6 +303,8 @@ class Cpu6502EorTest < Test::Unit::TestCase
         @cpu.ram[0x20] = 0x4C
         @cpu.ram[0x21] = 0x51
       end
+
+      should_increase_pc_by 2
 
       should "exclusive OR the contents of the accumulator with the correct value based on addressing mode, storing the results in the accumulator" do
         @cpu.ram[0x5150] = 0x83
@@ -361,13 +335,6 @@ class Cpu6502EorTest < Test::Unit::TestCase
         @cpu.runop(@op, 0x20)
         assert_equal 0, @cpu.flag[:S]
       end
-
-      should "increase the pc by the number of bytes for this op" do
-        pc = @cpu.pc
-        @cpu.runop(@op, 0x20)
-        assert_equal pc + 2, @cpu.pc
-      end
     end
-
   end
 end
