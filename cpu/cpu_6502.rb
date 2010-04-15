@@ -211,7 +211,10 @@ class Cpu6502
 
     0x8A => [ "TXA", :implied,     1, 2 ],
 
+    0x9A => [ "TXS", :implied,     1, 2 ],
+
     0x98 => [ "TYA", :implied,     1, 2 ]
+
   }
 
   # tables cribbed from py65. illegal bytes not supported. don't use 'em.
@@ -985,6 +988,9 @@ class Cpu6502
       when 0x8A # TXA implied
         @register[:A] = @register[:X]
         set_sz(@register[:A])
+
+      when 0x9A # TXS implied
+        @register[:SP] = @register[:X]
 
       when 0x98 # TYA
         @register[:A] = @register[:Y]
