@@ -11,6 +11,8 @@ class Cpu6502AslTest < Test::Unit::TestCase
         @op = 0x0A
       end
 
+      should_increase_pc_by 1
+      
       should "shift the accumulator left 1 bit" do
         @cpu.register[:A] = 0x20
         @cpu.runop(@op)
@@ -46,18 +48,14 @@ class Cpu6502AslTest < Test::Unit::TestCase
         @cpu.runop(@op)
         assert_equal 1, @cpu.flag[:C]
       end
-
-      should "increase the pc by the number of bytes this op has" do
-        pc = @cpu.pc
-        @cpu.runop(@op)
-        assert_equal pc + 1, @cpu.pc
-      end
     end
 
     context "zeropage mode" do
       setup do
         @op = 0x06
       end
+
+      should_increase_pc_by 2
 
       should "shift the value at the passed location left 1 bit" do
         @cpu.ram[0x04] = 0x20
@@ -94,12 +92,6 @@ class Cpu6502AslTest < Test::Unit::TestCase
         @cpu.runop(@op, 0x04)
         assert_equal 1, @cpu.flag[:C]
       end
-
-      should "increase the pc by the number of bytes this op has" do
-        pc = @cpu.pc
-        @cpu.runop(@op, 0x04)
-        assert_equal pc + 2, @cpu.pc
-      end
     end
 
     context "zeropagex mode" do
@@ -107,7 +99,9 @@ class Cpu6502AslTest < Test::Unit::TestCase
         @op = 0x16
         @cpu.register[:X] = 0x06
       end
-      
+
+      should_increase_pc_by 2
+
       should "shift the value at the passed location + the value in the X register left 1 bit" do
         @cpu.ram[0x0A] = 0x20
         @cpu.runop(@op, 0x04)
@@ -143,18 +137,14 @@ class Cpu6502AslTest < Test::Unit::TestCase
         @cpu.runop(@op, 0x04)
         assert_equal 1, @cpu.flag[:C]
       end
-
-      should "increase the pc by the number of bytes this op has" do
-        pc = @cpu.pc
-        @cpu.runop(@op, 0x04)
-        assert_equal pc + 2, @cpu.pc
-      end
     end
 
     context "absolute mode" do
       setup do
         @op = 0x0E
       end
+
+      should_increase_pc_by 3
 
       should "shift the value at the passed location left 1 bit" do
         @cpu.ram[0x23B3] = 0x20
@@ -191,12 +181,6 @@ class Cpu6502AslTest < Test::Unit::TestCase
         @cpu.runop(@op, 0x23, 0xB3)
         assert_equal 1, @cpu.flag[:C]
       end
-
-      should "increase the pc by the number of bytes this op has" do
-        pc = @cpu.pc
-        @cpu.runop(@op, 0x23, 0xB3)
-        assert_equal pc + 3, @cpu.pc
-      end
     end
 
     context "absolutex mode" do
@@ -204,7 +188,9 @@ class Cpu6502AslTest < Test::Unit::TestCase
         @op = 0x1E
         @cpu.register[:X] = 0x04
       end
-      
+
+      should_increase_pc_by 3
+
       should "shift the value at the passed location + the value in the X register left 1 bit" do
         @cpu.ram[0x23B3] = 0x20
         @cpu.runop(@op, 0x23, 0xAF)
@@ -239,12 +225,6 @@ class Cpu6502AslTest < Test::Unit::TestCase
         @cpu.ram[0x23B3] = 0x81
         @cpu.runop(@op, 0x23, 0xAF)
         assert_equal 1, @cpu.flag[:C]
-      end
-
-      should "increase the pc by the number of bytes this op has" do
-        pc = @cpu.pc
-        @cpu.runop(@op, 0x23, 0xAF)
-        assert_equal pc + 3, @cpu.pc
       end
     end
   end
