@@ -11,6 +11,8 @@ class Cpu6502OraTest < Test::Unit::TestCase
         @op = 0x09
       end
 
+      should_increase_pc_by 2
+
       should "do a bitwise OR of the accumulator and the passed arg, storing the result in the accumulator" do
         @cpu.register[:A] = 0x69
         @cpu.runop(@op, 0x22)
@@ -40,18 +42,14 @@ class Cpu6502OraTest < Test::Unit::TestCase
         @cpu.runop(@op, 0x05)
         assert_equal 0, @cpu.flag[:S]
       end
-
-      should "increase the pc by the correct number of bytes" do
-        pc = @cpu.pc
-        @cpu.runop(@op, 0x48)
-        assert_equal pc + 2, @cpu.pc
-      end
     end
 
     context "zeropage mode" do
       setup do
         @op = 0x05
       end
+
+      should_increase_pc_by 2
 
       should "do a bitwise OR of the accumulator and the value at the memory location of the passed arg, storing the result in the accumulator" do
         @cpu.register[:A] = 0x69
@@ -87,12 +85,6 @@ class Cpu6502OraTest < Test::Unit::TestCase
         @cpu.runop(@op, 0x22)
         assert_equal 0, @cpu.flag[:S]
       end
-
-      should "increase the pc by the correct number of bytes" do
-        pc = @cpu.pc
-        @cpu.runop(@op, 0x48)
-        assert_equal pc + 2, @cpu.pc
-      end
     end
 
     context "zeropagex mode" do
@@ -100,6 +92,8 @@ class Cpu6502OraTest < Test::Unit::TestCase
         @op = 0x15
         @cpu.register[:X] = 0x04
       end
+
+      should_increase_pc_by 2
 
       should "do a bitwise OR of the accumulator and the value at the memory location of the passed arg, storing the result in the accumulator" do
         @cpu.register[:A] = 0x69
@@ -143,18 +137,14 @@ class Cpu6502OraTest < Test::Unit::TestCase
         @cpu.runop(@op, 0xFE)
         assert_equal 0x10 | 0x33, @cpu.register[:A]
       end
-
-      should "increase the pc by the correct number of bytes" do
-        pc = @cpu.pc
-        @cpu.runop(@op, 0x1E)
-        assert_equal pc + 2, @cpu.pc
-      end
     end
 
     context "absolute mode" do
       setup do
         @op = 0x0D
       end
+
+      should_increase_pc_by 3
 
       should "do a bitwise OR of the accumulator and the value at the memory location of the passed args, storing the result in the accumulator" do
         @cpu.register[:A] = 0x69
@@ -190,12 +180,6 @@ class Cpu6502OraTest < Test::Unit::TestCase
         @cpu.runop(@op, 0x22, 0xFC)
         assert_equal 0, @cpu.flag[:S]
       end
-
-      should "increase the pc by the correct number of bytes" do
-        pc = @cpu.pc
-        @cpu.runop(@op, 0x22, 0xFC)
-        assert_equal pc + 3, @cpu.pc
-      end
     end
 
     context "absolutex mode" do
@@ -203,6 +187,8 @@ class Cpu6502OraTest < Test::Unit::TestCase
         @op = 0x1D
         @cpu.register[:X] = 0x04
       end
+
+      should_increase_pc_by 3
 
       should "add the value in the X register to the value at the memory location specified by the arguments and do a bitwise OR with the accumulator, storing the result in the accumulator" do
         @cpu.register[:A] = 0x69
@@ -237,12 +223,6 @@ class Cpu6502OraTest < Test::Unit::TestCase
         @cpu.ram[0x22FC] = 0x05
         @cpu.runop(@op, 0x22, 0xF8)
         assert_equal 0, @cpu.flag[:S]
-      end
-
-      should "increase the pc by the correct number of bytes" do
-        pc = @cpu.pc
-        @cpu.runop(@op, 0x22, 0xF8)
-        assert_equal pc + 3, @cpu.pc
       end
     end
 
@@ -252,6 +232,8 @@ class Cpu6502OraTest < Test::Unit::TestCase
         @cpu.register[:Y] = 0x04
       end
 
+      should_increase_pc_by 3
+
       should "add the value in the X register to the value at the memory location specified by the arguments and do a bitwise OR with the accumulator, storing the result in the accumulator" do
         @cpu.register[:A] = 0x69
         @cpu.ram[0x22FC] = 0x12
@@ -285,12 +267,6 @@ class Cpu6502OraTest < Test::Unit::TestCase
         @cpu.ram[0x22FC] = 0x05
         @cpu.runop(@op, 0x22, 0xF8)
         assert_equal 0, @cpu.flag[:S]
-      end
-
-      should "increase the pc by the correct number of bytes" do
-        pc = @cpu.pc
-        @cpu.runop(@op, 0x22, 0xF8)
-        assert_equal pc + 3, @cpu.pc
       end
     end
 
@@ -301,6 +277,8 @@ class Cpu6502OraTest < Test::Unit::TestCase
         @cpu.ram[0x1E] = 0x22
         @cpu.ram[0x1F] = 0x45
       end
+
+      should_increase_pc_by 2
 
       should "do a bitwise OR of the accumulator and the correct memory location, storing the result in the accumulator" do
         @cpu.register[:A] = 0x69
@@ -348,12 +326,6 @@ class Cpu6502OraTest < Test::Unit::TestCase
         @cpu.runop(@op, 0xFB)
         assert_equal 0x1A | 0x69, @cpu.register[:A]
       end
-
-      should "increase the pc by the correct number of bytes" do
-        pc = @cpu.pc
-        @cpu.runop(@op, 0x1A)
-        assert_equal pc + 2, @cpu.pc
-      end
     end
 
     context "indirecty mode" do
@@ -364,6 +336,8 @@ class Cpu6502OraTest < Test::Unit::TestCase
         @cpu.ram[0x1F] = 0x45
         @cpu.ram[0x4526] = 0x77
       end
+
+      should_increase_pc_by 2
 
       should "do a bitwise OR of the accumulator and the correct memory location, storing the result in the accumulator" do
         @cpu.register[:A] = 0x69
@@ -411,11 +385,6 @@ class Cpu6502OraTest < Test::Unit::TestCase
 #        assert_equal 0x80 & 0x69, @cpu.register[:A]
 #      end
 #
-      should "increase the pc by the correct number of bytes" do
-        pc = @cpu.pc
-        @cpu.runop(@op, 0x1E)
-        assert_equal pc + 2, @cpu.pc
-      end
     end
 
   end

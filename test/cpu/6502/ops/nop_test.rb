@@ -11,11 +11,7 @@ class Cpu6502NopTest < Test::Unit::TestCase
         @op = 0xEA
       end
 
-      should "increase the pc by the number of bytes for the op" do
-        pc = @cpu.pc
-        @cpu.runop(@op)
-        assert_equal pc + 1, @cpu.pc
-      end
+      should_increase_pc_by 1
     end
   end
 end
