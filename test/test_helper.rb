@@ -25,6 +25,14 @@ class Test::Unit::TestCase
       @cpu.runop(@op, 0xF8)
       assert_equal (0x6950 + 2) - (~(0xF8) & 0xff), @cpu.pc
     end
-    
+  end
+
+  def self.should_increase_pc_by(amount)
+    should "increase the pc by the number of bytes for this op" do
+      pc = @cpu.pc
+      args = Array.new(amount - 1, 0)
+      @cpu.runop(@op, *args)
+      assert_equal pc + amount, @cpu.pc
+    end
   end
 end

@@ -11,16 +11,12 @@ class Cpu6502SedTest < Test::Unit::TestCase
         @op = 0xF8
       end
 
+      should_increase_pc_by(1)
+
       should "set the decimal mode flag" do
         @cpu.flag[:D] = 0
         @cpu.runop(@op)
         assert_equal 1, @cpu.flag[:D]
-      end
-
-      should "increase the pc by the number of bytes for this op" do
-        pc = @cpu.pc
-        @cpu.runop(@op)
-        assert_equal pc + 1, @cpu.pc
       end
     end
   end

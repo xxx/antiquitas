@@ -17,11 +17,12 @@ class Cpu6502SeiTest < Test::Unit::TestCase
         assert_equal 1, @cpu.flag[:I]
       end
 
-      should "increase the pc by the number of bytes for this op" do
-        pc = @cpu.pc
-        @cpu.runop(@op)
-        assert_equal pc + 1, @cpu.pc
-      end
+      should_increase_pc_by(1)
+#      should "increase the pc by the number of bytes for this op" do
+#        pc = @cpu.pc
+#        @cpu.runop(@op)
+#        assert_equal pc + 1, @cpu.pc
+#      end
     end
   end
 end
