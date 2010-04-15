@@ -24,11 +24,7 @@ class Cpu6502BvsTest < Test::Unit::TestCase
           @cpu.flag[:V] = 0
         end
 
-        should "increase the pc by the number of bytes for the op" do
-          pc = @cpu.pc
-          @cpu.runop(@op, 0xA0)
-          assert_equal pc + 2, @cpu.pc
-        end
+        should_increase_pc_by 2
       end
     end
   end

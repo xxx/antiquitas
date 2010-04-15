@@ -11,16 +11,12 @@ class Cpu6502CliTest < Test::Unit::TestCase
         @op = 0x58
       end
 
+      should_increase_pc_by 1
+
       should "clear the interrupt-disable flag" do
         @cpu.flag[:I] = 1
         @cpu.runop(@op)
         assert_equal 0, @cpu.flag[:I]
-      end
-
-      should "increase the pc by the number of bytes for this op" do
-        pc = @cpu.pc
-        @cpu.runop(@op)
-        assert_equal pc + 1, @cpu.pc
       end
     end
   end

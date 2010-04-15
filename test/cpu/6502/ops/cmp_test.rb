@@ -12,6 +12,8 @@ class Cpu6502CmpTest < Test::Unit::TestCase
         @cpu.register[:A] = 0x69
       end
 
+      should_increase_pc_by 2
+
       should "set the carry flag if the value in the accumulator is greater than or equal to the value to compare with" do
         @cpu.runop(@op, 0x40)
         assert_equal 1, @cpu.flag[:C]
@@ -45,12 +47,6 @@ class Cpu6502CmpTest < Test::Unit::TestCase
         @cpu.runop(@op, 0x68)
         assert_equal 0, @cpu.flag[:S]
       end
-
-      should "increase the pc by the correct number of bytes" do
-        pc = @cpu.pc
-        @cpu.runop(@op, 0x6A)
-        assert_equal pc + 2, @cpu.pc
-      end
     end
 
     context "zeropage mode" do
@@ -58,6 +54,8 @@ class Cpu6502CmpTest < Test::Unit::TestCase
         @op = 0xC5
         @cpu.register[:A] = 0x69
       end
+
+      should_increase_pc_by 2
 
       should "set the carry flag if the value in the accumulator is greater than or equal to the value to compare with" do
         @cpu.ram[0x50] = 0x40
@@ -99,12 +97,6 @@ class Cpu6502CmpTest < Test::Unit::TestCase
         @cpu.runop(@op, 0x24)
         assert_equal 0, @cpu.flag[:S]
       end
-
-      should "increase the pc by the correct number of bytes" do
-        pc = @cpu.pc
-        @cpu.runop(@op, 0x6A)
-        assert_equal pc + 2, @cpu.pc
-      end
     end
 
     context "zeropagex mode" do
@@ -113,6 +105,8 @@ class Cpu6502CmpTest < Test::Unit::TestCase
         @cpu.register[:A] = 0x69
         @cpu.register[:X] = 0x04
       end
+
+      should_increase_pc_by 2
 
       should "set the carry flag if the value in the accumulator is greater than or equal to the value to compare with" do
         @cpu.ram[0x50] = 0x40
@@ -162,12 +156,6 @@ class Cpu6502CmpTest < Test::Unit::TestCase
         @cpu.runop(@op, 0x24)
         assert_equal 1, @cpu.flag[:Z]
       end
-
-      should "increase the pc by the correct number of bytes" do
-        pc = @cpu.pc
-        @cpu.runop(@op, 0x6A)
-        assert_equal pc + 2, @cpu.pc
-      end
     end
 
     context "absolute mode" do
@@ -175,6 +163,8 @@ class Cpu6502CmpTest < Test::Unit::TestCase
         @op = 0xCD
         @cpu.register[:A] = 0x69
       end
+
+      should_increase_pc_by 3
 
       should "set the carry flag if the value in the accumulator is greater than or equal to the value to compare with" do
         @cpu.ram[0x5050] = 0x40
@@ -216,12 +206,6 @@ class Cpu6502CmpTest < Test::Unit::TestCase
         @cpu.runop(@op, 0x24, 0x50)
         assert_equal 0, @cpu.flag[:S]
       end
-
-      should "increase the pc by the correct number of bytes" do
-        pc = @cpu.pc
-        @cpu.runop(@op, 0x6A, 0x56)
-        assert_equal pc + 3, @cpu.pc
-      end
     end
 
     context "absolutex mode" do
@@ -230,6 +214,8 @@ class Cpu6502CmpTest < Test::Unit::TestCase
         @cpu.register[:A] = 0x69
         @cpu.register[:X] = 0x04
       end
+
+      should_increase_pc_by 3
 
       should "set the carry flag if the value in the accumulator is greater than or equal to the value to compare with" do
         @cpu.ram[0x5050] = 0x40
@@ -270,12 +256,6 @@ class Cpu6502CmpTest < Test::Unit::TestCase
         @cpu.ram[0x2450] = 0x68
         @cpu.runop(@op, 0x24, 0x4C)
         assert_equal 0, @cpu.flag[:S]
-      end
-
-      should "increase the pc by the correct number of bytes" do
-        pc = @cpu.pc
-        @cpu.runop(@op, 0x6A, 0x56)
-        assert_equal pc + 3, @cpu.pc
       end
     end
 
@@ -286,6 +266,8 @@ class Cpu6502CmpTest < Test::Unit::TestCase
         @cpu.register[:Y] = 0x04
       end
 
+      should_increase_pc_by 3
+
       should "set the carry flag if the value in the accumulator is greater than or equal to the value to compare with" do
         @cpu.ram[0x5050] = 0x40
         @cpu.ram[0x5150] = 0x69
@@ -325,12 +307,6 @@ class Cpu6502CmpTest < Test::Unit::TestCase
         @cpu.ram[0x2450] = 0x68
         @cpu.runop(@op, 0x24, 0x4C)
         assert_equal 0, @cpu.flag[:S]
-      end
-
-      should "increase the pc by the correct number of bytes" do
-        pc = @cpu.pc
-        @cpu.runop(@op, 0x6A, 0x56)
-        assert_equal pc + 3, @cpu.pc
       end
     end
 
@@ -343,6 +319,8 @@ class Cpu6502CmpTest < Test::Unit::TestCase
         @cpu.ram[0x51] = 0x7C # hi byte
         @cpu.ram[0x7C28] = 0x20
       end
+
+      should_increase_pc_by 2
 
       should "set the carry flag if the value in the accumulator is greater than or equal to the value to compare with" do
         @cpu.runop(@op, 0x4C)
@@ -389,12 +367,6 @@ class Cpu6502CmpTest < Test::Unit::TestCase
         @cpu.runop(@op, 0x50)
         assert_equal 1, @cpu.flag[:C]
       end
-
-      should "increase the pc by the correct number of bytes" do
-        pc = @cpu.pc
-        @cpu.runop(@op, 0x4C)
-        assert_equal pc + 2, @cpu.pc
-      end
     end
 
     context "indirecty mode" do
@@ -406,6 +378,8 @@ class Cpu6502CmpTest < Test::Unit::TestCase
         @cpu.ram[0x51] = 0x24 # hi byte
         @cpu.ram[0x2450] = 0x20
       end
+
+      should_increase_pc_by 2
 
       should "set the carry flag if the value in the accumulator is greater than or equal to the value to compare with" do
         @cpu.runop(@op, 0x50)
@@ -445,12 +419,6 @@ class Cpu6502CmpTest < Test::Unit::TestCase
         @cpu.ram[0x2450] = 0x68
         @cpu.runop(@op, 0x50)
         assert_equal 0, @cpu.flag[:S]
-      end
-
-      should "increase the pc by the correct number of bytes" do
-        pc = @cpu.pc
-        @cpu.runop(@op, 0x50)
-        assert_equal pc + 2, @cpu.pc
       end
     end
 
