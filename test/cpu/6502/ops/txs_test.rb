@@ -16,7 +16,7 @@ class Cpu6502CTxsTest < Test::Unit::TestCase
       should "transfer the value in the X register to the stack pointer" do
         @cpu.register[:X] = 0x69
         @cpu.runop(@op)
-        assert_equal 0x69, @cpu.register[:SP]
+        assert_equal 0x69, @cpu.register[:S]
       end
 
       should "not change the value of the X register" do

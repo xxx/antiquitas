@@ -12,7 +12,7 @@ class Cpu6502Test < Test::Unit::TestCase
       assert_equal 0, @cpu.register[:A]
       assert_equal 0, @cpu.register[:X]
       assert_equal 0, @cpu.register[:Y]
-      assert_equal 0xFF, @cpu.register[:SP]
+      assert_equal 0xFF, @cpu.register[:S]
       assert_equal 0, @cpu.register[:P]
     end
 

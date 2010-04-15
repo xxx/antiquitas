@@ -254,7 +254,7 @@ class Cpu6502
     @pc = 0
     @pc_offset = 0
     @ram = Array.new(65536, 0)
-    @register = { :A => 0, :X => 0, :Y => 0, :SP => 0xFF, :P => 0 }
+    @register = { :A => 0, :X => 0, :Y => 0, :S => 0xFF, :P => 0 }
     # unused flag is always 1, according to the bug lists
     # real bits 7 to 0 are: N V - B D I Z C
     @flag = { :N => 0, :V => 0, :B => 0, :D => 0, :I => 0, :Z => 0, :C => 0}
@@ -267,18 +267,18 @@ class Cpu6502
 
   def display_status
     if (@debug)
-      printf("PC=%04x SP=%04x A=%02x X=%02x Y=%02x S=%02x C=%d Z=%d\n\n", @pc,@register[:SP],@register[:A],@register[:X],@register[:Y],@flag[:N],@flag[:C]?1:0,@flag[:Z])
+      printf("PC=%04x SP=%04x A=%02x X=%02x Y=%02x S=%02x C=%d Z=%d\n\n", @pc,@register[:S],@register[:A],@register[:X],@register[:Y],@flag[:N],@flag[:C]?1:0,@flag[:Z])
     end
   end
 
   def push(oper1)
-    @ram[@register[:SP] + 0x100] = oper1
-    @register[:SP] -= 1
+    @ram[@register[:S] + 0x100] = oper1
+    @register[:S] -= 1
   end
 
   def pull
-    @register[:SP] += 1
-    @ram[@register[:SP] + 0x100]
+    @register[:S] += 1
+    @ram[@register[:S] + 0x100]
   end
 
   def set_sign(accumulator)
@@ -982,7 +982,7 @@ class Cpu6502
         set_sz(@register[:Y])
 
       when 0xBA # TSX implied
-        @register[:X] = @register[:SP]
+        @register[:X] = @register[:S]
         set_sz(@register[:X])
         
       when 0x8A # TXA implied
@@ -990,7 +990,7 @@ class Cpu6502
         set_sz(@register[:A])
 
       when 0x9A # TXS implied
-        @register[:SP] = @register[:X]
+        @register[:S] = @register[:X]
 
       when 0x98 # TYA
         @register[:A] = @register[:Y]
