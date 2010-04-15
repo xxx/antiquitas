@@ -12,6 +12,8 @@ class Cpu6502DexTest < Test::Unit::TestCase
         @cpu.register[:X] = 0x69
       end
 
+      should_increase_pc_by 1
+
       should "decrement the value in the X register" do
         @cpu.runop(@op)
         assert_equal 0x68, @cpu.register[:X]
@@ -37,12 +39,6 @@ class Cpu6502DexTest < Test::Unit::TestCase
       should "clear the sign flag if bit 7 of the result is not set" do
         @cpu.runop(@op)
         assert_equal 0, @cpu.flag[:S]
-      end
-
-      should "increase the pc by the number of bytes for this op" do
-        pc = @cpu.pc
-        @cpu.runop(@op)
-        assert_equal pc + 1, @cpu.pc
       end
     end
   end

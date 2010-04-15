@@ -12,6 +12,8 @@ class Cpu6502CpyTest < Test::Unit::TestCase
         @cpu.register[:Y] = 0x30
       end
 
+      should_increase_pc_by 2
+
       should "set the carry flag if the value in the Y register is the same or greater than the passed value" do
         @cpu.runop(@op, 0x30)
         assert_equal 1, @cpu.flag[:C]
@@ -44,12 +46,6 @@ class Cpu6502CpyTest < Test::Unit::TestCase
         @cpu.runop(@op, 0x30)
         assert_equal 0, @cpu.flag[:S]
       end
-
-      should "increase the pc by the number of bytes for the op" do
-        pc = @cpu.pc
-        @cpu.runop(@op, 0x30)
-        assert_equal pc + 2, @cpu.pc
-      end
     end
 
     context "zeropage mode" do
@@ -58,6 +54,8 @@ class Cpu6502CpyTest < Test::Unit::TestCase
         @cpu.register[:Y] = 0x30
         @cpu.ram[0x1A] = 0x69
       end
+
+      should_increase_pc_by 2
 
       should "set the carry flag if the Y register value is the same or greater than the passed value" do
         @cpu.ram[0x1A] = 0x20
@@ -95,12 +93,6 @@ class Cpu6502CpyTest < Test::Unit::TestCase
         @cpu.runop(@op, 0x1A)
         assert_equal 0, @cpu.flag[:S]
       end
-
-      should "increase the pc by the number of bytes for the op" do
-        pc = @cpu.pc
-        @cpu.runop(@op, 0x1A)
-        assert_equal pc + 2, @cpu.pc
-      end
     end
 
     context "absolute mode" do
@@ -109,6 +101,8 @@ class Cpu6502CpyTest < Test::Unit::TestCase
         @cpu.register[:Y] = 0x30
         @cpu.ram[0x1A34] = 0x69
       end
+
+      should_increase_pc_by 3
 
       should "set the carry flag if the Y register value is the same or greater than the passed value" do
         @cpu.ram[0x1A34] = 0x20
@@ -145,12 +139,6 @@ class Cpu6502CpyTest < Test::Unit::TestCase
         @cpu.ram[0x1A34] = 0x01
         @cpu.runop(@op, 0x1A, 0x34)
         assert_equal 0, @cpu.flag[:S]
-      end
-
-      should "increase the pc by the number of bytes for the op" do
-        pc = @cpu.pc
-        @cpu.runop(@op, 0x1A, 0x34)
-        assert_equal pc + 3, @cpu.pc
       end
     end
   end
