@@ -893,9 +893,9 @@ class Cpu6502
       when 0xF9 # SBC absolutey
         op_sbc(@ram[((oper1 << 8) | oper2) + @register[:Y]])
 
-#      when 0x61 # SBC indirectx
-#        op_sbc(@ram[indirect_x_address(oper1)])
-#
+      when 0xE1 # SBC indirectx
+        op_sbc(@ram[indirect_x_address(oper1)])
+
 #      when 0x71 # SBC indirecty
 #        op_sbc(@ram[indirect_y_address(oper1)])
 

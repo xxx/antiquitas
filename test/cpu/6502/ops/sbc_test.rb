@@ -815,152 +815,145 @@ class Cpu6502SbcTest < Test::Unit::TestCase
       end
     end
 
-#    context "indirectx mode" do
-#      setup do
-#        @op = 0xE1
-#        @cpu.register[:X] = 0x04
-#        @cpu.ram[0x35] = 0x02
-#        @cpu.ram[0x36] = 0x20
-#        @cpu.ram[(0x20 << 8) | 0x02] = 0x69
-#      end
-#
-#      context "with decimal mode on" do
-#        setup do
-#          @cpu.flag[:D] = 1
-#        end
-#
-#        #wtf?
-#        should "add the passed value with the value in the X register, then take the value at that memory location and " +
-#          "use it as the least significant byte of the real address, while using the contents of the next memory location " +
-#          "counting up, and add it and the value of the carry flag bit to the present value of the accumulator, using BCD mode" do
-#          @cpu.register[:A] = 0x08
-#          @cpu.flag[:C] = 1
-#          @cpu.runop(@op, 0x31)
-#          assert_equal 0x78, @cpu.register[:A]
-#        end
-#
-#        should "set the carry flag if the result > 99" do
-#          @cpu.register[:A] = 0x40
-#          @cpu.runop(@op, 0x31)
-#          assert_equal 1, @cpu.flag[:C]
-#        end
-#
-#        should "clear the carry flag if the result <= 99" do
-#          @cpu.register[:A] = 0x30
-#          @cpu.runop(@op, 0x31)
-#          assert_equal 0, @cpu.flag[:C]
-#        end
-#
-#        # zero flag in decimal mode is undefined on 6502
-#        should "set the zero flag if the result is 0" do
-#          @cpu.register[:A] = 0x00
-#          @cpu.ram[(0x20 << 8) | 0x02] = 0x00
-#          @cpu.runop(@op, 0x31)
-#          assert_equal 1, @cpu.flag[:Z]
-#        end
-#
-#        should "clear the zero flag if the result is not zero" do
-#          @cpu.register[:A] = 0x08
-#          @cpu.runop(@op, 0x31)
-#          assert_equal 0, @cpu.flag[:Z]
-#        end
-#
-#        # sign flag in decimal mode is undefined on 6502
-#        should "set the sign flag if bit 7 in the result is set" do
-#          @cpu.register[:A] = 0x44
-#          @cpu.ram[(0x20 << 8) | 0x02] = 0x90
-#          @cpu.runop(@op, 0x31)
-#          assert_equal 1, @cpu.flag[:S]
-#        end
-#
-#        should "clear the sign flag if bit 7 in the result is not set" do
-#          @cpu.register[:A] = 0x05
-#          @cpu.runop(@op, 0x31)
-#          assert_equal 0, @cpu.flag[:S]
-#        end
-#      end
-#
-#      context "with decimal mode off" do
-#        should "add the passed value with the value in the X register, then take the value at that memory location and " +
-#          "use it as the least significant byte of the real address, while using the contents of the next memory location " +
-#          "counting up, and add it and the value of the carry flag bit to the present value of the accumulator" do
-#          @cpu.register[:A] = 0x08
-#          @cpu.flag[:C] = 1
-#          @cpu.runop(@op, 0x31)
-#          assert_equal 0x08 + 0x69 + 1, @cpu.register[:A]
-#        end
-#
-#        should "set the zero flag if the result is 0" do
-#          @cpu.register[:A] = 0x00
-#          @cpu.ram[(0x20 << 8) | 0x02] = 0x00
-#          @cpu.runop(@op, 0x31)
-#          assert_equal 1, @cpu.flag[:Z]
-#        end
-#
-#        should "clear the zero flag if the result is not zero" do
-#          @cpu.register[:A] = 0x08
-#          @cpu.runop(@op, 0x31)
-#          assert_equal 0, @cpu.flag[:Z]
-#        end
-#
-#        should "set the carry flag if the result overflows" do
-#          @cpu.register[:A] = 0xFE
-#          @cpu.runop(@op, 0x31)
-#          assert_equal 1, @cpu.flag[:C]
-#        end
-#
-#        should "clear the carry flag if the result does not overflow" do
-#          @cpu.register[:A] = 0x01
-#          @cpu.runop(@op, 0x31)
-#          assert_equal 0, @cpu.flag[:C]
-#        end
-#
-#        should "set the overflow flag if the sign of the result is wrong" do
-#          @cpu.register[:A] = 0x07
-#          @cpu.ram[(0x20 << 8) | 0x02] = 0x7A
-#          @cpu.runop(@op, 0x31)
-#          assert_equal 1, @cpu.flag[:V]
-#        end
-#
-#        should "clear the overflow flag if the sign of the result is ok" do
-#          @cpu.register[:A] = 0x05
-#          @cpu.runop(@op, 0x31)
-#          assert_equal 0, @cpu.flag[:V]
-#        end
-#
-#        should "set the sign flag if bit 7 in the result is set" do
-#          @cpu.register[:A] = 0x00
-#          @cpu.ram[(0x20 << 8) | 0x02] = 0xFF
-#          @cpu.runop(@op, 0x31)
-#          assert_equal 1, @cpu.flag[:S]
-#        end
-#
-#        should "clear the sign flag if bit 7 in the result is not set" do
-#          @cpu.register[:A] = 0x05
-#          @cpu.runop(@op, 0x31)
-#          assert_equal 0, @cpu.flag[:S]
-#        end
-#      end
-#
-#      should "increase the pc by the number of bytes for the op" do
-#        pc = @cpu.pc
-#        @cpu.runop(@op, 0x31)
-#        assert_equal pc + 2, @cpu.pc
-#      end
-#
-#      should "wrap too-large addresses around so they fit on the zero page" do
-#        @cpu.register[:A] = 0x00
-#        @cpu.register[:X] = 0x04
-#        @cpu.ram[0x00] = 0x0A
-#        @cpu.ram[0xFF] = 0x02
-#        @cpu.ram[0xFF + 1] = 0x10
-#        @cpu.ram[((0x10 << 8) | 0x02)] = 0xB0
-#        @cpu.ram[((0x0A << 8) | 0x02)] = 0x69
-#        @cpu.runop(@op, 0xFB)
-#        assert_equal 0x69, @cpu.register[:A]
-#      end
-#    end
-#
+    context "indirectx mode" do
+      setup do
+        @op = 0xE1
+        @cpu.register[:X] = 0x04
+        @cpu.ram[0x35] = 0x02
+        @cpu.ram[0x36] = 0x20
+        @cpu.ram[(0x20 << 8) | 0x02] = 0x69
+      end
+
+      context "with decimal mode on" do
+        setup do
+          @cpu.flag[:D] = 1
+        end
+
+        should "subtract the correct value from the accumulator, subtracting an additional one if the carry flag is clear, storing the result in the accumulator, using BCD mode" do
+          @cpu.register[:A] = 0x80
+          @cpu.runop(@op, 0x31)
+          assert_equal 0x10, @cpu.register[:A]
+        end
+
+        should "set the carry flag if borrow was required" do
+          @cpu.register[:A] = 0x01
+          @cpu.runop(@op, 0xFA)
+          assert_equal 1, @cpu.flag[:C]
+        end
+
+        should "clear the carry flag if borrow was not required" do
+          @cpu.register[:A] = 0x40
+          @cpu.runop(@op, 0x31)
+          assert_equal 0, @cpu.flag[:C]
+        end
+
+        # zero flag in decimal mode is undefined on 6502
+        should "set the zero flag if the result is 0" do
+          @cpu.register[:A] = 0x01
+          @cpu.ram[(0x20 << 8) | 0x02] = 0x00
+          @cpu.runop(@op, 0x31)
+          assert_equal 1, @cpu.flag[:Z]
+        end
+
+        should "clear the zero flag if the result is not zero" do
+          @cpu.register[:A] = 0x08
+          @cpu.runop(@op, 0x31)
+          assert_equal 0, @cpu.flag[:Z]
+        end
+
+        # sign flag in decimal mode is undefined on 6502
+        should "set the sign flag if bit 7 in the result is set" do
+          @cpu.register[:A] = 0x94
+          @cpu.ram[(0x20 << 8) | 0x02] = 0x96
+          @cpu.runop(@op, 0x31)
+          assert_equal 1, @cpu.flag[:S]
+        end
+
+        should "clear the sign flag if bit 7 in the result is not set" do
+          @cpu.register[:A] = 0x80
+          @cpu.runop(@op, 0x31)
+          assert_equal 0, @cpu.flag[:S]
+        end
+      end
+
+      context "with decimal mode off" do
+        should "subtract the correct value from the accumulator, subtracting an additional one if the carry flag is clear, storing the result in the accumulator" do
+          @cpu.register[:A] = 0x80
+          @cpu.runop(@op, 0x31)
+          assert_equal 0x80 - 0x69 - 1, @cpu.register[:A]
+        end
+
+        should "set the zero flag if the result is 0" do
+          @cpu.register[:A] = 0x01
+          @cpu.ram[(0x20 << 8) | 0x02] = 0x00
+          @cpu.runop(@op, 0x31)
+          assert_equal 1, @cpu.flag[:Z]
+        end
+
+        should "clear the zero flag if the result is not zero" do
+          @cpu.register[:A] = 0x08
+          @cpu.runop(@op, 0x31)
+          assert_equal 0, @cpu.flag[:Z]
+        end
+
+        should "set the carry flag if borrow was not required" do
+          @cpu.register[:A] = 0x90
+          @cpu.runop(@op, 0x31)
+          assert_equal 1, @cpu.flag[:C]
+        end
+
+        should "clear the carry flag if borrow was required" do
+          @cpu.register[:A] = 0x40
+          @cpu.runop(@op, 0x31)
+          assert_equal 0, @cpu.flag[:C]
+        end
+
+        should "set the overflow flag if the sign of the result is wrong" do
+          @cpu.register[:A] = 0x07
+          @cpu.ram[(0x20 << 8) | 0x02] = 0x7A
+          @cpu.runop(@op, 0x31)
+          assert_equal 1, @cpu.flag[:V]
+        end
+
+        should "clear the overflow flag if the sign of the result is ok" do
+          @cpu.register[:A] = 0x80
+          @cpu.runop(@op, 0x31)
+          assert_equal 0, @cpu.flag[:V]
+        end
+
+        should "set the sign flag if bit 7 in the result is set" do
+          @cpu.register[:A] = 0x00
+          @cpu.ram[(0x20 << 8) | 0x02] = 0x04
+          @cpu.runop(@op, 0x31)
+          assert_equal 1, @cpu.flag[:S]
+        end
+
+        should "clear the sign flag if bit 7 in the result is not set" do
+          @cpu.register[:A] = 0x80
+          @cpu.runop(@op, 0x31)
+          assert_equal 0, @cpu.flag[:S]
+        end
+      end
+
+      should "increase the pc by the number of bytes for the op" do
+        pc = @cpu.pc
+        @cpu.runop(@op, 0x31)
+        assert_equal pc + 2, @cpu.pc
+      end
+
+      should "wrap too-large addresses around so they fit on the zero page" do
+        @cpu.register[:A] = 0x50
+        @cpu.register[:X] = 0x04
+        @cpu.ram[0x00] = 0x0A
+        @cpu.ram[0xFF] = 0x02
+        @cpu.ram[0xFF + 1] = 0x10
+        @cpu.ram[((0x10 << 8) | 0x02)] = 0xB0
+        @cpu.ram[((0x0A << 8) | 0x02)] = 0x10
+        @cpu.runop(@op, 0xFB)
+        assert_equal 0x50 - 0x10 - 1, @cpu.register[:A]
+      end
+    end
+
 #    context "indirecty mode" do
 #      setup do
 #        @op = 0xF1
