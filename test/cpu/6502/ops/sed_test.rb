@@ -11,7 +11,7 @@ class Cpu6502SedTest < Test::Unit::TestCase
         @op = 0xF8
       end
 
-      should_increase_pc_by(1)
+      should_increase_pc_by 1
 
       should "set the decimal mode flag" do
         @cpu.flag[:D] = 0

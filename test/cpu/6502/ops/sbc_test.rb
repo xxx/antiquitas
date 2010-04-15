@@ -11,7 +11,7 @@ class Cpu6502SbcTest < Test::Unit::TestCase
         @op = 0xE9
       end
 
-      should_increase_pc_by(2)
+      should_increase_pc_by 2
       
       context "with decimal mode on" do
         setup do
@@ -127,7 +127,7 @@ class Cpu6502SbcTest < Test::Unit::TestCase
         @op = 0xE5
       end
 
-      should_increase_pc_by(2)
+      should_increase_pc_by 2
       
       context "with decimal mode on" do
         setup do
@@ -258,7 +258,7 @@ class Cpu6502SbcTest < Test::Unit::TestCase
         @cpu.register[:X] = 0x04
       end
 
-      should_increase_pc_by(2)
+      should_increase_pc_by 2
       
       context "with decimal mode on" do
         setup do
@@ -397,7 +397,7 @@ class Cpu6502SbcTest < Test::Unit::TestCase
         @op = 0xED
       end
 
-      should_increase_pc_by(3)
+      should_increase_pc_by 3
 
       context "with decimal mode on" do
         setup do
@@ -528,7 +528,7 @@ class Cpu6502SbcTest < Test::Unit::TestCase
         @cpu.register[:X] = 0x04
       end
 
-      should_increase_pc_by(3)
+      should_increase_pc_by 3
 
       context "with decimal mode on" do
         setup do
@@ -659,7 +659,7 @@ class Cpu6502SbcTest < Test::Unit::TestCase
         @cpu.register[:Y] = 0x04
       end
 
-      should_increase_pc_by(3)
+      should_increase_pc_by 3
       
       context "with decimal mode on" do
         setup do
@@ -793,7 +793,7 @@ class Cpu6502SbcTest < Test::Unit::TestCase
         @cpu.ram[(0x20 << 8) | 0x02] = 0x69
       end
 
-      should_increase_pc_by(2)
+      should_increase_pc_by 2
       
       context "with decimal mode on" do
         setup do
@@ -928,7 +928,7 @@ class Cpu6502SbcTest < Test::Unit::TestCase
         @cpu.ram[0x2006] = 0x69
       end
 
-      should_increase_pc_by(2)
+      should_increase_pc_by 2
 
       context "with decimal mode on" do
         setup do

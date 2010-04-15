@@ -11,6 +11,8 @@ class Cpu6502RorTest < Test::Unit::TestCase
         @op = 0x6A
       end
 
+      should_increase_pc_by 1
+
       should "shift the accumulator 1 bit to the right, moving bit 0 into the carry, and the carry into bit 7" do
         @cpu.register[:A] = 0x81
         @cpu.flag[:C] = 0
@@ -43,18 +45,14 @@ class Cpu6502RorTest < Test::Unit::TestCase
         @cpu.runop(@op)
         assert_equal 0, @cpu.flag[:S]
       end
-
-      should "increase the pc by the number of bytes for this op" do
-        pc = @cpu.pc
-        @cpu.runop(@op)
-        assert_equal pc + 1, @cpu.pc
-      end
     end
 
     context "zeropage mode" do
       setup do
         @op = 0x66
       end
+
+      should_increase_pc_by 2
 
       should "shift the memory value 1 bit to the right, moving bit 0 into the carry, and the carry into bit 7" do
         @cpu.ram[0x23] = 0x81
@@ -88,12 +86,6 @@ class Cpu6502RorTest < Test::Unit::TestCase
         @cpu.runop(@op, 0x23)
         assert_equal 0, @cpu.flag[:S]
       end
-
-      should "increase the pc by the number of bytes for this op" do
-        pc = @cpu.pc
-        @cpu.runop(@op, 0x23)
-        assert_equal pc + 2, @cpu.pc
-      end
     end
 
     context "zeropagex mode" do
@@ -101,6 +93,8 @@ class Cpu6502RorTest < Test::Unit::TestCase
         @op = 0x76
         @cpu.register[:X] = 0x04
       end
+
+      should_increase_pc_by 2
 
       should "shift the memory value 1 bit to the right, moving bit 0 into the carry, and the carry into bit 7" do
         @cpu.ram[0x23] = 0x81
@@ -141,18 +135,14 @@ class Cpu6502RorTest < Test::Unit::TestCase
         @cpu.runop(@op, 0x23)
         assert_equal 0x40, @cpu.ram[0x23]
       end
-
-      should "increase the pc by the number of bytes for this op" do
-        pc = @cpu.pc
-        @cpu.runop(@op, 0x1F)
-        assert_equal pc + 2, @cpu.pc
-      end
     end
 
     context "absolute mode" do
       setup do
         @op = 0x6E
       end
+
+      should_increase_pc_by 3
 
       should "shift the memory value 1 bit to the right, moving bit 0 into the carry, and the carry into bit 7" do
         @cpu.ram[0x2344] = 0x81
@@ -186,12 +176,6 @@ class Cpu6502RorTest < Test::Unit::TestCase
         @cpu.runop(@op, 0x23, 0x44)
         assert_equal 0, @cpu.flag[:S]
       end
-
-      should "increase the pc by the number of bytes for this op" do
-        pc = @cpu.pc
-        @cpu.runop(@op, 0x23, 0x44)
-        assert_equal pc + 3, @cpu.pc
-      end
     end
 
     context "absolutex mode" do
@@ -199,6 +183,8 @@ class Cpu6502RorTest < Test::Unit::TestCase
         @op = 0x7E
         @cpu.register[:X] = 0x04
       end
+
+      should_increase_pc_by 3
 
       should "shift the memory value 1 bit to the right, moving bit 0 into the carry, and the carry into bit 7" do
         @cpu.ram[0x2344] = 0x81
@@ -232,13 +218,6 @@ class Cpu6502RorTest < Test::Unit::TestCase
         @cpu.runop(@op, 0x23, 0x40)
         assert_equal 0, @cpu.flag[:S]
       end
-
-      should "increase the pc by the number of bytes for this op" do
-        pc = @cpu.pc
-        @cpu.runop(@op, 0x23, 0x40)
-        assert_equal pc + 3, @cpu.pc
-      end
     end
-
   end
 end
