@@ -207,6 +207,8 @@ class Cpu6502
 
     0xA8 => [ "TAY", :implied,     1, 2 ],
 
+    0xBA => [ "TSX", :implied,     1, 2 ],
+
     0x8A => [ "TXA", :implied,     1, 2 ],
 
     0x98 => [ "TYA", :implied,     1, 2 ]
@@ -976,9 +978,13 @@ class Cpu6502
         @register[:Y] = @register[:A]
         set_sz(@register[:Y])
 
-      when 0x8A #TXA
+      when 0xBA # TSX implied
+        @register[:X] = @register[:SP]
         set_sz(@register[:X])
+        
+      when 0x8A # TXA implied
         @register[:A] = @register[:X]
+        set_sz(@register[:A])
 
       when 0x98 # TYA
         @register[:A] = @register[:Y]
