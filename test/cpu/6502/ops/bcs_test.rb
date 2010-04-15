@@ -20,11 +20,7 @@ class Cpu6502BcsTest < Test::Unit::TestCase
       end
 
       context "carry flag clear" do
-        should "increase the pc by the number of bytes for this op" do
-          pc = @cpu.pc
-          @cpu.runop(@op, 0x04)
-          assert_equal pc + 2, @cpu.pc
-        end
+        should_increase_pc_by 2
       end
     end
   end
