@@ -11,6 +11,8 @@ class Cpu6502LdxTest < Test::Unit::TestCase
         @op = 0xA2
       end
 
+      should_increase_pc_by 2
+
       should "load the argument into the X register" do
         @cpu.runop(@op, 0x69)
         assert_equal 0x69, @cpu.register[:X]
@@ -35,18 +37,14 @@ class Cpu6502LdxTest < Test::Unit::TestCase
         @cpu.runop(@op, 0x00)
         assert_equal 0, @cpu.flag[:S]
       end
-
-      should "increase the pc by the number of bytes for this op" do
-        pc = @cpu.pc
-        @cpu.runop(@op, 0x69)
-        assert_equal pc + 2, @cpu.pc
-      end
     end
 
     context "zeropage mode" do
       setup do
         @op = 0xA6
       end
+
+      should_increase_pc_by 2
 
       should "load the correct value into the X register" do
         @cpu.ram[0x04] = 0x69
@@ -77,12 +75,6 @@ class Cpu6502LdxTest < Test::Unit::TestCase
         @cpu.runop(@op, 0x12)
         assert_equal 0, @cpu.flag[:S]
       end
-
-      should "increase the pc by the number of bytes for this op" do
-        pc = @cpu.pc
-        @cpu.runop(@op, 0x69)
-        assert_equal pc + 2, @cpu.pc
-      end
     end
     
     context "zeropagey mode" do
@@ -90,7 +82,9 @@ class Cpu6502LdxTest < Test::Unit::TestCase
         @op = 0xB6
         @cpu.register[:Y] = 0x04
       end
-      
+
+      should_increase_pc_by 2
+
       should "load the correct value into the X register" do
         @cpu.ram[0x08] = 0x69
         @cpu.runop(@op, 0x04)
@@ -127,18 +121,14 @@ class Cpu6502LdxTest < Test::Unit::TestCase
         @cpu.runop(@op, 0x16)
         assert_equal @cpu.register[:X], 0x77
       end
-
-      should "increase the pc by the number of bytes for this op" do
-        pc = @cpu.pc
-        @cpu.runop(@op, 0x69)
-        assert_equal pc + 2, @cpu.pc
-      end
     end
 
     context "absolute mode" do
       setup do
         @op = 0xAE
       end
+
+      should_increase_pc_by 3
 
       should "load the correct value into the X register" do
         @cpu.ram[0x049F] = 0x69
@@ -169,12 +159,6 @@ class Cpu6502LdxTest < Test::Unit::TestCase
         @cpu.runop(@op, 0x12, 0x9F)
         assert_equal 0, @cpu.flag[:S]
       end
-
-      should "increase the pc by the number of bytes for this op" do
-        pc = @cpu.pc
-        @cpu.runop(@op, 0x69, 0x44)
-        assert_equal pc + 3, @cpu.pc
-      end
     end
 
     context "absolutey mode" do
@@ -182,6 +166,8 @@ class Cpu6502LdxTest < Test::Unit::TestCase
         @op = 0xBE
         @cpu.register[:Y] = 0x04
       end
+
+      should_increase_pc_by 3
 
       should "load the correct value into the X register" do
         @cpu.ram[0x049F] = 0x69
@@ -212,13 +198,6 @@ class Cpu6502LdxTest < Test::Unit::TestCase
         @cpu.runop(@op, 0x12, 0x9B)
         assert_equal 0, @cpu.flag[:S]
       end
-
-      should "increase the pc by the number of bytes for this op" do
-        pc = @cpu.pc
-        @cpu.runop(@op, 0x69, 0x44)
-        assert_equal pc + 3, @cpu.pc
-      end
     end
-
   end
 end
