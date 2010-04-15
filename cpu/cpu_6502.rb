@@ -172,10 +172,6 @@ class Cpu6502
 
     0x60 => [ "RTS", :implied,     1, 6],
 
-    0x8A => [ "TXA", :implied,     1, 2 ],
-
-    0x98 => [ "TYA", :implied,     1, 2 ],
-
     0xE9 => [ "SBC", :immediate,   2, 2 ],
     0xE5 => [ "SBC", :zeropage,    2, 3 ],
     0xF5 => [ "SBC", :zeropagex,   2, 4 ],
@@ -185,6 +181,15 @@ class Cpu6502
     0xE1 => [ "SBC", :indirectx,   2, 6 ],
     0xF1 => [ "SBC", :indirecty,   2, [5, 6] ],
 
+    0x38 => [ "SEC", :implied,     1, 2 ],
+
+    0xF8 => [ "SED", :implied,     1, 2 ],
+
+    0x78 => [ "SEI", :implied,     1, 2 ],
+
+    0x8A => [ "TXA", :implied,     1, 2 ],
+
+    0x98 => [ "TYA", :implied,     1, 2 ]
   }
 
   # tables cribbed from py65. illegal bytes not supported. don't use 'em.
@@ -899,6 +904,15 @@ class Cpu6502
       when 0xF1 # SBC indirecty
         op_sbc(@ram[indirect_y_address(oper1)])
 
+      when 0x38 # SEC implied
+        @flag[:C] = 1
+
+      when 0xF8 # SED implied
+        @flag[:D] = 1
+
+      when 0x78 # SEI implied
+        @flag[:I] = 1
+      
       when 0x8A #TXA
         set_sz(@register[:X])
         @register[:A] = @register[:X]
