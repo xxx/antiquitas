@@ -23,7 +23,7 @@ class Test::Unit::TestCase
     should "decrease the pc by the number of bytes (twos complement) in the arg if the arg is >= 0x80 and <= 0xFF" do
       @cpu.pc = 0x6950
       @cpu.runop(@op, 0xF8)
-      assert_equal (0x6950 + 2) - (~(0xF8) & 0xff), @cpu.pc
+      assert_equal (0x6950 + 2) - (~(0xF8) & 0xFF), @cpu.pc
     end
   end
 
