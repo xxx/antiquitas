@@ -920,7 +920,32 @@ class Cpu6502
 
       when 0x78 # SEI implied
         @flag[:I] = 1
+
+      when 0x85 # STA zeropage
+        @ram[oper1] = @register[:A]
+
+      when 0x95 # STA zeropagex
+        address = (oper1 + @register[:X]) & 0xFF
+        @ram[address] = @register[:A]
       
+      when 0x8D # STA absolute
+        address = (oper1 << 8) | oper2
+        @ram[address] = @register[:A]
+
+      when 0x9D # STA absolutex
+        address = ((oper1 << 8) | oper2) + @register[:X]
+        @ram[address] = @register[:A]
+
+      when 0x99 # STA absolutex
+        address = ((oper1 << 8) | oper2) + @register[:Y]
+        @ram[address] = @register[:A]
+
+      when 0x81 # STA indirectx
+        @ram[indirect_x_address(oper1)] = @register[:A]
+
+      when 0x91 # STA indirecty
+        @ram[indirect_y_address(oper1)] = @register[:A]
+
       when 0x8A #TXA
         set_sz(@register[:X])
         @register[:A] = @register[:X]
@@ -963,17 +988,17 @@ class Cpu6502
   private
 
   def indirect_x_address(arg)
-    lsb_address = arg + @register[:X]
+    lsb = arg + @register[:X]
 
-    lsb_address -= 0xFF while lsb_address > 0xFF
-    hsb_address = lsb_address == 0xFF ? 0x00 : lsb_address + 1
+    lsb &= 0xFF # stay on zero page
+    hsb = lsb == 0xFF ? 0x00 : lsb + 1
 
-    @ram[hsb_address] << 8 | @ram[lsb_address]
+    @ram[hsb] << 8 | @ram[lsb]
   end
 
   def indirect_y_address(arg)
     lsb = arg
-    lsb -= 0xFF while lsb > 0xFF
+    lsb &= 0xFF
     hsb = lsb == 0xFF ? 0x00 : lsb + 1
     address = @ram[hsb] << 8 | @ram[lsb]
 
