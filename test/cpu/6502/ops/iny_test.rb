@@ -11,6 +11,8 @@ class Cpu6502InyTest < Test::Unit::TestCase
         @op = 0xC8
       end
 
+      should_increase_pc_by 1
+
       should "increment the Y register" do
         @cpu.register[:Y] = 0x08
         @cpu.runop(@op)
@@ -39,12 +41,6 @@ class Cpu6502InyTest < Test::Unit::TestCase
         @cpu.register[:Y] = 0x00
         @cpu.runop(@op)
         assert_equal 0, @cpu.flag[:Z]
-      end
-
-      should "increase the pc by the number of bytes for the op" do
-        pc = @cpu.pc
-        @cpu.runop(@op)
-        assert_equal pc + 1, @cpu.pc
       end
     end
   end

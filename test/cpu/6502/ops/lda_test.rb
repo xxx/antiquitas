@@ -11,6 +11,8 @@ class Cpu6502LdaTest < Test::Unit::TestCase
         @op = 0xA9
       end
 
+      should_increase_pc_by 2
+
       should "load the accumulator with arg" do
         @cpu.runop(@op, 0x69)
         assert_equal 0x69, @cpu.register[:A]
@@ -35,18 +37,14 @@ class Cpu6502LdaTest < Test::Unit::TestCase
         @cpu.runop(@op, 0x01)
         assert_equal 0, @cpu.flag[:S]
       end
-
-      should "increase the pc by the number of bytes for the op" do
-        pc = @cpu.pc
-        @cpu.runop(@op, 0x01)
-        assert_equal pc + 2, @cpu.pc
-      end
     end
 
     context "zeropage mode" do
       setup do
         @op = 0xA5
       end
+
+      should_increase_pc_by 2
 
       should "load the accumulator with the correct value" do
         @cpu.ram[0x12] = 0x69
@@ -77,12 +75,6 @@ class Cpu6502LdaTest < Test::Unit::TestCase
         @cpu.runop(@op, 0x12)
         assert_equal 0, @cpu.flag[:S]
       end
-
-      should "increase the pc by the number of bytes for the op" do
-        pc = @cpu.pc
-        @cpu.runop(@op, 0x01)
-        assert_equal pc + 2, @cpu.pc
-      end
     end
 
     context "zeropagex mode" do
@@ -90,6 +82,8 @@ class Cpu6502LdaTest < Test::Unit::TestCase
         @op = 0xB5
         @cpu.register[:X] = 0x04
       end
+
+      should_increase_pc_by 2
 
       should "load the accumulator with the correct value" do
         @cpu.ram[0x12] = 0x69
@@ -127,18 +121,14 @@ class Cpu6502LdaTest < Test::Unit::TestCase
         @cpu.runop(@op, 0x12)
         assert_equal 0x01, @cpu.register[:A]
       end
-
-      should "increase the pc by the number of bytes for the op" do
-        pc = @cpu.pc
-        @cpu.runop(@op, 0x01)
-        assert_equal pc + 2, @cpu.pc
-      end
     end
 
     context "absolute mode" do
       setup do
         @op = 0xAD
       end
+
+      should_increase_pc_by 3
 
       should "load the accumulator with the correct value" do
         @cpu.ram[0x128E] = 0x69
@@ -168,12 +158,6 @@ class Cpu6502LdaTest < Test::Unit::TestCase
         @cpu.ram[0x128E] = 0x01
         @cpu.runop(@op, 0x12, 0x8E)
         assert_equal 0, @cpu.flag[:S]
-      end
-
-      should "increase the pc by the number of bytes for the op" do
-        pc = @cpu.pc
-        @cpu.runop(@op, 0x01, 0x4D)
-        assert_equal pc + 3, @cpu.pc
       end
     end
 
@@ -183,6 +167,8 @@ class Cpu6502LdaTest < Test::Unit::TestCase
         @cpu.register[:X] = 0x04
       end
 
+      should_increase_pc_by 3
+
       should "load the accumulator with the correct value" do
         @cpu.ram[0x128E] = 0x69
         @cpu.runop(@op, 0x12, 0x8A)
@@ -211,12 +197,6 @@ class Cpu6502LdaTest < Test::Unit::TestCase
         @cpu.ram[0x128E] = 0x01
         @cpu.runop(@op, 0x12, 0x8A)
         assert_equal 0, @cpu.flag[:S]
-      end
-
-      should "increase the pc by the number of bytes for the op" do
-        pc = @cpu.pc
-        @cpu.runop(@op, 0x01, 0x4D)
-        assert_equal pc + 3, @cpu.pc
       end
     end
 
@@ -226,6 +206,8 @@ class Cpu6502LdaTest < Test::Unit::TestCase
         @cpu.register[:Y] = 0x04
       end
 
+      should_increase_pc_by 3
+
       should "load the accumulator with the correct value" do
         @cpu.ram[0x128E] = 0x69
         @cpu.runop(@op, 0x12, 0x8A)
@@ -254,12 +236,6 @@ class Cpu6502LdaTest < Test::Unit::TestCase
         @cpu.ram[0x128E] = 0x01
         @cpu.runop(@op, 0x12, 0x8A)
         assert_equal 0, @cpu.flag[:S]
-      end
-
-      should "increase the pc by the number of bytes for the op" do
-        pc = @cpu.pc
-        @cpu.runop(@op, 0x01, 0x4D)
-        assert_equal pc + 3, @cpu.pc
       end
     end
 
@@ -270,7 +246,9 @@ class Cpu6502LdaTest < Test::Unit::TestCase
         @cpu.ram[0x16] = 0x24
         @cpu.ram[0x17] = 0x51
       end
-      
+
+      should_increase_pc_by 2
+
       should "load the accumulator with the correct value" do
         @cpu.ram[0x5124] = 0x69
         @cpu.runop(@op, 0x12)
@@ -306,12 +284,6 @@ class Cpu6502LdaTest < Test::Unit::TestCase
         @cpu.runop(@op, 0x12)
         assert_equal 0x69, @cpu.register[:A]
       end
-
-      should "increase the pc by the number of bytes for the op" do
-        pc = @cpu.pc
-        @cpu.runop(@op, 0x01)
-        assert_equal pc + 2, @cpu.pc
-      end
     end
 
     context "indirecty mode" do
@@ -321,6 +293,8 @@ class Cpu6502LdaTest < Test::Unit::TestCase
         @cpu.ram[0x16] = 0x24
         @cpu.ram[0x17] = 0x51
       end
+
+      should_increase_pc_by 2
 
       should "load the accumulator with the correct value" do
         @cpu.ram[0x5128] = 0x69
@@ -351,13 +325,6 @@ class Cpu6502LdaTest < Test::Unit::TestCase
         @cpu.runop(@op, 0x16)
         assert_equal 0, @cpu.flag[:S]
       end
-
-      should "increase the pc by the number of bytes for the op" do
-        pc = @cpu.pc
-        @cpu.runop(@op, 0x01)
-        assert_equal pc + 2, @cpu.pc
-      end
     end
-
   end
 end
