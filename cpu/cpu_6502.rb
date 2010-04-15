@@ -255,13 +255,13 @@ class Cpu6502
   end
 
   def push(oper1)
-    @ram[@register[:SP]+0x100] = oper1
-    @register[:SP]-=1
+    @ram[@register[:SP] + 0x100] = oper1
+    @register[:SP] -= 1
   end
 
   def pull
-    @register[:SP]+=1
-    @ram[@register[:SP]+0x100]
+    @register[:SP] += 1
+    @ram[@register[:SP] + 0x100]
   end
 
   def set_sign(accumulator)
