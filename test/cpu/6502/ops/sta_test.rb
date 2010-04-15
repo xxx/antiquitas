@@ -36,7 +36,7 @@ class Cpu6502StaTest < Test::Unit::TestCase
 
       should "wrap addresses around to remain on the zero page" do
         @cpu.runop(@op, 0xFE)
-        assert_equal 0x69, @cpu.ram[0x02]
+        assert_equal 0x69, @cpu.ram[0x03]
       end
     end
 

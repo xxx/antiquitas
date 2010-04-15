@@ -195,6 +195,10 @@ class Cpu6502
     0x81 => [ "STA", :indirectx,   2, 6 ],
     0x91 => [ "STA", :indirecty,   2, 6 ],
 
+    0x86 => [ "STX", :zeropage,    2, 3 ],
+    0x96 => [ "STX", :zeropagey,   2, 4 ],
+    0x8E => [ "STX", :absolute,    3, 4 ],
+
     0x8A => [ "TXA", :implied,     1, 2 ],
 
     0x98 => [ "TYA", :implied,     1, 2 ]
@@ -829,9 +833,7 @@ class Cpu6502
         op_rol(address)
 
       when 0x36 # ROL zeropagex
-        address = oper1 + @register[:X]
-        address -= 0xFF while address > 0xFF
-        op_rol(address)
+        op_rol(zeropage_address(oper1 + @register[:X]))
 
       when 0x2E # ROL absolute
         address = (oper1 << 8) | oper2
@@ -853,9 +855,7 @@ class Cpu6502
         op_ror(address)
 
       when 0x76 # ROR zeropagex
-        address = oper1 + @register[:X]
-        address -= 0xFF while address > 0xFF
-        op_ror(address)
+        op_ror(zeropage_address(oper1 + @register[:X]))
 
       when 0x6E # ROR absolute
         address = (oper1 << 8) | oper2
@@ -893,9 +893,7 @@ class Cpu6502
         op_sbc(@ram[oper1])
 
       when 0xF5 # SBC zeropagex
-        address = oper1 + @register[:X]
-        address -= 0xFF while address > 0xFF
-        op_sbc(@ram[address])
+        op_sbc(@ram[zeropage_address(oper1 + @register[:X])])
 
       when 0xED # SBC absolute
         op_sbc(@ram[(oper1 << 8) | oper2])
@@ -925,12 +923,10 @@ class Cpu6502
         @ram[oper1] = @register[:A]
 
       when 0x95 # STA zeropagex
-        address = (oper1 + @register[:X]) & 0xFF
-        @ram[address] = @register[:A]
+        @ram[zeropage_address(oper1 + @register[:X])] = @register[:A]
       
       when 0x8D # STA absolute
-        address = (oper1 << 8) | oper2
-        @ram[address] = @register[:A]
+        @ram[absolute_address(oper1, oper2)] = @register[:A]
 
       when 0x9D # STA absolutex
         address = ((oper1 << 8) | oper2) + @register[:X]
@@ -945,6 +941,15 @@ class Cpu6502
 
       when 0x91 # STA indirecty
         @ram[indirect_y_address(oper1)] = @register[:A]
+
+      when 0x86 # STX zeropage
+        @ram[oper1] = @register[:X]
+
+      when 0x96 # STX zeropagey
+        @ram[zeropage_address(oper1 + @register[:Y])] = @register[:X]
+
+      when 0x8E # STX absolute
+        @ram[absolute_address(oper1, oper2)] = @register[:X]
 
       when 0x8A #TXA
         set_sz(@register[:X])
@@ -963,22 +968,22 @@ class Cpu6502
   end
 
   def decode
-    @pc=0
+    @pc = 0
     while @pc <= (@pc_offset + @imagesize)
       #puts "inside decode loop - #{@pc} #{@prog.size}"
       opcode=readmem(@pc)
       info = @@opcodes[opcode]
       case info[2]
         when 2
-          @operand[0] = readmem(@pc+1)
+          @operand[0] = readmem(@pc + 1)
 #          printf("%04X\t%s #%02X\t\t # %02X%02X -- (%d)\n", @pc,desc, @operand[0], opc, @operand[0], bytes) if @debug
           runop(opcode, @operand[0], @operand[1])
         when 1
 #          printf("%04X\t%s \t\t #%02X -- (%d)\n", @pc,desc, opc, bytes) if @debug
           runop(opcode, @operand[0], @operand[1])
         when 3
-          @operand[0] = readmem(@pc+2)
-          @operand[1] = readmem(@pc+1)
+          @operand[0] = readmem(@pc + 2) # 6502 args are lo-byte first
+          @operand[1] = readmem(@pc + 1)
 #          printf("%04X\t%s $%02X%02X\t\t # %02X%02X%02X -- (%d)\n", @pc,desc, @operand[0], @operand[1], opc, @operand[0],@operand[1], bytes) if @debug
           runop(opcode, @operand[0], @operand[1])
       end
@@ -986,6 +991,15 @@ class Cpu6502
   end
 
   private
+
+  def zeropage_address(arg)
+    arg -= 0xFF while arg > 0xFF
+    arg
+  end
+
+  def absolute_address(arg1, arg2)
+    (arg1 << 8)| arg2
+  end
 
   def indirect_x_address(arg)
     lsb = arg + @register[:X]
