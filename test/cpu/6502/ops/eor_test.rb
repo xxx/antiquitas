@@ -309,9 +309,10 @@ class Cpu6502EorTest < Test::Unit::TestCase
       end
 
       should "wrap the address around so it stays on the zero page" do
-        @cpu.register[:X] = 0xFF
-        @cpu.ram[0x5150] = 0x83
-        @cpu.runop(@op, 0x20)
+        @cpu.ram[0xFF] = 0x40
+        @cpu.ram[0x00] = 0x23
+        @cpu.ram[0x2340] = 0x83
+        @cpu.runop(@op, 0xFB)
         assert_equal 0x03, @cpu.register[:A]
       end
 
