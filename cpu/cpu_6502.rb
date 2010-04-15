@@ -252,7 +252,7 @@ class Cpu6502
   end
 
   def set_sign(accumulator)
-    @flag[:S] = (accumulator & 0x80) == 0x80 ? 1 : 0 #bit 7 of A
+    @flag[:S] = (accumulator & 0x80) == 0x80 ? 1 : 0
   end
 
   def set_zero(accumulator)
@@ -884,9 +884,9 @@ class Cpu6502
         address -= 0xFF while address > 0xFF
         op_sbc(@ram[address])
 
-#      when 0x6D # SBC absolute
-#        op_sbc(@ram[(oper1 << 8) | oper2])
-#
+      when 0xED # SBC absolute
+        op_sbc(@ram[(oper1 << 8) | oper2])
+
 #      when 0x7D # SBC absolutex
 #        op_sbc(@ram[((oper1 << 8) | oper2) + @register[:X]])
 #
