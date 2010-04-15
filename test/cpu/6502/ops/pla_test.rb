@@ -11,6 +11,8 @@ class Cpu6502PlaTest < Test::Unit::TestCase
         @op = 0x68
       end
 
+      should_increase_pc_by 1
+
       should "pull a value from the stack and load it into the accumulator" do
         @cpu.push(0x77)
         @cpu.runop(@op)
@@ -39,12 +41,6 @@ class Cpu6502PlaTest < Test::Unit::TestCase
         @cpu.push(0x08)
         @cpu.runop(@op)
         assert_equal 0, @cpu.flag[:S]
-      end
-
-      should "increase the pc by the number of bytes for this op" do
-        pc = @cpu.pc
-        @cpu.runop(@op)
-        assert_equal pc + 1, @cpu.pc
       end
     end
   end

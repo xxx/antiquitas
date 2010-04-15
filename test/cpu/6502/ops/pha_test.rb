@@ -11,16 +11,12 @@ class Cpu6502PhaTest < Test::Unit::TestCase
         @op = 0x48
       end
 
+      should_increase_pc_by 1
+
       should "push a copy of the accumulator onto the stack" do
         @cpu.register[:A] = 0x69
         @cpu.runop(@op)
         assert_equal 0x69, @cpu.pull
-      end
-
-      should "increase the pc by the number of bytes for this op" do
-        pc = @cpu.pc
-        @cpu.runop(@op)
-        assert_equal pc + 1, @cpu.pc
       end
     end
   end

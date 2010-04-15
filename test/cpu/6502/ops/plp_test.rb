@@ -10,11 +10,13 @@ class Cpu6502PlpTest < Test::Unit::TestCase
       setup do
         @op = 0x28
       end
+      
+      should_increase_pc_by 1
 
       should "pull a value from the stack and set the status flags accordingly" do
         @cpu.push(0x83)
         @cpu.runop(@op)
-        # bits 7 to 1 are: S V - B D I Z C
+        # bits 7 to 0 are: S V - B D I Z C
         assert_equal 1, @cpu.flag[:S]
         assert_equal 0, @cpu.flag[:V]
         assert_equal 0, @cpu.flag[:B]
@@ -22,12 +24,6 @@ class Cpu6502PlpTest < Test::Unit::TestCase
         assert_equal 0, @cpu.flag[:I]
         assert_equal 1, @cpu.flag[:Z]
         assert_equal 1, @cpu.flag[:C]
-      end
-
-      should "increase the pc by the number of bytes for this op" do
-        pc = @cpu.pc
-        @cpu.runop(@op)
-        assert_equal pc + 1, @cpu.pc
       end
     end
   end

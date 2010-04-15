@@ -373,18 +373,18 @@ class Cpu6502OraTest < Test::Unit::TestCase
         assert_equal 0, @cpu.flag[:S]
       end
 
-#      should "wrap too-large addresses around so they fit on the zero page" do
-#        @cpu.register[:A] = 0x80
-#        @cpu.register[:Y] = 0x04
-#        @cpu.ram[0x00] = 0x0A
-#        @cpu.ram[0xFF] = 0x02
-#        @cpu.ram[0xFF + 1] = 0x10
-#        @cpu.ram[((0x10 << 8) | 0x06)] = 0xB0 # WRONG - didn't wrap
-#        @cpu.ram[((0x0A << 8) | 0x06)] = 0x69 # correct
-#        @cpu.runop(@op, 0xFF)
-#        assert_equal 0x80 & 0x69, @cpu.register[:A]
-#      end
-#
+      should "wrap too-large addresses around so they fit on the zero page" do
+        @cpu.register[:A] = 0x80
+        @cpu.register[:Y] = 0x04
+        @cpu.ram[0x00] = 0x0A
+        @cpu.ram[0xFF] = 0x02
+        @cpu.ram[0xFF + 1] = 0x10
+        @cpu.ram[((0x10 << 8) | 0x06)] = 0xB0 # WRONG - didn't wrap
+        @cpu.ram[((0x0A << 8) | 0x06)] = 0x69 # correct
+        @cpu.runop(@op, 0xFF)
+        assert_equal 0x80 | 0x69, @cpu.register[:A]
+      end
+
     end
 
   end
