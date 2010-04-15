@@ -232,7 +232,7 @@ class Cpu6502
     @register = { :A => 0, :X => 0, :Y => 0, :SP => 0xFF, :SR => 0 }
     # unused flag is always 1, according to the bug lists
     # real bits 7 to 1 are: S V - B D I Z C
-    @flag = { :S => 0, :V => 0, :B => 0, :D => 0, :I => 0, :Z => 0, :C => 0, :U => 1 }
+    @flag = { :S => 0, :V => 0, :B => 0, :D => 0, :I => 0, :Z => 0, :C => 0}
     @operand = Array.new(2)
   end
 
@@ -1071,7 +1071,7 @@ class Cpu6502
   def packed_flags
     (@flag[:S] << 7) |
     (@flag[:V] << 6) |
-    (@flag[:U] << 5) |
+#    (@flag[:U] << 5) |
     (@flag[:B] << 4) |
     (@flag[:D] << 3) |
     (@flag[:I] << 2) |
