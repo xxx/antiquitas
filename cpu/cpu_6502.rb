@@ -187,6 +187,14 @@ class Cpu6502
 
     0x78 => [ "SEI", :implied,     1, 2 ],
 
+    0x85 => [ "STA", :zeropage,    2, 3 ],
+    0x95 => [ "STA", :zeropagex,   2, 4 ],
+    0x8D => [ "STA", :absolute,    3, 4 ],
+    0x9D => [ "STA", :absolutex,   3, 5 ],
+    0x99 => [ "STA", :absolutey,   3, 5 ],
+    0x81 => [ "STA", :indirectx,   2, 6 ],
+    0x91 => [ "STA", :indirecty,   2, 6 ],
+
     0x8A => [ "TXA", :implied,     1, 2 ],
 
     0x98 => [ "TYA", :implied,     1, 2 ]
