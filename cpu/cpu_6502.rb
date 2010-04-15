@@ -199,6 +199,10 @@ class Cpu6502
     0x96 => [ "STX", :zeropagey,   2, 4 ],
     0x8E => [ "STX", :absolute,    3, 4 ],
 
+    0x84 => [ "STY", :zeropage,    2, 3 ],
+    0x94 => [ "STY", :zeropagex,   2, 4 ],
+    0x8C => [ "STY", :absolute,    3, 4 ],
+
     0x8A => [ "TXA", :implied,     1, 2 ],
 
     0x98 => [ "TYA", :implied,     1, 2 ]
@@ -950,6 +954,15 @@ class Cpu6502
 
       when 0x8E # STX absolute
         @ram[absolute_address(oper1, oper2)] = @register[:X]
+
+      when 0x84 # STY zeropage
+        @ram[oper1] = @register[:Y]
+
+      when 0x94 # STY zeropagex
+        @ram[zeropage_address(oper1 + @register[:X])] = @register[:Y]
+
+      when 0x8C # STY absolute
+        @ram[absolute_address(oper1, oper2)] = @register[:Y]
 
       when 0x8A #TXA
         set_sz(@register[:X])
