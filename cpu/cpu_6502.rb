@@ -896,9 +896,8 @@ class Cpu6502
       when 0xE1 # SBC indirectx
         op_sbc(@ram[indirect_x_address(oper1)])
 
-#      when 0x71 # SBC indirecty
-#        op_sbc(@ram[indirect_y_address(oper1)])
-
+      when 0xF1 # SBC indirecty
+        op_sbc(@ram[indirect_y_address(oper1)])
 
       when 0x8A #TXA
         set_sz(@register[:X])
