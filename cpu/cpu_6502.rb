@@ -362,11 +362,17 @@ class Cpu6502
         set_sz(@register[:A])
 
       when 0x3D # AND absolutex
-        @register[:A] &= @ram[((oper1 << 8) | oper2) + @register[:X]]
+        sixteen = to_16_bit(oper1, oper2)
+        add_cycle_if_crossing_boundary(sixteen, @register[:X])
+        address = (sixteen + @register[:X])
+        @register[:A] &= @ram[address]
         set_sz(@register[:A])
 
       when 0x39 # AND absolutey
-        @register[:A] &= @ram[((oper1 << 8) | oper2) + @register[:Y]]
+        sixteen = to_16_bit(oper1, oper2)
+        add_cycle_if_crossing_boundary(sixteen, @register[:Y])
+        address = (sixteen + @register[:Y])
+        @register[:A] &= @ram[address]
         set_sz(@register[:A])
 
       when 0x21 # AND indirectx
@@ -374,6 +380,7 @@ class Cpu6502
         set_sz(@register[:A])
 
       when 0x31 # AND indirecty
+        add_cycle_if_crossing_boundary(oper1, @register[:Y])
         @register[:A] &= @ram[indirect_y_address(oper1)]
         set_sz(@register[:A])
 

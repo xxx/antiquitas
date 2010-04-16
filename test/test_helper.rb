@@ -54,7 +54,14 @@ class Test::Unit::TestCase
     should_increase_cycles_by(amount)
 
     should "add one more cycle if adding the index crosses a page boundary" do
-      @args = yield
+      if block_given?
+        @args = yield
+      else
+        # set up some default args that should work with all of the tests.
+        @op_info = @cpu.opcodes[@op] # need to get op byte count to get correct # of args
+        @args = @op_info[2] == 3 ? [0x06, 0xFE] : [0xFE]
+      end
+
       @cycles = @cpu.cycles
       @cpu.runop(@op, *@args)
       assert_equal @cycles + amount + 1, @cpu.cycles

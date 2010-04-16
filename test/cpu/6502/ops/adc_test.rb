@@ -539,9 +539,7 @@ class Cpu6502AdcTest < Test::Unit::TestCase
       end
 
       should_increase_pc_by 3
-      should_increase_cycles_with_boundary_check_by 4 do
-        [0x06, 0xFE]
-      end
+      should_increase_cycles_with_boundary_check_by 4
 
       context "with decimal mode on" do
         setup do
@@ -675,9 +673,7 @@ class Cpu6502AdcTest < Test::Unit::TestCase
       end
 
       should_increase_pc_by 3
-      should_increase_cycles_with_boundary_check_by 4 do
-        [0x06, 0xFE]
-      end
+      should_increase_cycles_with_boundary_check_by 4
 
       context "with decimal mode on" do
         setup do
@@ -957,9 +953,7 @@ class Cpu6502AdcTest < Test::Unit::TestCase
       end
 
       should_increase_pc_by 2
-      should_increase_cycles_with_boundary_check_by 5 do
-        [0xFE]
-      end
+      should_increase_cycles_with_boundary_check_by 5
 
       context "with decimal mode on" do
         setup do
