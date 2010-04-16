@@ -13,6 +13,7 @@ class Cpu6502BitTest < Test::Unit::TestCase
       end
 
       should_increase_pc_by 2
+      should_increase_cycles_by 3
       
       context "one or more bits are set" do
         should "not set the zero flag" do
@@ -56,6 +57,7 @@ class Cpu6502BitTest < Test::Unit::TestCase
       end
 
       should_increase_pc_by 3
+      should_increase_cycles_by 4
 
       context "one or more bits are set" do
         should "not set the zero flag" do

@@ -11,6 +11,8 @@ class Cpu6502BrkTest < Test::Unit::TestCase
         @op = 0x00
       end
 
+      should_increase_cycles_by 7
+      
       should "set the break flag" do
         @cpu.runop(@op)
         assert_equal 1, @cpu.flag[:B]

@@ -413,26 +413,31 @@ class Cpu6502
 
       when 0xB0 # BCS relative
         if @flag[:C] == 1
+          add_branching_cycles(oper1)
           branch_pc(oper1)
         end
 
       when 0xF0 # BEQ relative
         if @flag[:Z] == 1
+          add_branching_cycles(oper1)
           branch_pc(oper1)
         end
 
       when 0x30 # BMI relative
         if @flag[:N] == 1
+          add_branching_cycles(oper1)
           branch_pc(oper1)
         end
 
       when 0xD0 # BNE relative
         if (@flag[:Z] == 0)
+          add_branching_cycles(oper1)
           branch_pc(oper1)
         end
 
       when 0x10 # BPL relative
         if @flag[:N] == 0
+          add_branching_cycles(oper1)
           branch_pc(oper1)
         end
 
@@ -448,11 +453,13 @@ class Cpu6502
       
       when 0x50 # BVC relative
         if @flag[:V] == 0
+          add_branching_cycles(oper1)
           branch_pc(oper1)
         end
 
       when 0x70 # BVS relative
         if @flag[:V] == 1
+          add_branching_cycles(oper1)
           branch_pc(oper1)
         end
 

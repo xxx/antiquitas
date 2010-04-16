@@ -11,6 +11,10 @@ class Cpu6502BneTest < Test::Unit::TestCase
         @op = 0xD0
       end
 
+      should_increase_cycles_with_branch_check_by 2 do
+        [:Z, 0] # pass the flag to check and its state when we want to branch
+      end
+
       context "zero flag is set" do
         setup do
           @cpu.flag[:Z] = 1

@@ -11,6 +11,10 @@ class Cpu6502BplTest < Test::Unit::TestCase
         @op = 0x10
       end
 
+      should_increase_cycles_with_branch_check_by 2 do
+        [:N, 0] # pass the flag to check and its state when we want to branch
+      end
+
       context "negative flag is set" do
         setup do
           @cpu.flag[:N] = 1

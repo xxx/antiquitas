@@ -12,6 +12,7 @@ class Cpu6502AslTest < Test::Unit::TestCase
       end
 
       should_increase_pc_by 1
+      should_increase_cycles_by 2
       
       should "shift the accumulator left 1 bit" do
         @cpu.register[:A] = 0x20
@@ -56,6 +57,7 @@ class Cpu6502AslTest < Test::Unit::TestCase
       end
 
       should_increase_pc_by 2
+      should_increase_cycles_by 5
 
       should "shift the value at the passed location left 1 bit" do
         @cpu.ram[0x04] = 0x20
@@ -101,6 +103,7 @@ class Cpu6502AslTest < Test::Unit::TestCase
       end
 
       should_increase_pc_by 2
+      should_increase_cycles_by 6
 
       should "shift the value at the passed location + the value in the X register left 1 bit" do
         @cpu.ram[0x0A] = 0x20
@@ -145,6 +148,7 @@ class Cpu6502AslTest < Test::Unit::TestCase
       end
 
       should_increase_pc_by 3
+      should_increase_cycles_by 6
 
       should "shift the value at the passed location left 1 bit" do
         @cpu.ram[0x23B3] = 0x20
@@ -190,6 +194,7 @@ class Cpu6502AslTest < Test::Unit::TestCase
       end
 
       should_increase_pc_by 3
+      should_increase_cycles_by 7
 
       should "shift the value at the passed location + the value in the X register left 1 bit" do
         @cpu.ram[0x23B3] = 0x20

@@ -11,6 +11,10 @@ class Cpu6502BvsTest < Test::Unit::TestCase
         @op = 0x70
       end
 
+      should_increase_cycles_with_branch_check_by 2 do
+        [:V, 1] # pass the flag to check and its state when we want to branch
+      end
+
       context "overflow flag is set" do
         setup do
           @cpu.flag[:V] = 1
