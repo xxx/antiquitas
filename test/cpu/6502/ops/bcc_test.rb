@@ -11,6 +11,10 @@ class Cpu6502BccTest < Test::Unit::TestCase
         @op = 0x90
       end
 
+      should_increase_cycles_with_branch_check_by 2 do
+        [:C, 0] # pass the flag to check and its state when we want to branch
+      end
+      
       context "carry flag clear" do
         should_branch_correctly
       end

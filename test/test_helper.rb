@@ -35,4 +35,72 @@ class Test::Unit::TestCase
       assert_equal pc + amount, @cpu.pc
     end
   end
+
+  def self.should_increase_cycles_by(amount)
+    should "increase the cycle count by the correct number" do
+      # While we could pull the cycle info out of @op_info, that would mean we're
+      # testing the code being tested with itself.
+      # We really only do this so we can get the correct byte count (tested elsewhere)
+      # so we can dummy up args and dry up the code.
+      @op_info = @cpu.opcodes[@op]
+      @args = Array.new(@op_info[2] - 1, 0) # @op_info[2] == op byte count
+      @cycles = @cpu.cycles
+      @cpu.runop(@op, *@args)
+      assert_equal @cycles + amount, @cpu.cycles
+    end
+  end
+
+  def self.should_increase_cycles_with_boundary_check_by(amount)
+    should_increase_cycles_by(amount)
+
+    should "add one more cycle if adding the index crosses a page boundary" do
+      @args = yield
+      @cycles = @cpu.cycles
+      @cpu.runop(@op, *@args)
+      assert_equal @cycles + amount + 1, @cpu.cycles
+    end
+  end
+
+  def self.should_increase_cycles_with_branch_check_by(amount)
+    context "increasing cycles with special branching logic" do
+      setup do
+        @flag, @success = yield
+        @cpu.flag[@flag] = @success
+        @cpu.cycles = 0
+      end
+
+      context "branch not taken" do
+        setup do
+          fail = 1 - @success
+          @cpu.flag[@flag] = fail
+        end
+
+        should_increase_cycles_by(amount)
+      end
+
+      should "add an extra cycle if the branch was taken forward" do
+        @cpu.pc = 0x00
+        @cpu.runop(@op, 0x01)
+        assert_equal amount + 1, @cpu.cycles
+      end
+
+      should "add an extra cycle if the branch was taken backward" do
+        @cpu.pc = 0x90
+        @cpu.runop(@op, 0xFE)
+        assert_equal amount + 1, @cpu.cycles
+      end
+
+      should "add two extra cycles if branched forward over a page boundary" do
+        @cpu.pc = 0xFC
+        @cpu.runop(@op, 0x02)
+        assert_equal amount + 2, @cpu.cycles
+      end
+
+      should "add two extra cycles if branched backward over a page boundary" do
+        @cpu.pc = 0x04
+        @cpu.runop(@op, 0xF0)
+        assert_equal amount + 2, @cpu.cycles
+      end
+    end
+  end
 end

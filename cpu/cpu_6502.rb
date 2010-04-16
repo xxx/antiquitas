@@ -1,5 +1,5 @@
 class Cpu6502
-  attr_accessor :debug, :register, :flag, :ram, :pc
+  attr_accessor :debug, :register, :flag, :ram, :pc, :cycles
   attr_reader :imagesize
 
   class << self
@@ -7,24 +7,24 @@ class Cpu6502
   end
 
   @opcodes = {
-    # mnemonic, addressing mode, bytes, cycles
+    # mnemonic, addressing mode, bytes, cycles, total possible extra cycles
     0x69 => [ "ADC", :immediate,   2, 2 ],
     0x65 => [ "ADC", :zeropage,    2, 3 ],
     0x75 => [ "ADC", :zeropagex,   2, 4 ],
     0x6D => [ "ADC", :absolute,    3, 4 ],
-    0x7D => [ "ADC", :absolutex,   3, [4, 5] ],
-    0x79 => [ "ADC", :absolutey,   3, [4, 5] ],
+    0x7D => [ "ADC", :absolutex,   3, 4, 1 ],
+    0x79 => [ "ADC", :absolutey,   3, 4, 1 ],
     0x61 => [ "ADC", :indirectx,   2, 6 ],
-    0x71 => [ "ADC", :indirecty,   2, [5, 6] ],
+    0x71 => [ "ADC", :indirecty,   2, 5, 1 ],
 
     0x29 => [ "AND", :immediate,   2, 2 ],
     0x25 => [ "AND", :zeropage,    2, 3 ],
     0x35 => [ "AND", :zeropagex,   2, 4 ],
     0x2D => [ "AND", :absolute,    3, 4 ],
-    0x3D => [ "AND", :absolutex,   3, [4, 5] ],
-    0x39 => [ "AND", :absolutey,   3, [4, 5] ],
+    0x3D => [ "AND", :absolutex,   3, 4, 1 ],
+    0x39 => [ "AND", :absolutey,   3, 4, 1 ],
     0x21 => [ "AND", :indirectx,   2, 6 ],
-    0x31 => [ "AND", :indirecty,   2, [5, 6] ],
+    0x31 => [ "AND", :indirecty,   2, 5, 1 ],
 
     0x0A => [ "ASL", :accumulator, 1, 2 ],
     0x06 => [ "ASL", :zeropage,    2, 5 ],
@@ -32,26 +32,26 @@ class Cpu6502
     0x0E => [ "ASL", :absolute,    3, 6 ],
     0x1E => [ "ASL", :absolutex,   3, 7 ],
 
-    0x90 => [ "BCC", :relative,    2, [2, 3, 4] ],
+    0x90 => [ "BCC", :relative,    2, 2, 2 ],
 
-    0xB0 => [ "BCS", :relative,    2, [2, 3, 4] ],
+    0xB0 => [ "BCS", :relative,    2, 2, 2 ],
 
-    0xF0 => [ "BEQ", :relative,    2, [2, 3, 4] ],
+    0xF0 => [ "BEQ", :relative,    2, 2, 2 ],
 
     0x24 => [ "BIT", :zeropage,    2, 3 ],
     0x2C => [ "BIT", :absolute,    3, 4 ],
 
-    0x30 => [ "BMI", :relative,    2, [2, 3, 4] ],
+    0x30 => [ "BMI", :relative,    2, 2, 2 ],
 
-    0xD0 => [ "BNE", :relative,    2, [2, 3, 4] ],
+    0xD0 => [ "BNE", :relative,    2, 2, 2 ],
 
-    0x10 => [ "BPL", :relative,    2, [2, 3, 4] ],
+    0x10 => [ "BPL", :relative,    2, 2, 2 ],
 
     0x00 => [ "BRK", :implied,     2, 7 ],
     
-    0x50 => [ "BVC", :relative,    2, [2, 3, 4] ],
+    0x50 => [ "BVC", :relative,    2, 2, 2 ],
 
-    0x70 => [ "BVS", :relative,    2, [2, 3, 4] ],
+    0x70 => [ "BVS", :relative,    2, 2, 2 ],
 
     0x18 => [ "CLC", :implied,     1, 2 ],
 
@@ -65,10 +65,10 @@ class Cpu6502
     0xC5 => [ "CMP", :zeropage,    2, 3 ],
     0xD5 => [ "CMP", :zeropagex,   2, 4 ],
     0xCD => [ "CMP", :absolute,    3, 4 ],
-    0xDD => [ "CMP", :absolutex,   3, [4, 5] ],
-    0xD9 => [ "CMP", :absolutey,   3, [4, 5] ],
+    0xDD => [ "CMP", :absolutex,   3, 4, 1 ],
+    0xD9 => [ "CMP", :absolutey,   3, 4, 1 ],
     0xC1 => [ "CMP", :indirectx,   2, 6 ],
-    0xD1 => [ "CMP", :indirecty,   2, [5, 6] ],
+    0xD1 => [ "CMP", :indirecty,   2, 5, 1 ],
 
     0xE0 => [ "CPX", :immediate,   2, 2 ],
     0xE4 => [ "CPX", :zeropage,    2, 3 ],
@@ -91,10 +91,10 @@ class Cpu6502
     0x45 => [ "EOR", :zeropage,    2, 3 ],
     0x55 => [ "EOR", :zeropagex,   2, 4 ],
     0x4D => [ "EOR", :absolute,    3, 4 ],
-    0x5D => [ "EOR", :absolutex,   3, [4, 5] ],
-    0x59 => [ "EOR", :absolutey,   3, [4, 5] ],
+    0x5D => [ "EOR", :absolutex,   3, 4, 1 ],
+    0x59 => [ "EOR", :absolutey,   3, 4, 1 ],
     0x41 => [ "EOR", :indirectx,   2, 6 ],
-    0x51 => [ "EOR", :indirecty,   2, [5, 6] ],
+    0x51 => [ "EOR", :indirecty,   2, 5, 1 ],
 
     0xE6 => [ "INC", :zeropage,    2, 5 ],
     0xF6 => [ "INC", :zeropagex,   2, 6 ],
@@ -114,22 +114,22 @@ class Cpu6502
     0xA5 => [ "LDA", :zeropage,    2, 3 ],
     0xB5 => [ "LDA", :zeropagex,   2, 4 ],
     0xAD => [ "LDA", :absolute,    3, 4 ],
-    0xBD => [ "LDA", :absolutex,   3, [4, 5] ],
-    0xB9 => [ "LDA", :absolutey,   3, [4, 5] ],
+    0xBD => [ "LDA", :absolutex,   3, 4, 1 ],
+    0xB9 => [ "LDA", :absolutey,   3, 4, 1 ],
     0xA1 => [ "LDA", :indirectx,   2, 6 ],
-    0xB1 => [ "LDA", :indirecty,   2, [5, 6] ],
+    0xB1 => [ "LDA", :indirecty,   2, 5, 1 ],
 
     0xA2 => [ "LDX", :immediate,   2, 2 ],
     0xA6 => [ "LDX", :zeropage,    2, 3 ],
     0xB6 => [ "LDX", :zeropagey,   2, 4 ],
     0xAE => [ "LDX", :absolute,    3, 4 ],
-    0xBE => [ "LDX", :absolutey,   3, [4, 5] ],
+    0xBE => [ "LDX", :absolutey,   3, 4, 1 ],
 
     0xA0 => [ "LDY", :immediate,   2, 2 ],
     0xA4 => [ "LDY", :zeropage,    2, 3 ],
     0xB4 => [ "LDY", :zeropagex,   2, 4 ],
     0xAC => [ "LDY", :absolute,    3, 4 ],
-    0xBC => [ "LDY", :absolutex,   3, [4, 5] ],
+    0xBC => [ "LDY", :absolutex,   3, 4, 1 ],
 
     0x4A => [ "LSR", :accumulator, 1, 2 ],
     0x46 => [ "LSR", :zeropage,    2, 5 ],
@@ -143,10 +143,10 @@ class Cpu6502
     0x05 => [ "ORA", :zeropage,    2, 3 ],
     0x15 => [ "ORA", :zeropagex,   2, 4 ],
     0x0D => [ "ORA", :absolute,    3, 4 ],
-    0x1D => [ "ORA", :absolutex,   3, [4, 5] ],
-    0x19 => [ "ORA", :absolutey,   3, [4, 5] ],
+    0x1D => [ "ORA", :absolutex,   3, 4, 1 ],
+    0x19 => [ "ORA", :absolutey,   3, 4, 1 ],
     0x01 => [ "ORA", :indirectx,   2, 6 ],
-    0x11 => [ "ORA", :indirecty,   2, [5, 6] ],
+    0x11 => [ "ORA", :indirecty,   2, 5, 1 ],
 
     0x48 => [ "PHA", :implied,     1, 3 ],
 
@@ -176,10 +176,10 @@ class Cpu6502
     0xE5 => [ "SBC", :zeropage,    2, 3 ],
     0xF5 => [ "SBC", :zeropagex,   2, 4 ],
     0xED => [ "SBC", :absolute,    3, 4 ],
-    0xFD => [ "SBC", :absolutex,   3, [4, 5] ],
-    0xF9 => [ "SBC", :absolutey,   3, [4, 5] ],
+    0xFD => [ "SBC", :absolutex,   3, 4, 1 ],
+    0xF9 => [ "SBC", :absolutey,   3, 4, 1 ],
     0xE1 => [ "SBC", :indirectx,   2, 6 ],
-    0xF1 => [ "SBC", :indirecty,   2, [5, 6] ],
+    0xF1 => [ "SBC", :indirecty,   2, 5, 1 ],
 
     0x38 => [ "SEC", :implied,     1, 2 ],
 
@@ -259,6 +259,7 @@ class Cpu6502
     # real bits 7 to 0 are: N V - B D I Z C
     @flag = { :N => 0, :V => 0, :B => 0, :D => 0, :I => 0, :Z => 0, :C => 0}
     @operand = Array.new(2)
+    @cycles = 0
   end
 
   def opcodes
@@ -305,6 +306,8 @@ class Cpu6502
   def runop(opcode, oper1 = nil, oper2 = nil)
     op = opcodes[opcode]
     @pc += op[2]
+    @cycles += op[3]
+
     case opcode
       when 0x69 # ADC immediate
         op_adc(oper1)
@@ -322,15 +325,22 @@ class Cpu6502
         op_adc(@ram[(oper1 << 8) | oper2])
 
       when 0x7D # ADC absolutex
-        op_adc(@ram[((oper1 << 8) | oper2) + @register[:X]])
+        sixteen = to_16_bit(oper1, oper2)
+        add_cycle_if_crossing_boundary(sixteen, @register[:X])
+        address = (sixteen + @register[:X])
+        op_adc(@ram[address])
 
       when 0x79 # ADC absolutey
-        op_adc(@ram[((oper1 << 8) | oper2) + @register[:Y]])
+        sixteen = to_16_bit(oper1, oper2)
+        add_cycle_if_crossing_boundary(sixteen, @register[:Y])
+        address = (sixteen + @register[:Y])
+        op_adc(@ram[address])
 
       when 0x61 # ADC indirectx
         op_adc(@ram[indirect_x_address(oper1)])
 
       when 0x71 # ADC indirecty
+        add_cycle_if_crossing_boundary(oper1, @register[:Y])
         op_adc(@ram[indirect_y_address(oper1)])
 
       when 0x29 # AND immediate
@@ -390,6 +400,7 @@ class Cpu6502
 
       when 0x90 # BCC relative
         if @flag[:C] == 0
+          add_branching_cycles(oper1)
           branch_pc(oper1)
         end
 
@@ -1137,10 +1148,27 @@ class Cpu6502
   end
 
   def branch_pc(arg)
+    @pc += branch_address(arg)
+  end
+
+  def branch_address(arg)
     if (arg > 0x7F)
-      @pc -= ~arg & 0xFF
+      (~arg & 0xFF) * -1
     else
-      @pc += arg & 0xFF
+      arg & 0xFF
+    end
+  end
+
+  def add_cycle_if_crossing_boundary(address, register)
+    hi = address >> 8
+    @cycles += 1 if hi != ((address + register) >> 8)
+  end
+
+  def add_branching_cycles(address)
+    if (@pc + branch_address(address)) >> 8 != @pc >> 8
+      @cycles += 2
+    else
+      @cycles += 1
     end
   end
 
@@ -1161,6 +1189,10 @@ class Cpu6502
     (@flag[:C])
   end
 
+  def to_16_bit(arg1, arg2)
+    (arg1 << 8) | arg2
+  end
+  
   def to_bcd(num)
     self.class.to_bcd[num]
   end
