@@ -12,6 +12,7 @@ class Cpu6502PhpTest < Test::Unit::TestCase
       end
 
       should_increase_pc_by 1
+      should_increase_cycles_by 3
 
       should "push a copy of the status register onto the stack" do
         @cpu.flag[:Z] = 1

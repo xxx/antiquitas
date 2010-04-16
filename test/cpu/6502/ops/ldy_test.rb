@@ -12,6 +12,7 @@ class Cpu6502LdyTest < Test::Unit::TestCase
       end
 
       should_increase_pc_by 2
+      should_increase_cycles_by 2
 
       should "load the argument into the Y register" do
         @cpu.runop(@op, 0x69)
@@ -45,6 +46,7 @@ class Cpu6502LdyTest < Test::Unit::TestCase
       end
 
       should_increase_pc_by 2
+      should_increase_cycles_by 3
 
       should "load the correct value into the Y register" do
         @cpu.ram[0x04] = 0x69
@@ -84,6 +86,7 @@ class Cpu6502LdyTest < Test::Unit::TestCase
       end
 
       should_increase_pc_by 2
+      should_increase_cycles_by 4
 
       should "load the correct value into the Y register" do
         @cpu.ram[0x08] = 0x69
@@ -129,6 +132,7 @@ class Cpu6502LdyTest < Test::Unit::TestCase
       end
 
       should_increase_pc_by 3
+      should_increase_cycles_by 4
 
       should "load the correct value into the Y register" do
         @cpu.ram[0x049F] = 0x69
@@ -168,6 +172,7 @@ class Cpu6502LdyTest < Test::Unit::TestCase
       end
 
       should_increase_pc_by 3
+      should_increase_cycles_with_boundary_check_by 4
 
       should "load the correct value into the Y register" do
         @cpu.ram[0x049F] = 0x69

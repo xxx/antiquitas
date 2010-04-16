@@ -11,6 +11,8 @@ class Cpu6502JsrTest < Test::Unit::TestCase
         @op = 0x20
       end
 
+      should_increase_cycles_by 6
+      
       should "push the current pc - 1 (after incrementing it for this op) onto the stack" do
         @cpu.pc = 2100
         @cpu.runop(@op, 0x40, 0x25)

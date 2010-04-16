@@ -687,13 +687,6 @@ class Cpu6502
         push(@pc & 0xFF)
 
         @pc = (oper1 << 8) | oper2
-#        if @pc == 0xFFEE
-#          putc(@register[:A])
-#        end
-#        display_status
-#        @pc = pull
-#        @pc |= (pull << 8)
-#        @pc += 1
       
       when 0xA9 # LDA immediate
         @register[:A] = oper1
@@ -717,13 +710,17 @@ class Cpu6502
         set_sz(value)
 
       when 0xBD # LDA absolutex
-        address = ((oper1 << 8) | oper2) + @register[:X]
+        sixteen = to_16_bit(oper1, oper2)
+        add_cycle_if_crossing_boundary(sixteen, @register[:X])
+        address = (sixteen + @register[:X])
         value = @ram[address]
         @register[:A] = value
         set_sz(value)
 
       when 0xB9 # LDA absolutey
-        address = ((oper1 << 8) | oper2) + @register[:Y]
+        sixteen = to_16_bit(oper1, oper2)
+        add_cycle_if_crossing_boundary(sixteen, @register[:Y])
+        address = (sixteen + @register[:Y])
         value = @ram[address]
         @register[:A] = value
         set_sz(value)
@@ -734,6 +731,7 @@ class Cpu6502
         set_sz(value)
 
       when 0xB1 # LDA indirecty
+        add_cycle_if_crossing_boundary(oper1, @register[:Y])
         value = @ram[indirect_y_address(oper1)]
         @register[:A] = value
         set_sz(value)
@@ -757,7 +755,9 @@ class Cpu6502
         set_sz(@register[:X])
 
       when 0xBE # LDX absolutey
-        @register[:X] = @ram[((oper1 << 8) | oper2) + @register[:Y]]
+        sixteen = to_16_bit(oper1, oper2)
+        add_cycle_if_crossing_boundary(sixteen, @register[:Y])
+        @register[:X] = @ram[sixteen + @register[:Y]]
         set_sz(@register[:X])
 
       when 0xA0 # LDY immediate
@@ -779,7 +779,9 @@ class Cpu6502
         set_sz(@register[:Y])
 
       when 0xBC # LDY absolutex
-        @register[:Y] = @ram[((oper1 << 8) | oper2) + @register[:X]]
+        sixteen = to_16_bit(oper1, oper2)
+        add_cycle_if_crossing_boundary(sixteen, @register[:X])
+        @register[:Y] = @ram[sixteen + @register[:X]]
         set_sz(@register[:Y])
 
       when 0x4A # LSR accumulator
@@ -832,11 +834,15 @@ class Cpu6502
         set_sz(@register[:A])
 
       when 0x1D # ORA absolutex
-        @register[:A] |= @ram[((oper1 << 8) | oper2) + @register[:X]]
+        sixteen = to_16_bit(oper1, oper2)
+        add_cycle_if_crossing_boundary(sixteen, @register[:X])
+        @register[:A] |= @ram[sixteen + @register[:X]]
         set_sz(@register[:A])
 
       when 0x19 # ORA absolutey
-        @register[:A] |= @ram[((oper1 << 8) | oper2) + @register[:Y]]
+        sixteen = to_16_bit(oper1, oper2)
+        add_cycle_if_crossing_boundary(sixteen, @register[:Y])
+        @register[:A] |= @ram[sixteen + @register[:Y]]
         set_sz(@register[:A])
 
       when 0x01 # ORA indirectx
@@ -844,6 +850,7 @@ class Cpu6502
         set_sz(@register[:A])
 
       when 0x11 # ORA indirecty
+        add_cycle_if_crossing_boundary(oper1, @register[:Y])
         @register[:A] |= @ram[indirect_y_address(oper1)]
         set_sz(@register[:A])
 

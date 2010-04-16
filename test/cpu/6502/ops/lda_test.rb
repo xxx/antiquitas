@@ -12,6 +12,7 @@ class Cpu6502LdaTest < Test::Unit::TestCase
       end
 
       should_increase_pc_by 2
+      should_increase_cycles_by 2
 
       should "load the accumulator with arg" do
         @cpu.runop(@op, 0x69)
@@ -45,6 +46,7 @@ class Cpu6502LdaTest < Test::Unit::TestCase
       end
 
       should_increase_pc_by 2
+      should_increase_cycles_by 3
 
       should "load the accumulator with the correct value" do
         @cpu.ram[0x12] = 0x69
@@ -84,6 +86,7 @@ class Cpu6502LdaTest < Test::Unit::TestCase
       end
 
       should_increase_pc_by 2
+      should_increase_cycles_by 4
 
       should "load the accumulator with the correct value" do
         @cpu.ram[0x12] = 0x69
@@ -129,6 +132,7 @@ class Cpu6502LdaTest < Test::Unit::TestCase
       end
 
       should_increase_pc_by 3
+      should_increase_cycles_by 4
 
       should "load the accumulator with the correct value" do
         @cpu.ram[0x128E] = 0x69
@@ -168,6 +172,7 @@ class Cpu6502LdaTest < Test::Unit::TestCase
       end
 
       should_increase_pc_by 3
+      should_increase_cycles_with_boundary_check_by 4
 
       should "load the accumulator with the correct value" do
         @cpu.ram[0x128E] = 0x69
@@ -207,6 +212,7 @@ class Cpu6502LdaTest < Test::Unit::TestCase
       end
 
       should_increase_pc_by 3
+      should_increase_cycles_with_boundary_check_by 4
 
       should "load the accumulator with the correct value" do
         @cpu.ram[0x128E] = 0x69
@@ -248,6 +254,7 @@ class Cpu6502LdaTest < Test::Unit::TestCase
       end
 
       should_increase_pc_by 2
+      should_increase_cycles_by 6
 
       should "load the accumulator with the correct value" do
         @cpu.ram[0x5124] = 0x69
@@ -295,6 +302,7 @@ class Cpu6502LdaTest < Test::Unit::TestCase
       end
 
       should_increase_pc_by 2
+      should_increase_cycles_with_boundary_check_by 5
 
       should "load the accumulator with the correct value" do
         @cpu.ram[0x5128] = 0x69

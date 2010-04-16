@@ -12,6 +12,7 @@ class Cpu6502OraTest < Test::Unit::TestCase
       end
 
       should_increase_pc_by 2
+      should_increase_cycles_by 2
 
       should "do a bitwise OR of the accumulator and the passed arg, storing the result in the accumulator" do
         @cpu.register[:A] = 0x69
@@ -50,6 +51,7 @@ class Cpu6502OraTest < Test::Unit::TestCase
       end
 
       should_increase_pc_by 2
+      should_increase_cycles_by 3
 
       should "do a bitwise OR of the accumulator and the value at the memory location of the passed arg, storing the result in the accumulator" do
         @cpu.register[:A] = 0x69
@@ -94,6 +96,7 @@ class Cpu6502OraTest < Test::Unit::TestCase
       end
 
       should_increase_pc_by 2
+      should_increase_cycles_by 4
 
       should "do a bitwise OR of the accumulator and the value at the memory location of the passed arg, storing the result in the accumulator" do
         @cpu.register[:A] = 0x69
@@ -145,6 +148,7 @@ class Cpu6502OraTest < Test::Unit::TestCase
       end
 
       should_increase_pc_by 3
+      should_increase_cycles_by 4
 
       should "do a bitwise OR of the accumulator and the value at the memory location of the passed args, storing the result in the accumulator" do
         @cpu.register[:A] = 0x69
@@ -189,6 +193,7 @@ class Cpu6502OraTest < Test::Unit::TestCase
       end
 
       should_increase_pc_by 3
+      should_increase_cycles_with_boundary_check_by 4
 
       should "add the value in the X register to the value at the memory location specified by the arguments and do a bitwise OR with the accumulator, storing the result in the accumulator" do
         @cpu.register[:A] = 0x69
@@ -233,6 +238,7 @@ class Cpu6502OraTest < Test::Unit::TestCase
       end
 
       should_increase_pc_by 3
+      should_increase_cycles_with_boundary_check_by 4
 
       should "add the value in the X register to the value at the memory location specified by the arguments and do a bitwise OR with the accumulator, storing the result in the accumulator" do
         @cpu.register[:A] = 0x69
@@ -279,6 +285,7 @@ class Cpu6502OraTest < Test::Unit::TestCase
       end
 
       should_increase_pc_by 2
+      should_increase_cycles_by 6
 
       should "do a bitwise OR of the accumulator and the correct memory location, storing the result in the accumulator" do
         @cpu.register[:A] = 0x69
@@ -338,6 +345,7 @@ class Cpu6502OraTest < Test::Unit::TestCase
       end
 
       should_increase_pc_by 2
+      should_increase_cycles_with_boundary_check_by 5
 
       should "do a bitwise OR of the accumulator and the correct memory location, storing the result in the accumulator" do
         @cpu.register[:A] = 0x69
@@ -384,8 +392,6 @@ class Cpu6502OraTest < Test::Unit::TestCase
         @cpu.runop(@op, 0xFF)
         assert_equal 0x80 | 0x69, @cpu.register[:A]
       end
-
     end
-
   end
 end

@@ -11,6 +11,8 @@ class Cpu6502JmpTest < Test::Unit::TestCase
         @op = 0x4C
       end
 
+      should_increase_cycles_by 3
+
       should "use the passed-in address as the lsb of the address to jump to" do
         @cpu.ram[0x6960] = 0x20
         @cpu.ram[0x6961] = 0x4A
@@ -32,6 +34,8 @@ class Cpu6502JmpTest < Test::Unit::TestCase
         @op = 0x6C
       end
 
+      should_increase_cycles_by 5
+      
       should "use the passed-in address as the lsb of the that holds the lsb of the REAL address we will eventually make it to" do
         @cpu.ram[0x6960] = 0x20
         @cpu.ram[0x6961] = 0x4A

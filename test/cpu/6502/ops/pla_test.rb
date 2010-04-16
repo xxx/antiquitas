@@ -12,6 +12,7 @@ class Cpu6502PlaTest < Test::Unit::TestCase
       end
 
       should_increase_pc_by 1
+      should_increase_cycles_by 4
 
       should "pull a value from the stack and load it into the accumulator" do
         @cpu.push(0x77)

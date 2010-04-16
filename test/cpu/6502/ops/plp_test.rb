@@ -12,7 +12,8 @@ class Cpu6502PlpTest < Test::Unit::TestCase
       end
       
       should_increase_pc_by 1
-
+      should_increase_cycles_by 4
+      
       should "pull a value from the stack and set the status flags accordingly" do
         @cpu.push(0x83)
         @cpu.runop(@op)
