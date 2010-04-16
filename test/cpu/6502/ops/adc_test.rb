@@ -11,6 +11,7 @@ class Cpu6502AdcTest < Test::Unit::TestCase
         @op = 0x69
       end
 
+      should_increase_pc_by 2
       context "with decimal mode on" do
         setup do
           @cpu.flag[:D] = 1
@@ -118,18 +119,14 @@ class Cpu6502AdcTest < Test::Unit::TestCase
           assert_equal 0, @cpu.flag[:N]
         end
       end
-
-      should "increase the pc by the number of bytes for the op" do
-        pc = @cpu.pc
-        @cpu.runop(@op, 0x05)
-        assert_equal pc + 2, @cpu.pc
-      end
     end
 
     context "zeropage mode" do
       setup do
         @op = 0x65
       end
+
+      should_increase_pc_by 2
 
       context "with decimal mode on" do
         setup do
@@ -254,14 +251,6 @@ class Cpu6502AdcTest < Test::Unit::TestCase
           assert_equal 0, @cpu.flag[:N]
         end
       end
-
-      should "increase the pc by the number of bytes for the op" do
-        pc = @cpu.pc
-        @cpu.ram[0x42] = 0x02
-        @cpu.runop(@op, 0x42)
-        assert_equal pc + 2, @cpu.pc
-      end
-
     end
 
     context "zeropagex mode" do
@@ -269,6 +258,8 @@ class Cpu6502AdcTest < Test::Unit::TestCase
         @op = 0x75
         @cpu.register[:X] = 0x04
       end
+
+      should_increase_pc_by 2
 
       context "with decimal mode on" do
         setup do
@@ -394,14 +385,6 @@ class Cpu6502AdcTest < Test::Unit::TestCase
         end
       end
 
-      should "increase the pc by the number of bytes for the op" do
-        pc = @cpu.pc
-        @cpu.register[:X] = 0x04
-        @cpu.ram[0x42] = 0x02
-        @cpu.runop(@op, 0x3E)
-        assert_equal pc + 2, @cpu.pc
-      end
-
       should "wrap too-large addresses around so they fit on the zero page" do
         @cpu.register[:A] = 0x00
         @cpu.register[:X] = 0xFF
@@ -416,6 +399,8 @@ class Cpu6502AdcTest < Test::Unit::TestCase
       setup do
         @op = 0x6D
       end
+
+      should_increase_pc_by 3
 
       context "with decimal mode on" do
         setup do
@@ -540,13 +525,6 @@ class Cpu6502AdcTest < Test::Unit::TestCase
           assert_equal 0, @cpu.flag[:N]
         end
       end
-
-      should "increase the pc by the number of bytes for the op" do
-        pc = @cpu.pc
-        @cpu.ram[0x2436] = 0x02
-        @cpu.runop(@op, 0x24, 0x36)
-        assert_equal pc + 3, @cpu.pc
-      end
     end
 
     context "absolutex mode" do
@@ -554,6 +532,8 @@ class Cpu6502AdcTest < Test::Unit::TestCase
         @op = 0x7D
         @cpu.register[:X] = 0x04
       end
+
+      should_increase_pc_by 3
 
       context "with decimal mode on" do
         setup do
@@ -678,13 +658,6 @@ class Cpu6502AdcTest < Test::Unit::TestCase
           assert_equal 0, @cpu.flag[:N]
         end
       end
-
-      should "increase the pc by the number of bytes for the op" do
-        pc = @cpu.pc
-        @cpu.ram[0x2436] = 0x02
-        @cpu.runop(@op, 0x24, 0x32)
-        assert_equal pc + 3, @cpu.pc
-      end
     end
 
     context "absolutey mode" do
@@ -692,6 +665,8 @@ class Cpu6502AdcTest < Test::Unit::TestCase
         @op = 0x79
         @cpu.register[:Y] = 0x04
       end
+
+      should_increase_pc_by 3
 
       context "with decimal mode on" do
         setup do
@@ -816,13 +791,6 @@ class Cpu6502AdcTest < Test::Unit::TestCase
           assert_equal 0, @cpu.flag[:N]
         end
       end
-
-      should "increase the pc by the number of bytes for the op" do
-        pc = @cpu.pc
-        @cpu.ram[0x2436] = 0x02
-        @cpu.runop(@op, 0x24, 0x32)
-        assert_equal pc + 3, @cpu.pc
-      end
     end
 
     context "indirectx mode" do
@@ -833,6 +801,8 @@ class Cpu6502AdcTest < Test::Unit::TestCase
         @cpu.ram[0x36] = 0x20
         @cpu.ram[(0x20 << 8) | 0x02] = 0x69
       end
+
+      should_increase_pc_by 2
 
       context "with decimal mode on" do
         setup do
@@ -952,12 +922,6 @@ class Cpu6502AdcTest < Test::Unit::TestCase
         end
       end
 
-      should "increase the pc by the number of bytes for the op" do
-        pc = @cpu.pc
-        @cpu.runop(@op, 0x31)
-        assert_equal pc + 2, @cpu.pc
-      end
-
       should "wrap too-large addresses around so they fit on the zero page" do
         @cpu.register[:A] = 0x00
         @cpu.register[:X] = 0x04
@@ -979,6 +943,8 @@ class Cpu6502AdcTest < Test::Unit::TestCase
         @cpu.ram[0x36] = 0x20
         @cpu.ram[0x2006] = 0x69
       end
+
+      should_increase_pc_by 2
 
       context "with decimal mode on" do
         setup do
@@ -1093,12 +1059,6 @@ class Cpu6502AdcTest < Test::Unit::TestCase
           @cpu.runop(@op, 0x35)
           assert_equal 0, @cpu.flag[:N]
         end
-      end
-
-      should "increase the pc by the number of bytes for the op" do
-        pc = @cpu.pc
-        @cpu.runop(@op, 0x35)
-        assert_equal pc + 2, @cpu.pc
       end
 
       should "wrap too-large addresses around so they fit on the zero page" do
