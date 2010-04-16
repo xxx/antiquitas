@@ -12,6 +12,7 @@ class Cpu6502CliTest < Test::Unit::TestCase
       end
 
       should_increase_pc_by 1
+      should_increase_cycles_by 2
 
       should "clear the interrupt-disable flag" do
         @cpu.flag[:I] = 1

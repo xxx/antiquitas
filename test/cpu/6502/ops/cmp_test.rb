@@ -13,6 +13,7 @@ class Cpu6502CmpTest < Test::Unit::TestCase
       end
 
       should_increase_pc_by 2
+      should_increase_cycles_by 2
 
       should "set the carry flag if the value in the accumulator is greater than or equal to the value to compare with" do
         @cpu.runop(@op, 0x40)
@@ -56,6 +57,7 @@ class Cpu6502CmpTest < Test::Unit::TestCase
       end
 
       should_increase_pc_by 2
+      should_increase_cycles_by 3
 
       should "set the carry flag if the value in the accumulator is greater than or equal to the value to compare with" do
         @cpu.ram[0x50] = 0x40
@@ -107,6 +109,7 @@ class Cpu6502CmpTest < Test::Unit::TestCase
       end
 
       should_increase_pc_by 2
+      should_increase_cycles_by 4
 
       should "set the carry flag if the value in the accumulator is greater than or equal to the value to compare with" do
         @cpu.ram[0x50] = 0x40
@@ -165,6 +168,7 @@ class Cpu6502CmpTest < Test::Unit::TestCase
       end
 
       should_increase_pc_by 3
+      should_increase_cycles_by 4
 
       should "set the carry flag if the value in the accumulator is greater than or equal to the value to compare with" do
         @cpu.ram[0x5050] = 0x40
@@ -216,6 +220,7 @@ class Cpu6502CmpTest < Test::Unit::TestCase
       end
 
       should_increase_pc_by 3
+      should_increase_cycles_with_boundary_check_by 4
 
       should "set the carry flag if the value in the accumulator is greater than or equal to the value to compare with" do
         @cpu.ram[0x5050] = 0x40
@@ -267,6 +272,7 @@ class Cpu6502CmpTest < Test::Unit::TestCase
       end
 
       should_increase_pc_by 3
+      should_increase_cycles_with_boundary_check_by 4
 
       should "set the carry flag if the value in the accumulator is greater than or equal to the value to compare with" do
         @cpu.ram[0x5050] = 0x40
@@ -321,6 +327,7 @@ class Cpu6502CmpTest < Test::Unit::TestCase
       end
 
       should_increase_pc_by 2
+      should_increase_cycles_by 6
 
       should "set the carry flag if the value in the accumulator is greater than or equal to the value to compare with" do
         @cpu.runop(@op, 0x4C)
@@ -380,6 +387,7 @@ class Cpu6502CmpTest < Test::Unit::TestCase
       end
 
       should_increase_pc_by 2
+      should_increase_cycles_with_boundary_check_by 5
 
       should "set the carry flag if the value in the accumulator is greater than or equal to the value to compare with" do
         @cpu.runop(@op, 0x50)

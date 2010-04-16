@@ -505,11 +505,15 @@ class Cpu6502
         op_cmp(address)
 
       when 0XDD # CMP absolutex
-        address = ((oper1 << 8) | oper2) + @register[:X]
+        sixteen = to_16_bit(oper1, oper2)
+        add_cycle_if_crossing_boundary(sixteen, @register[:X])
+        address = (sixteen + @register[:X])
         op_cmp(address)
 
       when 0XD9 # CMP absolutey
-        address = ((oper1 << 8) | oper2) + @register[:Y]
+        sixteen = to_16_bit(oper1, oper2)
+        add_cycle_if_crossing_boundary(sixteen, @register[:Y])
+        address = (sixteen + @register[:Y])
         op_cmp(address)
 
       when 0XC1 # CMP indirectx
@@ -517,6 +521,7 @@ class Cpu6502
         op_cmp(address)
 
       when 0XD1 # CMP indirecty
+        add_cycle_if_crossing_boundary(oper1, @register[:Y])
         address = indirect_y_address(oper1)
         op_cmp(address)
 
