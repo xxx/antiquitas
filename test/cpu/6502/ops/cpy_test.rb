@@ -13,6 +13,7 @@ class Cpu6502CpyTest < Test::Unit::TestCase
       end
 
       should_increase_pc_by 2
+      should_increase_cycles_by 2
 
       should "set the carry flag if the value in the Y register is the same or greater than the passed value" do
         @cpu.runop(@op, 0x30)
@@ -56,6 +57,7 @@ class Cpu6502CpyTest < Test::Unit::TestCase
       end
 
       should_increase_pc_by 2
+      should_increase_cycles_by 3
 
       should "set the carry flag if the Y register value is the same or greater than the passed value" do
         @cpu.ram[0x1A] = 0x20
@@ -103,6 +105,7 @@ class Cpu6502CpyTest < Test::Unit::TestCase
       end
 
       should_increase_pc_by 3
+      should_increase_cycles_by 4
 
       should "set the carry flag if the Y register value is the same or greater than the passed value" do
         @cpu.ram[0x1A34] = 0x20

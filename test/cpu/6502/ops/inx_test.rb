@@ -12,7 +12,8 @@ class Cpu6502InxTest < Test::Unit::TestCase
       end
 
       should_increase_pc_by 1
-
+      should_increase_cycles_by 2
+      
       should "increment the X register" do
         @cpu.register = {:X => 8}
         @cpu.runop(@op)

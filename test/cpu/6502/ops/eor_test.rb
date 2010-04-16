@@ -13,6 +13,7 @@ class Cpu6502EorTest < Test::Unit::TestCase
       end
 
       should_increase_pc_by 2
+      should_increase_cycles_by 2
 
       should "exclusive OR the contents of the accumulator with the correct value based on addressing mode, storing the results in the accumulator" do
         @cpu.runop(@op, 0x83)
@@ -47,6 +48,7 @@ class Cpu6502EorTest < Test::Unit::TestCase
       end
 
       should_increase_pc_by 2
+      should_increase_cycles_by 3
 
       should "exclusive OR the contents of the accumulator with the correct value based on addressing mode, storing the results in the accumulator" do
         @cpu.ram[0x50] = 0x83
@@ -87,6 +89,7 @@ class Cpu6502EorTest < Test::Unit::TestCase
       end
 
       should_increase_pc_by 2
+      should_increase_cycles_by 4
 
       should "exclusive OR the contents of the accumulator with the correct value based on addressing mode, storing the results in the accumulator" do
         @cpu.ram[0x50] = 0x83
@@ -133,6 +136,7 @@ class Cpu6502EorTest < Test::Unit::TestCase
       end
 
       should_increase_pc_by 3
+      should_increase_cycles_by 4
 
       should "exclusive OR the contents of the accumulator with the correct value based on addressing mode, storing the results in the accumulator" do
         @cpu.ram[0x5150] = 0x83
@@ -173,6 +177,7 @@ class Cpu6502EorTest < Test::Unit::TestCase
       end
 
       should_increase_pc_by 3
+      should_increase_cycles_with_boundary_check_by 4
 
       should "exclusive OR the contents of the accumulator with the correct value based on addressing mode, storing the results in the accumulator" do
         @cpu.ram[0x5150] = 0x83
@@ -213,6 +218,7 @@ class Cpu6502EorTest < Test::Unit::TestCase
       end
 
       should_increase_pc_by 3
+      should_increase_cycles_with_boundary_check_by 4
 
       should "exclusive OR the contents of the accumulator with the correct value based on addressing mode, storing the results in the accumulator" do
         @cpu.ram[0x5150] = 0x83
@@ -255,7 +261,8 @@ class Cpu6502EorTest < Test::Unit::TestCase
       end
 
       should_increase_pc_by 2
-      
+      should_increase_cycles_by 6
+
       should "exclusive OR the contents of the accumulator with the correct value based on addressing mode, storing the results in the accumulator" do
         @cpu.ram[0x5150] = 0x83
         @cpu.runop(@op, 0x1C)
@@ -305,6 +312,7 @@ class Cpu6502EorTest < Test::Unit::TestCase
       end
 
       should_increase_pc_by 2
+      should_increase_cycles_with_boundary_check_by 5
 
       should "exclusive OR the contents of the accumulator with the correct value based on addressing mode, storing the results in the accumulator" do
         @cpu.ram[0x5150] = 0x83

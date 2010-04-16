@@ -13,6 +13,7 @@ class Cpu6502DeyTest < Test::Unit::TestCase
       end
 
       should_increase_pc_by 1
+      should_increase_cycles_by 2
 
       should "decrement the value in the Y register" do
         @cpu.runop(@op)

@@ -13,7 +13,8 @@ class Cpu6502DecTest < Test::Unit::TestCase
       end
 
       should_increase_pc_by 2
-      
+      should_increase_cycles_by 5
+
       should "decrement the value at the correct address by 1" do
         @cpu.runop(@op, 0x12)
         assert_equal 0x68, @cpu.ram[0x12]
@@ -50,6 +51,7 @@ class Cpu6502DecTest < Test::Unit::TestCase
       end
 
       should_increase_pc_by 2
+      should_increase_cycles_by 6
 
       should "decrement the value at the correct address by 1" do
         @cpu.runop(@op, 0x12)
@@ -92,6 +94,7 @@ class Cpu6502DecTest < Test::Unit::TestCase
       end
 
       should_increase_pc_by 3
+      should_increase_cycles_by 6
 
       should "decrement the value at the correct address by 1" do
         @cpu.runop(@op, 0x16, 0x5B)
@@ -129,6 +132,7 @@ class Cpu6502DecTest < Test::Unit::TestCase
       end
 
       should_increase_pc_by 3
+      should_increase_cycles_by 7
 
       should "decrement the value at the correct address by 1" do
         @cpu.runop(@op, 0x16, 0x5B)

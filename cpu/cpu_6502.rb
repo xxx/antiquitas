@@ -605,12 +605,16 @@ class Cpu6502
         set_sz(@register[:A])
 
       when 0x5D # EOR absolutex
-        address = ((oper1 << 8) | oper2) + @register[:X]
+        sixteen = to_16_bit(oper1, oper2)
+        add_cycle_if_crossing_boundary(sixteen, @register[:X])
+        address = (sixteen + @register[:X])
         @register[:A] = (@register[:A] ^ @ram[address]) & 0xFF
         set_sz(@register[:A])
 
       when 0x59 # EOR absolutey
-        address = ((oper1 << 8) | oper2) + @register[:Y]
+        sixteen = to_16_bit(oper1, oper2)
+        add_cycle_if_crossing_boundary(sixteen, @register[:Y])
+        address = (sixteen + @register[:Y])
         @register[:A] = (@register[:A] ^ @ram[address]) & 0xFF
         set_sz(@register[:A])
 
@@ -620,6 +624,7 @@ class Cpu6502
         set_sz(@register[:A])
 
       when 0x51 # EOR indirecty
+        add_cycle_if_crossing_boundary(oper1, @register[:Y])
         address = indirect_y_address(oper1)
         @register[:A] = (@register[:A] ^ @ram[address]) & 0xFF
         set_sz(@register[:A])
