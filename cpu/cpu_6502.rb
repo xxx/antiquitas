@@ -1063,6 +1063,7 @@ class Cpu6502
       result = @register[:A] + @flag[:C] + arg
     end
 
+    set_sz(result)
 
     if @flag[:D] == 1
       set_carry(result > 99)
@@ -1070,7 +1071,6 @@ class Cpu6502
       @register[:A] = self.class.to_bcd[result]
     else
       set_carry(result > 255)
-      set_sz(result)
 
       if ( ~(@register[:A] ^ arg) & (@register[:A] ^ result) ) & 0x80 > 0
         set_overflow(1)
@@ -1091,15 +1091,13 @@ class Cpu6502
     end
 
     set_carry(result & 0x100 == 0)
+    set_sz(result)
     
     if @flag[:D] == 1
-      set_sz(result)
       result &= 0xFF
 #      result += 100 while result < 0
       @register[:A] = to_bcd(result)
     else
-      set_sz(result)
-
       if ( ~(@register[:A] ^ arg) & (@register[:A] ^ result) ) & 0x80 > 0
         set_overflow(1)
       else
