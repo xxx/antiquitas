@@ -12,6 +12,7 @@ class Cpu6502RorTest < Test::Unit::TestCase
       end
 
       should_increase_pc_by 1
+      should_increase_cycles_by 2
 
       should "shift the accumulator 1 bit to the right, moving bit 0 into the carry, and the carry into bit 7" do
         @cpu.register[:A] = 0x81
@@ -53,6 +54,7 @@ class Cpu6502RorTest < Test::Unit::TestCase
       end
 
       should_increase_pc_by 2
+      should_increase_cycles_by 5
 
       should "shift the memory value 1 bit to the right, moving bit 0 into the carry, and the carry into bit 7" do
         @cpu.ram[0x23] = 0x81
@@ -95,6 +97,7 @@ class Cpu6502RorTest < Test::Unit::TestCase
       end
 
       should_increase_pc_by 2
+      should_increase_cycles_by 6
 
       should "shift the memory value 1 bit to the right, moving bit 0 into the carry, and the carry into bit 7" do
         @cpu.ram[0x23] = 0x81
@@ -143,6 +146,7 @@ class Cpu6502RorTest < Test::Unit::TestCase
       end
 
       should_increase_pc_by 3
+      should_increase_cycles_by 6
 
       should "shift the memory value 1 bit to the right, moving bit 0 into the carry, and the carry into bit 7" do
         @cpu.ram[0x2344] = 0x81
@@ -185,6 +189,7 @@ class Cpu6502RorTest < Test::Unit::TestCase
       end
 
       should_increase_pc_by 3
+      should_increase_cycles_by 7
 
       should "shift the memory value 1 bit to the right, moving bit 0 into the carry, and the carry into bit 7" do
         @cpu.ram[0x2344] = 0x81

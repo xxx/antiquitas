@@ -11,6 +11,8 @@ class Cpu6502RtsTest < Test::Unit::TestCase
         @op = 0x60
       end
 
+      should_increase_cycles_by 6
+      
       should "pulls a new value for the pc from the stack, increments, it, and assigns it to the pc" do
         @cpu.pc = 0x53FF
         @cpu.push(0x88)

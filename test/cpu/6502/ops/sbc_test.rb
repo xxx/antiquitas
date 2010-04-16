@@ -12,6 +12,7 @@ class Cpu6502SbcTest < Test::Unit::TestCase
       end
 
       should_increase_pc_by 2
+      should_increase_cycles_by 2
       
       context "with decimal mode on" do
         setup do
@@ -128,6 +129,7 @@ class Cpu6502SbcTest < Test::Unit::TestCase
       end
 
       should_increase_pc_by 2
+      should_increase_cycles_by 3
       
       context "with decimal mode on" do
         setup do
@@ -259,7 +261,8 @@ class Cpu6502SbcTest < Test::Unit::TestCase
       end
 
       should_increase_pc_by 2
-      
+      should_increase_cycles_by 4
+
       context "with decimal mode on" do
         setup do
           @cpu.flag[:D] = 1
@@ -398,6 +401,7 @@ class Cpu6502SbcTest < Test::Unit::TestCase
       end
 
       should_increase_pc_by 3
+      should_increase_cycles_by 4
 
       context "with decimal mode on" do
         setup do
@@ -529,6 +533,7 @@ class Cpu6502SbcTest < Test::Unit::TestCase
       end
 
       should_increase_pc_by 3
+      should_increase_cycles_with_boundary_check_by 4
 
       context "with decimal mode on" do
         setup do
@@ -660,6 +665,7 @@ class Cpu6502SbcTest < Test::Unit::TestCase
       end
 
       should_increase_pc_by 3
+      should_increase_cycles_with_boundary_check_by 4
       
       context "with decimal mode on" do
         setup do
@@ -794,6 +800,7 @@ class Cpu6502SbcTest < Test::Unit::TestCase
       end
 
       should_increase_pc_by 2
+      should_increase_cycles_by 6
       
       context "with decimal mode on" do
         setup do
@@ -929,6 +936,7 @@ class Cpu6502SbcTest < Test::Unit::TestCase
       end
 
       should_increase_pc_by 2
+      should_increase_cycles_with_boundary_check_by 5
 
       context "with decimal mode on" do
         setup do

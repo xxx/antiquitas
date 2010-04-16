@@ -12,7 +12,8 @@ class Cpu6502SedTest < Test::Unit::TestCase
       end
 
       should_increase_pc_by 1
-
+      should_increase_cycles_by 2
+      
       should "set the decimal mode flag" do
         @cpu.flag[:D] = 0
         @cpu.runop(@op)

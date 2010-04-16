@@ -11,6 +11,8 @@ class Cpu6502RtiTest < Test::Unit::TestCase
         @op = 0x40
       end
 
+      should_increase_cycles_by 6
+      
       should "pull the value of the status register from the stack and set the flags from it accordingly, then the two bytes of the address to return to, low byte first, then set the pc to that address" do
         @cpu.pc = 0x53FF
         @cpu.push(0x88)

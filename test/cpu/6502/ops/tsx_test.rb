@@ -12,6 +12,7 @@ class Cpu6502CTsxTest < Test::Unit::TestCase
       end
 
       should_increase_pc_by 1
+      should_increase_cycles_by 2
 
       should "transfer the value in the stack pointer to the X register" do
         @cpu.register[:S] = 0x69

@@ -12,6 +12,7 @@ class Cpu6502CTayTest < Test::Unit::TestCase
       end
 
       should_increase_pc_by 1
+      should_increase_cycles_by 2
 
       should "transfer the value in the accumulator to the Y register" do
         @cpu.register[:A] = 0x69

@@ -954,15 +954,20 @@ class Cpu6502
         op_sbc(@ram[(oper1 << 8) | oper2])
 
       when 0xFD # SBC absolutex
-        op_sbc(@ram[((oper1 << 8) | oper2) + @register[:X]])
+        sixteen = to_16_bit(oper1, oper2)
+        add_cycle_if_crossing_boundary(sixteen, @register[:X])
+        op_sbc(@ram[sixteen + @register[:X]])
 
       when 0xF9 # SBC absolutey
-        op_sbc(@ram[((oper1 << 8) | oper2) + @register[:Y]])
+        sixteen = to_16_bit(oper1, oper2)
+        add_cycle_if_crossing_boundary(sixteen, @register[:Y])
+        op_sbc(@ram[sixteen + @register[:Y]])
 
       when 0xE1 # SBC indirectx
         op_sbc(@ram[indirect_x_address(oper1)])
 
       when 0xF1 # SBC indirecty
+        add_cycle_if_crossing_boundary(oper1, @register[:Y])
         op_sbc(@ram[indirect_y_address(oper1)])
 
       when 0x38 # SEC implied

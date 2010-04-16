@@ -13,6 +13,7 @@ class Cpu6502TyaTest < Test::Unit::TestCase
       end
 
       should_increase_pc_by 1
+      should_increase_cycles_by 2
 
       should "transfer the contents of the Y register to the accumulator" do
         @cpu.runop(@op)

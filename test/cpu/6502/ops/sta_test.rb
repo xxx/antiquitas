@@ -13,6 +13,7 @@ class Cpu6502StaTest < Test::Unit::TestCase
       end
 
       should_increase_pc_by 2
+      should_increase_cycles_by 3
 
       should "store the value in the accumulator into the correct place in memory" do
         @cpu.runop(@op, 0x50)
@@ -28,6 +29,7 @@ class Cpu6502StaTest < Test::Unit::TestCase
       end
 
       should_increase_pc_by 2
+      should_increase_cycles_by 4
 
       should "store the value in the accumulator into the correct place in memory" do
         @cpu.runop(@op, 0x50)
@@ -47,6 +49,7 @@ class Cpu6502StaTest < Test::Unit::TestCase
       end
 
       should_increase_pc_by 3
+      should_increase_cycles_by 4
 
       should "store the value in the accumulator into the correct place in memory" do
         @cpu.runop(@op, 0x51, 0x50)
@@ -62,6 +65,7 @@ class Cpu6502StaTest < Test::Unit::TestCase
       end
 
       should_increase_pc_by 3
+      should_increase_cycles_by 5
 
       should "store the value in the accumulator into the correct place in memory" do
         @cpu.runop(@op, 0x51, 0x4C)
@@ -77,7 +81,8 @@ class Cpu6502StaTest < Test::Unit::TestCase
       end
 
       should_increase_pc_by 3
-
+      should_increase_cycles_by 5
+      
       should "store the value in the accumulator into the correct place in memory" do
         @cpu.runop(@op, 0x51, 0x4C)
         assert_equal 0x69, @cpu.ram[0x5150]
@@ -94,6 +99,7 @@ class Cpu6502StaTest < Test::Unit::TestCase
       end
 
       should_increase_pc_by 2
+      should_increase_cycles_by 6
 
       should "store the value in the accumulator into the correct place in memory" do
         @cpu.runop(@op, 0x30)
@@ -118,6 +124,7 @@ class Cpu6502StaTest < Test::Unit::TestCase
       end
 
       should_increase_pc_by 2
+      should_increase_cycles_by 6
 
       should "store the value in the accumulator into the correct place in memory" do
         @cpu.runop(@op, 0x34)
@@ -132,7 +139,5 @@ class Cpu6502StaTest < Test::Unit::TestCase
         assert_equal 0x69, @cpu.ram[0x1210]
       end
     end
-
-
   end
 end

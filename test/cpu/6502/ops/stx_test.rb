@@ -13,6 +13,7 @@ class Cpu6502StxTest < Test::Unit::TestCase
       end
 
       should_increase_pc_by 2
+      should_increase_cycles_by 3
 
       should "store the value in the X register to the correct place in memory" do
         @cpu.runop(@op, 0x40)
@@ -27,6 +28,7 @@ class Cpu6502StxTest < Test::Unit::TestCase
       end
 
       should_increase_pc_by 2
+      should_increase_cycles_by 4
 
       should "store the value in the X register to the correct place in memory" do
         @cpu.runop(@op, 0x3C)
@@ -46,6 +48,7 @@ class Cpu6502StxTest < Test::Unit::TestCase
       end
 
       should_increase_pc_by 3
+      should_increase_cycles_by 4
 
       should "store the value in the X register to the correct place in memory" do
         @cpu.runop(@op, 0x20, 0x50)
