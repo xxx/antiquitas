@@ -1074,6 +1074,14 @@ class Cpu6502
     end
   end
 
+  def opcodes(op = nil)
+    if op
+      self.class.opcodes[op]
+    else
+      self.class.opcodes
+    end
+  end
+  
   private
 
   def zeropage_address(arg)

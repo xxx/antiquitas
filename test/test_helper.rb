@@ -6,6 +6,10 @@ Dir.glob(File.join(File.dirname(__FILE__), '..', 'cpu', '*.rb')).each do |f|
   require f
 end
 
+Dir.glob(File.join(File.dirname(__FILE__), '..', 'lib', '**', '*.rb')).each do |f|
+  require f
+end
+
 #require File.join(File.dirname(__FILE__), 'blueprints')
 
 class Test::Unit::TestCase
@@ -107,6 +111,16 @@ class Test::Unit::TestCase
         @cpu.pc = 0x04
         @cpu.runop(@op, 0xF0)
         assert_equal amount + 2, @cpu.cycles
+      end
+    end
+  end
+
+  def self.should_disassemble(op, result)
+    context "disassembly of #{op.to_s(16)}" do
+      should "disassemble into the correct string" do
+        @op_info = @cpu.opcodes(op)
+        args = [0x12, 0x34][0, @op_info[2] - 1] # get correct number of args
+        assert_equal result, @cpu.disassemble(op, *args).gsub(/\s{2,}/, ' ')
       end
     end
   end
