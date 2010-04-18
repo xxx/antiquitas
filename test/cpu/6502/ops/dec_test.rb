@@ -20,6 +20,12 @@ class Cpu6502DecTest < Test::Unit::TestCase
         assert_equal 0x68, @cpu.ram[0x12]
       end
 
+      should "roll over if decremented when 0" do
+        @cpu.ram[0x12] = 0x00
+        @cpu.runop(@op, 0x12)
+        assert_equal 0xFF, @cpu.ram[0x12]
+      end
+
       should "set the zero flag if the result is 0" do
         @cpu.ram[0x12] = 0x01
         @cpu.runop(@op, 0x12)
@@ -56,6 +62,12 @@ class Cpu6502DecTest < Test::Unit::TestCase
       should "decrement the value at the correct address by 1" do
         @cpu.runop(@op, 0x12)
         assert_equal 0x68, @cpu.ram[0x16]
+      end
+
+      should "roll over if decremented when 0" do
+        @cpu.ram[0x16] = 0x00
+        @cpu.runop(@op, 0x12)
+        assert_equal 0xFF, @cpu.ram[0x16]
       end
 
       should "set the zero flag if the result is 0" do
@@ -101,6 +113,12 @@ class Cpu6502DecTest < Test::Unit::TestCase
         assert_equal 0x68, @cpu.ram[0x165B]
       end
 
+      should "roll over if decremented when 0" do
+        @cpu.ram[0x165B] = 0x00
+        @cpu.runop(@op, 0x16, 0x5B)
+        assert_equal 0xFF, @cpu.ram[0x165B]
+      end
+
       should "set the zero flag if the result is 0" do
         @cpu.ram[0x165B] = 0x01
         @cpu.runop(@op, 0x16, 0x5B)
@@ -137,6 +155,12 @@ class Cpu6502DecTest < Test::Unit::TestCase
       should "decrement the value at the correct address by 1" do
         @cpu.runop(@op, 0x16, 0x5B)
         assert_equal 0x68, @cpu.ram[0x165F]
+      end
+
+      should "roll over if decremented when 0" do
+        @cpu.ram[0x165F] = 0x00
+        @cpu.runop(@op, 0x16, 0x5B)
+        assert_equal 0xFF, @cpu.ram[0x165F]
       end
 
       should "set the zero flag if the result is 0" do

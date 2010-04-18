@@ -574,23 +574,23 @@ class Cpu6502
         set_sz(tmp)
 
       when 0xC6 # DEC zeropage
-        @ram[oper1] -= 0x01
+        @ram[oper1] = (@ram[oper1] - 0x01) & 0xFF
         set_sz(@ram[oper1])
 
       when 0xD6 # DEC zeropagex
         address = (oper1 + @register[:X])
         address -= 0xFF while address > 0xFF
-        @ram[address] -= 0x01
+        @ram[address] = (@ram[address] - 0x01) & 0xFF
         set_sz(@ram[address])
 
       when 0xCE # DEC absolute
         address = (oper1 << 8) | oper2
-        @ram[address] -= 0x01
+        @ram[address] = (@ram[address] - 0x01) & 0xFF
         set_sz(@ram[address])
 
       when 0xDE # DEC absolutex
         address = ((oper1 << 8) | oper2) + @register[:X]
-        @ram[address] -= 0x01
+        @ram[address] = (@ram[address] - 0x01) & 0xFF
         set_sz(@ram[address])
 
       when 0xCA # DEX implied

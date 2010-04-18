@@ -20,6 +20,12 @@ class Cpu6502DexTest < Test::Unit::TestCase
         assert_equal 0x68, @cpu.register[:X]
       end
 
+      should "roll over if decremented when 0" do
+        @cpu.register[:X] = 0x00
+        @cpu.runop(@op)
+        assert_equal 0xFF, @cpu.register[:X]
+      end
+
       should "set the zero flag if the X register is now zero" do
         @cpu.register[:X] = 0x01
         @cpu.runop(@op)

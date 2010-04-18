@@ -20,6 +20,12 @@ class Cpu6502DeyTest < Test::Unit::TestCase
         assert_equal 0x68, @cpu.register[:Y]
       end
 
+      should "roll over if decremented when 0" do
+        @cpu.register[:Y] = 0x00
+        @cpu.runop(@op)
+        assert_equal 0xFF, @cpu.register[:Y]
+      end
+
       should "set the zero flag if the Y register is now zero" do
         @cpu.register[:Y] = 0x01
         @cpu.runop(@op)
