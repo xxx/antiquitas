@@ -20,8 +20,6 @@ module Antiquitas
             nil
         end
 
-        address = address ? "$%x" % address : ""
-
         # op_info[1] is address mode
         address = dressed_address.call(address, op_info[1])
 
@@ -44,6 +42,9 @@ module Antiquitas
     private
 
     def self.dressed_address(address, address_mode)
+
+      address = address ? "$%02X" % address : ""
+      
       case address_mode
         when :immediate
           "##{address}"
