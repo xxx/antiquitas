@@ -1,6 +1,11 @@
 require File.join(File.dirname(__FILE__), '..', 'test_helper')
 
 class DisassemblerTest < Test::Unit::TestCase
+  # a very good case could be made for moving these into the respective
+  # hardware tests.
+  #
+  # in that case though, what to test here? maybe just test ops in the
+  # class? not sure.
   context "use with 6502 CPU" do
     should "inject itself into an existing instance" do
       @cpu = Cpu6502.new

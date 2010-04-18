@@ -120,4 +120,40 @@ class Test::Unit::TestCase
       end
     end
   end
+
+  def self.should_be_disassemblable
+    context "checking if hardware can be hooked up to the disassembler and used" do
+      should "return a table of opcodes when asked" do
+        assert @cpu.opcodes.kind_of?(Hash)
+      end
+    end
+  end
+
+  def self.should_be_monitorable
+    context "checking if hardware can be hooked up to the disassembler and used" do
+      should_be_disassemblable # will always be tested separately anyway?
+
+      context "required methods" do
+        should "return its registers" do
+          assert @cpu.respond_to?(:register)
+        end
+
+        should "return its flags" do
+          assert @cpu.respond_to?(:flag)
+        end
+
+        should "return its pointer to memory" do
+          assert @cpu.respond_to?(:ram)
+        end
+
+        should "return the number of cycles that have run" do
+          assert @cpu.respond_to?(:cycles)
+        end
+
+        should "have a debug flag" do
+          assert @cpu.respond_to?(:debug)
+        end
+      end
+    end
+  end
 end

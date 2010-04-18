@@ -1,3 +1,6 @@
+require 'optparse'
+require 'ostruct'
+
 module Antiquitas
   class Options < OpenStruct
     def self.parse(argv)
@@ -16,6 +19,22 @@ module Antiquitas
           instance.wall_mode = wall
         end
 
+        opts.on("--cpu CPU", ['6502'], "CPU type to open in the monitor.",
+                "Implies -d. Mutually exclusive of --system.",
+                "  (6502)") do |cpu|
+          instance.debug = true
+          instance.cpu = cpu
+          instance.system = nil
+        end
+
+        opts.on("--system SYSTEM", ["vcs"], "System type to open in the monitor.",
+                "Implies -d. Mutually exclusive of --cpu.",
+                "  (vcs)") do |system|
+          instance.debug = true
+          instance.system = system
+          instance.cpu = nil
+        end
+
         opts.on_tail("-h", "--help", "Show this message") do
           puts opts
           exit
@@ -28,7 +47,14 @@ module Antiquitas
 
       end
 
-      opts.parse! argv
+      begin
+        opts.parse! argv
+      rescue OptionParser::InvalidArgument, OptionParser::MissingArgument => e
+        puts opts
+        puts ""
+        puts "Error: #{e}"
+        exit
+      end
       instance
     end
   end

@@ -7,6 +7,9 @@ class Cpu6502Test < Test::Unit::TestCase
     @cpu = Cpu6502.new
   end
 
+  should_be_disassemblable
+  should_be_monitorable
+
   should "be little-endian" do
     assert_equal :little, @cpu.endianness
   end

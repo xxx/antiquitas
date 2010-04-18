@@ -1,6 +1,4 @@
 #!/usr/bin/env ruby
-require 'ostruct'
-require 'optparse'
 require 'rubygems'
 require 'bundler'
 
@@ -16,6 +14,9 @@ $options = Antiquitas::Options.parse(ARGV)
 rom = ARGV.first
 
 if $options.debug
+  if $options.cpu
+    cpu = Kernel.const_get("Cpu#{$options.cpu}")
+  end
   print '> '
   while line = $stdin.gets.chomp
     puts line
