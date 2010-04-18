@@ -112,7 +112,7 @@ class Test::Unit::TestCase
   end
 
   def self.should_disassemble(op, result)
-    context "disassembly of #{op.to_s(16)}" do
+    context "disassembly of #{"%02X" % op}" do
       should "disassemble into the correct string" do
         @op_info = @cpu.opcodes(op)
         args = [0x12, 0x34][0, @op_info[2] - 1] # get correct number of args
