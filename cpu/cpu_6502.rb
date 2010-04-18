@@ -606,44 +606,32 @@ class Cpu6502
         set_sz(@register[:A])
 
       when 0x45 # EOR zeropage
-        @register[:A] = (@register[:A] ^ @ram[oper1]) & 0xFF
-        set_sz(@register[:A])
+        op_eor(oper1)
 
       when 0x55 # EOR zeropagex
         address = oper1 + @register[:X]
         address -= 0xFF while address > 0xFF
-        @register[:A] = (@register[:A] ^ @ram[address]) & 0xFF
-        set_sz(@register[:A])
+        op_eor(address)
 
       when 0x4D # EOR absolute
-        address = (oper1 << 8) | oper2
-        @register[:A] = (@register[:A] ^ @ram[address]) & 0xFF
-        set_sz(@register[:A])
+        op_eor((oper1 << 8) | oper2)
 
       when 0x5D # EOR absolutex
         sixteen = to_16_bit(oper1, oper2)
         add_cycle_if_crossing_boundary(sixteen, @register[:X])
-        address = (sixteen + @register[:X])
-        @register[:A] = (@register[:A] ^ @ram[address]) & 0xFF
-        set_sz(@register[:A])
+        op_eor(sixteen + @register[:X])
 
       when 0x59 # EOR absolutey
         sixteen = to_16_bit(oper1, oper2)
         add_cycle_if_crossing_boundary(sixteen, @register[:Y])
-        address = (sixteen + @register[:Y])
-        @register[:A] = (@register[:A] ^ @ram[address]) & 0xFF
-        set_sz(@register[:A])
+        op_eor(sixteen + @register[:Y])
 
       when 0x41 # EOR indirectx
-        address = indirect_x_address(oper1)
-        @register[:A] = (@register[:A] ^ @ram[address]) & 0xFF
-        set_sz(@register[:A])
+        op_eor(indirect_x_address(oper1))
 
       when 0x51 # EOR indirecty
         add_cycle_if_crossing_boundary(oper1, @register[:Y])
-        address = indirect_y_address(oper1)
-        @register[:A] = (@register[:A] ^ @ram[address]) & 0xFF
-        set_sz(@register[:A])
+        op_eor(indirect_y_address(oper1))
 
       when 0xE6 # INC zeropage
         address = oper1
@@ -874,7 +862,7 @@ class Cpu6502
         push(@register[:A])
 
       when 0x08 # PHP implied
-        # break flag is always set to 1 per bug list
+        # break flag is always 1 when pushed via PHP.
         push(packed_flags | 0x10)
 
       when 0x68 # PLA implied
@@ -886,7 +874,7 @@ class Cpu6502
         @flag[:N] = val & 0x80 == 0 ? 0 : 1
         @flag[:V] = val & 0x40 == 0 ? 0 : 1
         # no flag at 0x20
-        @flag[:B] = 0 # break flag doesn't really exist
+#        @flag[:B] = 0 # break flag doesn't really exist
         @flag[:D] = val & 0x08 == 0 ? 0 : 1
         @flag[:I] = val & 0x04 == 0 ? 0 : 1
         @flag[:Z] = val & 0x02 == 0 ? 0 : 1
@@ -1210,6 +1198,11 @@ class Cpu6502
 
   def branch_pc(arg)
     @pc += branch_address(arg)
+  end
+
+  def op_eor(address)
+    @register[:A] = (@register[:A] ^ @ram[address]) & 0xFF
+    set_sz(@register[:A])
   end
 
   def branch_address(arg)
