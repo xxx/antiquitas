@@ -26,6 +26,12 @@ class Cpu6502PlpTest < Test::Unit::TestCase
         assert_equal 1, @cpu.flag[:Z]
         assert_equal 1, @cpu.flag[:C]
       end
+
+      should "discard the popped value of the break flag regardless of what it is" do
+        @cpu.push(0x10)
+        @cpu.runop(@op)
+        assert_equal 0, @cpu.flag[:B]
+      end
     end
   end
 end

@@ -25,13 +25,13 @@ class Cpu6502RtiTest < Test::Unit::TestCase
         assert_equal 0x8820, @cpu.pc
       end
 
-      should "not change the break flag" do
+      should "always set the break flag to 0 because it doesn't actually exist" do
         @cpu.flag[:B] = 1
         @cpu.push(0x88)
         @cpu.push(0x20)
         @cpu.push(0x00)
         @cpu.runop(@op)
-        assert_equal 1, @cpu.flag[:B]
+        assert_equal 0, @cpu.flag[:B]
       end
     end
   end

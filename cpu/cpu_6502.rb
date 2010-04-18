@@ -245,10 +245,6 @@ class Cpu6502
   ]
 
   def initialize
-    reset
-  end
-
-  def reset
     @debug = false
     @imagesize = 0
     @pc = 0
@@ -256,10 +252,26 @@ class Cpu6502
     @ram = Array.new(65536, 0)
     @register = { :A => 0, :X => 0, :Y => 0, :S => 0xFF, :P => 0 }
     # unused flag is always 1, according to the bug lists
-    # real bits 7 to 0 are: N V - B D I Z C
+    # 'real' bits 7 to 0 are: N V - B D I Z C
+    # 'B' really only exists in the context of pushing or pulling
+    # the status register from the stack. There is no actual direct way to
+    # set or clear the flag in the 6502, and is ALWAYS set to 0 when 
     @flag = { :N => 0, :V => 0, :B => 0, :D => 0, :I => 0, :Z => 0, :C => 0}
     @operand = Array.new(2)
     @cycles = 0
+  end
+
+  def reset
+    @pc = (@ram[0xFFFD] << 8) | @ram[0xFFFC]
+    @flag[:I] = 1
+  end
+
+  def nmi
+    service_interrupt(0xFFFA)
+  end
+
+  def irq
+    service_interrupt(0xFFFE) if @flag[:I] == 0
   end
 
   def opcodes
@@ -874,7 +886,7 @@ class Cpu6502
         @flag[:N] = val & 0x80 == 0 ? 0 : 1
         @flag[:V] = val & 0x40 == 0 ? 0 : 1
         # no flag at 0x20
-        @flag[:B] = val & 0x10 == 0 ? 0 : 1
+        @flag[:B] = 0 # break flag doesn't really exist
         @flag[:D] = val & 0x08 == 0 ? 0 : 1
         @flag[:I] = val & 0x04 == 0 ? 0 : 1
         @flag[:Z] = val & 0x02 == 0 ? 0 : 1
@@ -928,11 +940,12 @@ class Cpu6502
         status = pull
         # flag bits 7 to 0 are: N V - B D I Z C
 
-        # break flag is ignored per documentation
+        # break flag is always set to 0 because it doesn't really exist
         @flag[:C] = status & 0x01 == 0x01 ? 1 : 0
         @flag[:Z] = status & 0x02 == 0x02 ? 1 : 0
         @flag[:I] = status & 0x04 == 0x04 ? 1 : 0
         @flag[:D] = status & 0x08 == 0x08 ? 1 : 0
+        @flag[:B] = 0
         @flag[:V] = status & 0x40 == 0x40 ? 1 : 0
         @flag[:N] = status & 0x80 == 0x80 ? 1 : 0
 
@@ -1060,7 +1073,7 @@ class Cpu6502
     while @pc <= (@pc_offset + @imagesize)
       #puts "inside decode loop - #{@pc} #{@prog.size}"
       opcode=readmem(@pc)
-      info = @@opcodes[opcode]
+      info = opcodes[opcode]
       case info[2]
         when 2
           @operand[0] = readmem(@pc + 1)
@@ -1218,6 +1231,15 @@ class Cpu6502
     else
       @cycles += 1
     end
+  end
+
+  def service_interrupt(vector_byte)
+    push(@pc >> 8)
+    push(@pc & 0xFF)
+    push(packed_flags & (~0x10))
+
+    @pc = (@ram[vector_byte + 1] << 8) | @ram[vector_byte]
+    @flag[:I] = 1
   end
 
   # so, so common to call these together.
