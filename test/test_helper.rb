@@ -2,11 +2,7 @@ require 'rubygems'
 require 'bundler'
 Bundler.require(:default, :test)
 
-Dir.glob(File.join(File.dirname(__FILE__), '..', 'cpu', '*.rb')).each do |f|
-  require f
-end
-
-Dir.glob(File.join(File.dirname(__FILE__), '..', 'lib', '**', '*.rb')).each do |f|
+Dir.glob(File.join(File.dirname(__FILE__), '..', '{cpu,lib}', '**', '*.rb')).each do |f|
   require f
 end
 

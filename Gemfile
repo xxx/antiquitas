@@ -7,3 +7,8 @@ group :test do
   gem 'thoughtbot-shoulda', :require => 'shoulda'
 #  gem "rr"
 end
+
+# bundle install --without gui
+group :gui do
+  # tk 'n shit
+end
