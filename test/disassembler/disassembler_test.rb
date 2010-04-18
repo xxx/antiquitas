@@ -45,7 +45,7 @@ class DisassemblerTest < Test::Unit::TestCase
       should_disassemble(0x21, 'AND ($12,X)')
       should_disassemble(0x31, 'AND ($12),Y')
 
-      should_disassemble(0x0A, 'ASL')
+      should_disassemble(0x0A, 'ASL A')
       should_disassemble(0x06, 'ASL $12')
       should_disassemble(0x16, 'ASL $12,X')
       should_disassemble(0x0E, 'ASL $1234')
@@ -150,7 +150,7 @@ class DisassemblerTest < Test::Unit::TestCase
       should_disassemble(0xAC, 'LDY $1234')
       should_disassemble(0xBC, 'LDY $1234,X')
 
-      should_disassemble(0x4A, 'LSR')
+      should_disassemble(0x4A, 'LSR A')
       should_disassemble(0x46, 'LSR $12')
       should_disassemble(0x56, 'LSR $12,X')
       should_disassemble(0x4E, 'LSR $1234')
@@ -175,13 +175,13 @@ class DisassemblerTest < Test::Unit::TestCase
 
       should_disassemble(0x28, 'PLP')
 
-      should_disassemble(0x2A, 'ROL')
+      should_disassemble(0x2A, 'ROL A')
       should_disassemble(0x26, 'ROL $12')
       should_disassemble(0x36, 'ROL $12,X')
       should_disassemble(0x2E, 'ROL $1234')
       should_disassemble(0x3E, 'ROL $1234,X')
 
-      should_disassemble(0x6A, 'ROR')
+      should_disassemble(0x6A, 'ROR A')
       should_disassemble(0x66, 'ROR $12')
       should_disassemble(0x76, 'ROR $12,X')
       should_disassemble(0x6E, 'ROR $1234')

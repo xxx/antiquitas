@@ -72,6 +72,9 @@ module Antiquitas
         when :indirecty
           "(#{address}),Y"
 
+        when :accumulator
+          "A"
+        
         else
           "#{address}"
       end
