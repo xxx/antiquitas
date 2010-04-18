@@ -8,9 +8,13 @@ module Antiquitas
       dressed_address = method(:dressed_address)
 
       imeta = class << instance; self; end;
+
+      # pass MSB as first arg to disassemble if multiple args.
+      # keeping MSB as first on all endianness types to
+      # keep the internal API consistent with itself.
       imeta.send :define_method, :disassemble do |op, *args|
         op_info = opcodes[op]
-        str = op_info[0] # op_info[0] is mnemonic
+        mnemonic = op_info[0]
         address = case args.length
           when 2
             ((args.first << 8) | args.last)
@@ -27,9 +31,9 @@ module Antiquitas
         # we only want to output 'BRK'
         # this will need to be broken into a separate module
         # if more cpu types are tested with this suite.
-        address = '' if str == 'BRK'
+        address = '' if mnemonic == 'BRK'
         
-        ("%3s %s" % [str, address]).strip
+        ("%3s %s" % [mnemonic, address]).strip
       end
     end
 

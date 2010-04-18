@@ -31,4 +31,8 @@ class Cpu6502Test < Test::Unit::TestCase
     end
   end
 
+  should "be little-endian" do
+    assert_equal :little, @cpu.endianness
+  end
+
 end

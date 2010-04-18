@@ -266,6 +266,10 @@ class Cpu6502
     self.class.opcodes
   end
 
+  def endianness
+    :little
+  end
+
   def display_status
     if (@debug)
       printf("PC=%04x SP=%04x A=%02x X=%02x Y=%02x S=%02x C=%d Z=%d\n\n", @pc,@register[:S],@register[:A],@register[:X],@register[:Y],@flag[:N],@flag[:C]?1:0,@flag[:Z])
