@@ -20,6 +20,12 @@ class Cpu6502InyTest < Test::Unit::TestCase
         assert_equal 0x09, @cpu.register[:Y]
       end
 
+      should "roll over when incremented at 0xFF" do
+        @cpu.register[:Y] = 0xFF
+        @cpu.runop(@op)
+        assert_equal 0x00, @cpu.register[:Y]
+      end
+
       should "set the negative flag of the bit 7 of the Y register is set" do
         @cpu.register[:Y] = 0xFE
         @cpu.runop(@op)
