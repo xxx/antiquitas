@@ -2,13 +2,13 @@ require 'rubygems'
 require 'bundler'
 Bundler.require(:default, :test)
 
-Dir.glob(File.join(File.dirname(__FILE__), '..', '{cpu,lib}', '**', '*.rb')).each do |f|
+Dir.glob(File.join(File.dirname(__FILE__), '..', '{cpu,monitor,lib}', '**', '*.rb')).each do |f|
   require f
 end
 
-#require File.join(File.dirname(__FILE__), 'blueprints')
-
 class Test::Unit::TestCase
+  include RR::Adapters::TestUnit
+  
   def to16bit(high_byte, low_byte)
     (high_byte << 8) | low_byte
   end
@@ -130,7 +130,7 @@ class Test::Unit::TestCase
   end
 
   def self.should_be_monitorable
-    context "checking if hardware can be hooked up to the disassembler and used" do
+    context "checking if hardware can be hooked up to the monitor and used" do
       should_be_disassemblable # will always be tested separately anyway?
 
       context "required methods" do

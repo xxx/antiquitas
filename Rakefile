@@ -18,13 +18,13 @@ namespace :test do
     t.verbose = true
   end
 
-#  desc "Run the request tests"
-#  Rake::TestTask.new do |t|
-#    t.name = 'requests'
-#    t.libs << "test"
-#    t.test_files = FileList['test/requests/*_test.rb']
-#    t.verbose = true
-#  end
+  desc "Run the monitor/debugger tests"
+  Rake::TestTask.new do |t|
+    t.name = 'monitor'
+    t.libs << "test"
+    t.test_files = FileList['test/monitor/**/*_test.rb']
+    t.verbose = true
+  end
 end
 
 desc "Run all tests"

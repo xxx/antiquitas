@@ -1,6 +1,7 @@
 #!/usr/bin/env ruby
 require 'rubygems'
 require 'bundler'
+require 'readline'
 
 Bundler.require :default
 
@@ -17,10 +18,10 @@ if $options.debug
   if $options.cpu
     cpu = Kernel.const_get("Cpu#{$options.cpu}")
   end
-  print '> '
-  while line = $stdin.gets.chomp
+  loop do
+    line = Readline::readline('> ')
+    Readline::HISTORY.push(line)
     puts line
-    print '> '
   end
 else
   puts  'cool'
