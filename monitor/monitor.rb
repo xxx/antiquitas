@@ -65,6 +65,49 @@ module Antiquitas
           end
           trap(opts)
 
+        when /^(?:cont(?:inue)?)$/i
+          continue
+
+        when /^(?:s(?:tep)?|n(?:ext)?)$/i
+          step
+
+        when /bt|backtrace/i
+          backtrace
+
+        when /^d(?:ump)?$/i
+          dump
+
+        when /^dis(?:assemble)?(?:\s+(\$[0-9a-fA-F]+|\d+|\$[0-9a-fA-F]+\s+\d+))?$/i
+          if $1
+            match = $1
+            if match[0, 1] == '$'
+              if match.include? ' ' # address and bytes
+                address, bytes = match.split(/\s+/)
+                opts[:address] = address[1..-1].hex
+                opts[:bytes] = bytes.to_i
+              else # just address
+                opts[:address] = match[1..-1].hex
+              end
+            else # just bytes
+              opts[:bytes] = match.to_i
+            end
+          end
+
+          disassemble(opts)
+
+        when /^label(?:\s+(\$[0-9a-fA-F]+|\$[0-9a-fA-F]+\s+[\w\s]+))?$/i
+          if $1
+            match = $1
+            if match.include? ' ' # address and name
+              address, opts[:name] = match.split(/\s+/, 2)
+              opts[:address] = address[1..-1].hex
+            else # just address
+              opts[:address] = match[1..-1].hex
+            end
+          end
+
+          label(opts)
+
       end
     end
     
@@ -81,7 +124,25 @@ module Antiquitas
     end
 
     def trap(opts = {})
-
     end
+
+    def continue
+    end
+
+    def step
+    end
+
+    def backtrace
+    end
+
+    def dump
+    end
+
+    def disassemble(opts = {})
+    end
+
+    def label(opts = {})
+    end
+
   end
 end

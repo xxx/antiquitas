@@ -223,27 +223,140 @@ class MonitorTest < Test::Unit::TestCase
       end
 
       context "continue" do
+        context "no args" do
+          should "call the command" do
+            mock(@monitor).continue
+            @monitor.parse_command('continue')
+          end
+        end
 
+        context "alternate invocations" do
+          should "call the command" do
+            mock(@monitor).continue
+            @monitor.parse_command('cont')
+          end
+        end
       end
 
       context "step/next" do
+        context "no args" do
+          should "call the command" do
+            mock(@monitor).step
+            @monitor.parse_command('step')
+          end
+        end
+
+        context "alternate invocations" do
+          should "call the command" do
+            mock(@monitor).step.times(3)
+            @monitor.parse_command('next')
+            @monitor.parse_command('n')
+            @monitor.parse_command('s')
+          end
+        end
 
       end
 
       context "backtrace" do
-        
+        context "no args" do
+          should "call the command" do
+            mock(@monitor).backtrace
+            @monitor.parse_command('backtrace')
+          end
+        end
+
+        context "alternate invocations" do
+          should "call the command" do
+            mock(@monitor).backtrace
+            @monitor.parse_command('bt')
+          end
+        end
       end
 
       context "dump" do
-        
+        context "no args" do
+          should "call the command" do
+            mock(@monitor).dump
+            @monitor.parse_command('dump')
+          end
+        end
+
+        context "alternate invocations" do
+          should "call the command" do
+            mock(@monitor).dump
+            @monitor.parse_command('d')
+          end
+        end
       end
 
       context "disassemble" do
+        context "no args" do
+          should "call the command" do
+            mock(@monitor).disassemble({})
+            @monitor.parse_command('disassemble')
+          end
+        end
 
+        context "alternate invocations" do
+          should "call the command" do
+            mock(@monitor).disassemble({})
+            @monitor.parse_command('dis')
+          end
+        end
+
+        context "with address" do
+          should "pass the arg as a real hex value" do
+            mock(@monitor).disassemble(:address => 0x69)
+            @monitor.parse_command('disassemble $69')
+          end
+        end
+
+        context "with byte count" do
+          should "pass the correct byte count" do
+            mock(@monitor).disassemble(:bytes => 50)
+            @monitor.parse_command('dis 50')
+          end
+        end
+        
+        context "with address and byte count" do
+          should "call disassemble with the correct arguments" do
+            mock(@monitor).disassemble(:bytes => 50, :address => 0x69)
+            @monitor.parse_command('dis $69 50')
+          end
+        end
       end
 
       context "label" do
-        
+        context "no args" do
+          should "call the command" do
+            mock(@monitor).label({})
+            @monitor.parse_command('label')
+          end
+        end
+
+        context "with an address" do
+          should "call the command" do
+            mock(@monitor).label(:address => 0x69)
+            @monitor.parse_command('label $69')
+          end
+        end
+
+        context "with address and name" do
+          should "call the command" do
+            mock(@monitor).label(:address => 0x69, :name => 'foobar baz')
+            @monitor.parse_command('label $69 foobar baz')
+          end
+        end
+      end
+
+      context "help" do
+        context "no args" do
+
+        end
+
+        context "alternate invocations" do
+
+        end
       end
     end
 
