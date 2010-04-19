@@ -111,15 +111,114 @@ class MonitorTest < Test::Unit::TestCase
 
       context "trap" do
         context "read traps" do
+          context "no address" do
+            should "call the command" do
+              mock(@monitor).trap({:type => :read})
+              @monitor.parse_command('trap read')
+            end
+          end
 
+          context "single hex address arg" do
+            should "pass the arg as a real hex value" do
+              mock(@monitor).trap(:address => 0x69, :type => :read)
+              @monitor.parse_command('trap read $69')
+            end
+          end
+
+          context "flag arg" do
+            should "call with the correct argument" do
+              mock(@monitor).trap(:type => :read, :flag => :z)
+              @monitor.parse_command('trap read flag:z')
+            end
+          end
+
+          context "register arg" do
+            should "call with the correct argument" do
+              mock(@monitor).trap(:type => :read, :register => :x)
+              @monitor.parse_command('trap read register:x')
+            end
+          end
+
+          context "alternate invocation" do
+            should "call with the correct argument" do
+              mock(@monitor).trap(:type => :read, :register => :x)
+              @monitor.parse_command('trap r reg:x')
+            end
+          end
         end
 
         context "write traps" do
+          context "no address" do
+            should "call the command" do
+              mock(@monitor).trap({:type => :write})
+              @monitor.parse_command('trap write')
+            end
+          end
 
+          context "single hex address arg" do
+            should "pass the arg as a real hex value" do
+              mock(@monitor).trap(:address => 0x69, :type => :write)
+              @monitor.parse_command('trap write $69')
+            end
+          end
+
+          context "flag arg" do
+            should "call with the correct argument" do
+              mock(@monitor).trap(:type => :write, :flag => :z)
+              @monitor.parse_command('trap write flag:z')
+            end
+          end
+
+          context "register arg" do
+            should "call with the correct argument" do
+              mock(@monitor).trap(:type => :write, :register => :x)
+              @monitor.parse_command('trap write register:x')
+            end
+          end
+
+          context "alternate invocation" do
+            should "call with the correct argument" do
+              mock(@monitor).trap(:type => :write, :flag => :z)
+              @monitor.parse_command('trap w flag:z')
+            end
+          end
         end
 
-        context "don't-care traps" do
-          
+        context "read-write traps" do
+          context "no address" do
+            should "call the command" do
+              mock(@monitor).trap({:type => :readwrite})
+              @monitor.parse_command('trap readwrite')
+            end
+          end
+
+          context "single hex address arg" do
+            should "pass the arg as a real hex value" do
+              mock(@monitor).trap(:address => 0x69, :type => :readwrite)
+              @monitor.parse_command('trap readwrite $69')
+            end
+          end
+
+          context "flag arg" do
+            should "call with the correct argument" do
+              mock(@monitor).trap(:type => :readwrite, :flag => :z)
+              @monitor.parse_command('trap readwrite flag:z')
+            end
+          end
+
+          context "register arg" do
+            should "call with the correct argument" do
+              mock(@monitor).trap(:type => :readwrite, :register => :x)
+              @monitor.parse_command('trap readwrite register:x')
+            end
+          end
+
+          context "alternate invocation" do
+            should "call with the correct argument" do
+              mock(@monitor).trap(:type => :readwrite, :address => 0x6969)
+              @monitor.parse_command('trap rw $6969')
+            end
+          end
         end
       end
 
