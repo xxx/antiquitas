@@ -65,10 +65,10 @@ module Antiquitas
           end
           trap(opts)
 
-        when /^(?:cont(?:inue)?)$/i
+        when /^cont(?:inue)?$/i
           continue
 
-        when /^(?:s(?:tep)?|n(?:ext)?)$/i
+        when /^s(?:tep)?|n(?:ext)?$/i
           step
 
         when /bt|backtrace/i
