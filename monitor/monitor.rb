@@ -141,6 +141,24 @@ module Antiquitas
     end
 
     def watchpoint(opts = {})
+      if opts.empty?
+        @watchpoints.each do |wp|
+          puts wp
+        end
+      else
+        [:address, :flag, :register].each do |watch_type|
+          if opts[watch_type]
+            wp = @watchpoints.detect { |w| w.watch_type == watch_type and w.watch_location == opts[watch_type] }
+            if wp
+              wp.enabled = !wp.enabled
+            else
+              @watchpoints << Watchpoint.new(watch_type, opts[watch_type])
+            end
+            
+            break
+          end
+        end
+      end
     end
 
     def trap(opts = {})

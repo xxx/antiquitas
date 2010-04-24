@@ -6,13 +6,13 @@ module Antiquitas
       attr_accessor :address, :condition, :enabled
       
       def initialize(address = nil, condition = nil, enabled = true)
-        self.address = address
-        self.condition = condition
-        self.enabled = enabled
+        @address = address
+        @condition = condition
+        @enabled = enabled
       end
       
       def <=>(other)
-        address <=> other.address
+        @address <=> other.address
       end
     end
   end
