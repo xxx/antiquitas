@@ -17,12 +17,28 @@ class MonitorWatchpointOperationTest < Test::Unit::TestCase
         @monitor.watchpoint(type => location)
       end
 
-      should "disable the watchpoint for the passed #{type}" do
-        @monitor.watchpoint(type => location)
-        assert_equal 1, @monitor.watchpoints.length
-        assert_equal type, @monitor.watchpoints.first.watch_type
-        assert_equal location, @monitor.watchpoints.first.watch_location
-        assert !@monitor.watchpoints.first.enabled
+      context "watchpoint enabled" do
+        should "disable the watchpoint for the passed #{type}" do
+          @monitor.watchpoint(type => location)
+          assert_equal 1, @monitor.watchpoints.length
+          assert_equal type, @monitor.watchpoints.first.watch_type
+          assert_equal location, @monitor.watchpoints.first.watch_location
+          assert !@monitor.watchpoints.first.enabled
+        end
+      end
+
+      context "watchpoint disabled" do
+        setup do
+          @monitor.watchpoints.first.enabled = false
+        end
+
+        should "enable the watchpoint for the passed #{type}" do
+          @monitor.watchpoint(type => location)
+          assert_equal 1, @monitor.watchpoints.length
+          assert_equal type, @monitor.watchpoints.first.watch_type
+          assert_equal location, @monitor.watchpoints.first.watch_location
+          assert @monitor.watchpoints.first.enabled
+        end
       end
     end
   end
