@@ -255,7 +255,8 @@ class Cpu6502
     # 'real' bits 7 to 0 are: N V - B D I Z C
     # 'B' really only exists in the context of pushing or pulling
     # the status register from the stack. There is no actual direct way to
-    # set or clear the flag in the 6502, and is ALWAYS set to 0 when 
+    # set or clear the flag in the 6502, and is ALWAYS set to 0 in the status
+    # register
     @flag = { :N => 0, :V => 0, :B => 0, :D => 0, :I => 0, :Z => 0, :C => 0}
     @operand = Array.new(2)
     @cycles = 0
