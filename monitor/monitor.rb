@@ -1,9 +1,10 @@
 module Antiquitas
   class Monitor
-    attr_reader :hardware, :breakpoints
+    attr_reader :hardware, :breakpoints, :watchpoints
 
     def initialize
       @breakpoints = []
+      @watchpoints = []
     end
 
     def monitor(hardware)
@@ -13,23 +14,22 @@ module Antiquitas
     end
 
     def run
-
     end
     
     def parse_command(command)
       opts = {}
       case command.strip
-        when /^b(?:p|reak(?:point)?)(?:\s+\$([0-9a-fA-F]+))?(?:\s+(.+))?$/i
+        when /\Ab(?:p|reak(?:point)?)(?:\s+\$([0-9a-fA-F]+))?(?:\s+(.+))?\Z/i
           opts[:address] = $1.hex if $1
           opts[:condition] = $2 if $2
           breakpoint opts
 
-        when /^watch(?:\s+(\$[0-9a-fA-F]+|f(?:lag)?:\w+|r(?:eg(?:ister)?)?:\w+))?(?:\s+(.+))?$/i
+        when /\Awatch(?:\s+(\$[0-9a-fA-F]+|f(?:lag)?:\w+|r(?:eg(?:ister)?)?:\w+))?(?:\s+(.+))?\Z/i
           if $1
             if $1[0, 1] == '$'
               opts[:address] = $1[1..-1].hex
-            elsif $1[0, 4] == 'flag'
-              opts[:flag] = $1.gsub(/^flag:/, '').to_sym
+            elsif $1[0, 1] == 'f'
+              opts[:flag] = $1.gsub(/^f(?:lag)?:/, '').to_sym
             elsif $1[0, 3] == 'reg'
               opts[:register] = $1.gsub(/^reg(?:ister)?:/, '').to_sym
             end
@@ -38,7 +38,7 @@ module Antiquitas
           opts[:condition] = $2 if $2
           watchpoint(opts)
 
-        when /^trap(?:\s+(r(?:ead)?|w(?:rite)?|rw|readwrite))?(?:\s+(\$[0-9a-fA-F]+|flag:\w+|reg(?:ister)?:\w+))?$/i
+        when /\Atrap(?:\s+(r(?:ead)?|w(?:rite)?|rw|readwrite))?(?:\s+(\$[0-9a-fA-F]+|flag:\w+|reg(?:ister)?:\w+))?\Z/i
           if $1
             opts[:type] = case $1.downcase
               when 'r'
@@ -65,19 +65,19 @@ module Antiquitas
           end
           trap(opts)
 
-        when /^cont(?:inue)?$/i
+        when /\Acont(?:inue)?\Z/i
           continue
 
-        when /^s(?:tep)?|n(?:ext)?$/i
+        when /\As(?:tep)?|n(?:ext)?\Z/i
           step
 
-        when /bt|backtrace/i
+        when /\Abt|backtrace\Z/i
           backtrace
 
-        when /^d(?:ump)?$/i
+        when /\Ad(?:ump)?\Z/i
           dump
 
-        when /^dis(?:assemble)?(?:\s+(\$[0-9a-fA-F]+|\d+|\$[0-9a-fA-F]+\s+\d+))?$/i
+        when /\Adis(?:assemble)?(?:\s+(\$[0-9a-fA-F]+|\d+|\$[0-9a-fA-F]+\s+\d+))?\Z/i
           if $1
             match = $1
             if match[0, 1] == '$'
@@ -95,7 +95,7 @@ module Antiquitas
 
           disassemble(opts)
 
-        when /^label(?:\s+(\$[0-9a-fA-F]+|\$[0-9a-fA-F]+\s+[\w\s]+))?$/i
+        when /\Alabel(?:\s+(\$[0-9a-fA-F]+|\$[0-9a-fA-F]+\s+[\w\s]+))?\Z/i
           if $1
             match = $1
             if match.include? ' ' # address and name
@@ -108,6 +108,8 @@ module Antiquitas
 
           label(opts)
 
+        when /\A(?:h(?:elp)?|\?)(?:\s+(.+))?\Z/i
+          help
       end
     end
     
@@ -115,9 +117,29 @@ module Antiquitas
       @hardware.send(method, *args, &block)
     end
 
-    private
-
     def breakpoint(opts = {})
+      if opts.empty?
+        @breakpoints.sort.each do |bp|
+          puts bp
+        end
+      else
+        if opts[:address]
+          bp = @breakpoints.detect { |brk| opts[:address] == brk.address }
+          if bp
+            if opts[:condition]
+              if bp.condition == opts[:condition]
+                bp.enabled = !bp.enabled
+              else
+                bp.condition = opts[:condition]
+              end
+            else
+              bp.enabled = !bp.enabled
+            end
+          else
+            @breakpoints << Breakpoint.new(opts[:address], opts[:condition])
+          end
+        end
+      end
     end
 
     def watchpoint(opts = {})
@@ -144,5 +166,8 @@ module Antiquitas
     def label(opts = {})
     end
 
+    def help(opts = {})
+      
+    end
   end
 end
