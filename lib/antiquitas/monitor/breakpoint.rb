@@ -1,6 +1,6 @@
 module Antiquitas
   class Monitor
-    class Breakpoint < Struct.new("AntiquitasMonitorBreakpoint", :address, :condition, :enabled)
+    Breakpoint = Struct.new("AntiquitasMonitorBreakpoint", :address, :condition, :enabled) do
       include Comparable
 
       def initialize(*args)
