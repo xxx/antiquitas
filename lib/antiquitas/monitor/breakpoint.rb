@@ -1,11 +1,14 @@
 module Antiquitas
   class Monitor
-    Breakpoint = Struct.new("AntiquitasMonitorBreakpoint", :address, :condition, :enabled) do
+    class Breakpoint
       include Comparable
 
-      def initialize(*args)
-        super *args
-        self.enabled = true unless args.length == 3 # i.e. enabled value passed-in
+      attr_accessor :address, :condition, :enabled
+      
+      def initialize(address = nil, condition = nil, enabled = true)
+        self.address = address
+        self.condition = condition
+        self.enabled = enabled
       end
       
       def <=>(other)
