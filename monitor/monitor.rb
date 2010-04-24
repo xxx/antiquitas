@@ -118,26 +118,24 @@ module Antiquitas
     end
 
     def breakpoint(opts = {})
-      if opts.empty?
-        @breakpoints.sort.each do |bp|
-          puts bp
-        end
-      else
-        if opts[:address]
-          bp = @breakpoints.detect { |brk| opts[:address] == brk.address }
-          if bp
-            if opts[:condition]
-              if bp.condition == opts[:condition]
-                bp.enabled = !bp.enabled
-              else
-                bp.condition = opts[:condition]
-              end
-            else
+      if opts[:address]
+        bp = @breakpoints.detect { |brk| opts[:address] == brk.address }
+        if bp
+          if opts[:condition]
+            if bp.condition == opts[:condition]
               bp.enabled = !bp.enabled
+            else
+              bp.condition = opts[:condition]
             end
           else
-            @breakpoints << Breakpoint.new(opts[:address], opts[:condition])
+            bp.enabled = !bp.enabled
           end
+        else
+          @breakpoints << Breakpoint.new(opts[:address], opts[:condition])
+        end
+      else
+        @breakpoints.sort.each do |bp|
+          puts bp
         end
       end
     end
