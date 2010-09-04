@@ -1,4 +1,4 @@
-require File.join(File.dirname(__FILE__), '..', '..', 'test_helper')
+require File.expand_path('../../test_helper.rb', File.dirname(__FILE__))
 
 class Cpu6502Test < Test::Unit::TestCase
 #  include RR::Adapters::TestUnit

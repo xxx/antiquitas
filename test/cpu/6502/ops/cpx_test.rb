@@ -1,4 +1,4 @@
-require File.join(File.dirname(__FILE__), '..', '..', '..', 'test_helper')
+require File.expand_path('../../../test_helper', File.dirname(__FILE__))
 
 class Cpu6502CpxTest < Test::Unit::TestCase
   context "CPX" do

@@ -1,10 +1,13 @@
-require 'rubygems'
 require 'bundler'
-Bundler.require(:default, :test)
+Bundler.setup(:default, :test)
 
 Dir.glob(File.join(File.dirname(__FILE__), '..', '{cpu,monitor,lib}', '**', '*.rb')).each do |f|
   require f
 end
+
+# *no idea* why bundler isn't handling these requires.
+require 'shoulda'
+require 'rr'
 
 class Test::Unit::TestCase
   include RR::Adapters::TestUnit
