@@ -15,6 +15,10 @@ module Antiquitas
     end
 
     def run
+      begin
+        print "> "
+        parse_command($stdin.gets.chomp)
+      end while true
     end
     
     def parse_command(command)
@@ -111,6 +115,8 @@ module Antiquitas
 
         when /\A(?:h(?:elp)?|\?)(?:\s+(.+))?\Z/i
           help
+        else
+          puts "unknown command"
       end
     end
     
