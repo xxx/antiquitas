@@ -12,7 +12,7 @@ module Antiquitas
       end
       
       def <=>(other)
-        @address <=> other.address
+        @watch_type <=> other.watch_type || @watch_location <=> other.watch_location
       end
     end
   end
