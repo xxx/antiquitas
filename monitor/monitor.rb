@@ -1,10 +1,11 @@
 module Antiquitas
   class Monitor
-    attr_reader :hardware, :breakpoints, :watchpoints
+    attr_reader :hardware, :breakpoints, :watchpoints, :trappoints
 
     def initialize
       @breakpoints = []
       @watchpoints = []
+      @trappoints = []
     end
 
     def monitor(hardware)
@@ -162,6 +163,24 @@ module Antiquitas
     end
 
     def trap(opts = {})
+      if opts.empty?
+        @trappoints.each do |tp|
+          puts tp
+        end
+      else
+        return unless [:read, :write, :readwrite, :r, :w, :rw].include?(trap_type = opts.delete(:type))
+
+        trap_location_type = opts.keys.detect { |k| [:address, :register, :flag].include?(k) }
+        return unless trap_location_type
+        trap_location = opts[trap_location_type]
+        tp = @trappoints.detect { |tp| tp.trap_location_type == trap_location_type && tp.trap_location == trap_location }
+        if tp
+          tp.trap_type = trap_type
+        else
+          @trappoints << Trappoint.new(trap_type, trap_location_type, trap_location)
+        end
+      end
+
     end
 
     def continue
