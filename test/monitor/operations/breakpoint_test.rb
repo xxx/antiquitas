@@ -8,12 +8,13 @@ class MonitorBreakpointOperationTest < Test::Unit::TestCase
     
     context "no address" do
       should "print out the breakpoints, sorted by address" do
-        bp = Antiquitas::Monitor::Breakpoint.new(0x0080)
-        bp2 = Antiquitas::Monitor::Breakpoint.new(0x0040)
+        @monitor.breakpoint(:address => 0x0080)
+        @monitor.breakpoint(:address => 0x0040)
+        bp = @monitor.breakpoints.first
+        bp2 = @monitor.breakpoints.last
         mock(@monitor).puts(bp)
         mock(@monitor).puts(bp2)
-        @monitor.breakpoints << bp
-        @monitor.breakpoints << bp2
+
         @monitor.breakpoint
       end
     end

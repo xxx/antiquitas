@@ -1,9 +1,9 @@
 module Antiquitas
   class Monitor
-    attr_reader :hardware, :breakpoints, :watchpoints, :trappoints
+    attr_reader :hardware, :watchpoints, :trappoints
 
     def initialize
-      @breakpoints = []
+      @breakpoints = {}
       @watchpoints = []
       @trappoints = []
     end
@@ -120,7 +120,7 @@ module Antiquitas
 
     def breakpoint(opts = {})
       if opts[:address]
-        bp = @breakpoints.detect { |brk| opts[:address] == brk.address }
+        bp = @breakpoints[opts[:address]]
         if bp
           if opts[:condition]
             if bp.condition == opts[:condition]
@@ -132,15 +132,19 @@ module Antiquitas
             bp.enabled = !bp.enabled
           end
         else
-          @breakpoints << Breakpoint.new(opts[:address], opts[:condition])
+          @breakpoints[opts[:address]] = Breakpoint.new(opts[:address], opts[:condition])
         end
       else
-        @breakpoints.sort.each do |bp|
+        @breakpoints.values.each do |bp|
           puts bp
         end
       end
     end
 
+    def breakpoints
+      @breakpoints.values
+    end
+    
     def watchpoint(opts = {})
       if opts.empty?
         @watchpoints.each do |wp|
